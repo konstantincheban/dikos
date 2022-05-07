@@ -1,0 +1,23 @@
+@import '@styles/shared.scss';
+
+.InputContainer {
+  display: flex;
+  width: 100%;
+  padding: 10px 0;
+  input {
+    width: 100%;
+    background-color: $secondaryBackgroundColor;
+    border-radius: $borderRadius;
+    color: $textColor;
+    padding: 12px 15px;
+    border: none;
+    outline: transparent;
+    @include transition;
+    &::placeholder {
+      color: $secondaryTextColor;
+    }
+    &:focus {
+      @include outline;
+    }
+  }
+}
