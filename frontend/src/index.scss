@@ -1,0 +1,32 @@
+@import 'shared/styles/shared.scss';
+// @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100&family=Roboto:wght@100&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Roboto', 'Montserrat', sans-serif;
+  background-color: $backgroundColor;
+  color: $textColor;
+  font-size: $defaultFontSize;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.App {
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(
+    ellipse at bottom,
+    hsl(213, 58%, 12%) 0%,
+    #0c0d13 100%
+  );
+}
+
+// add some style changes to toastify to avoid draggable issue
+// .Toastify__bounce-enter--top-right,
+// .Toastify__bounce-enter--bottom-right {
+//   animation-fill-mode: none;
+// }

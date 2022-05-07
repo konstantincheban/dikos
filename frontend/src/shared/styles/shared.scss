@@ -1,0 +1,8 @@
+@import 'variables/colors.scss';
+@import 'variables/mixins.scss';
+@import 'variables/sizes.scss';
+
+// TOSTIFY Restyling
+:root {
+  --toastify-color-dark: #{$vineColor};
+}

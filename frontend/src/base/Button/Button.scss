@@ -1,0 +1,27 @@
+@import '@styles/shared.scss';
+
+.ButtonContainer {
+  button {
+    min-width: 30px;
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: darken($color: $purpleAccentColor, $amount: 10);
+    color: $textColor;
+    font-weight: 700;
+    border: none;
+    border-radius: $borderRadius;
+    outline: transparent;
+    @include transition;
+    &:focus {
+      background-color: $purpleAccentColor;
+      @include outline;
+    }
+    &:hover {
+      background-color: $purpleAccentColor;
+      cursor: pointer;
+      @include boxShadow;
+    }
+  }
+}
