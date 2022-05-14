@@ -16,35 +16,38 @@ export const useAuthRepository = () => {
   const authObservable = useAuthObservable();
 
   const login = async (data: LoginRequest) => {
+    authObservable.setLoadingState(true);
     authApi
       .login<LoginRequest>(data)
       .then(({ data }: AxiosResponse<LoginResponse>) => {
         authObservable.updateUserData(data);
         authObservable.updateToken(data.token);
+        authObservable.setLoadingState(false);
         navigate('/');
       })
       .catch((err) => setErrorToState(err, authObservable));
   };
 
   const registration = async (data: RegistrationRequest) => {
+    authObservable.setLoadingState(true);
     authApi
       .registration<RegistrationRequest>(data)
       .then(({ data }: AxiosResponse<RegistrationResponse>) => {
         authObservable.updateUserData(data);
         authObservable.updateToken(data.token);
+        authObservable.setLoadingState(false);
         navigate('/');
       })
       .catch((err) => setErrorToState(err, authObservable));
   };
 
   const logout = async () => {
-    authApi
-      .logout()
-      .then(({}: AxiosResponse<RegistrationResponse>) => {
-        authObservable.updateToken('');
-        navigate('/');
-      })
-      .catch((err) => setErrorToState(err, authObservable));
+    try {
+      authObservable.updateToken('');
+      navigate('/');
+    } catch (err) {
+      setErrorToState(err, authObservable);
+    }
   };
 
   const clearToken = () => {

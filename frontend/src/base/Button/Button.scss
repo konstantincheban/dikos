@@ -7,21 +7,38 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: darken($color: $purpleAccentColor, $amount: 10);
+    background-color: darken($color: $blueAccentColor, $amount: 15);
     color: $textColor;
     font-weight: 700;
     border: none;
     border-radius: $borderRadius;
     outline: transparent;
     @include transition;
+
+    &[secondary] {
+      background-color: transparent;
+      border: 2px solid $blueAccentColor;
+    }
+    &[disruptive] {
+      background-color: darken($color: $errorColor, $amount: 15);
+      &:hover {
+        background-color: $errorColor;
+      }
+    }
+
     &:focus {
-      background-color: $purpleAccentColor;
       @include outline;
     }
+    &:not([disruptive]):focus {
+      background-color: $blueAccentColor;
+    }
+
     &:hover {
-      background-color: $purpleAccentColor;
       cursor: pointer;
       @include boxShadow;
+    }
+    &:not([disruptive]):hover {
+      background-color: $blueAccentColor;
     }
   }
 }

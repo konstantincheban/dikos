@@ -1,0 +1,51 @@
+@import '@styles/shared.scss';
+$padding: calc(($columnSize - $defaultIconContainerSize) / 2);
+
+.NavigationItem {
+  position: relative;
+  height: 40px;
+  padding-left: $padding;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  color: $textColor;
+  background-color: $secondaryBackgroundColor;
+  width: calc($defaultIconContainerSize + $padding);
+  @include transition;
+
+  &.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 3px;
+    background-color: $blueAccentColor;
+  }
+
+  & .IconContainer {
+    min-width: $defaultIconContainerSize;
+    color: $secondaryTextColor;
+  }
+
+  & .ItemLabel {
+    width: 0;
+    opacity: 0;
+    @include truncate;
+  }
+
+  &:hover {
+    width: 200px;
+    background-color: lighten($color: $secondaryBackgroundColor, $amount: 15);
+
+    & .IconContainer {
+      color: $textColor;
+    }
+
+    & .ItemLabel {
+      width: auto;
+      padding: 0 10px;
+      opacity: 1;
+    }
+  }
+}

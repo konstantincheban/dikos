@@ -1,24 +1,14 @@
 @import '@styles/shared.scss';
 
-$activeTranslateX: -50%;
-$translateX: -60%;
-
-$activeTranslateY: -50%;
-$translateY: -65%;
-
-@mixin bounceAnimation($animationName) {
-  -webkit-animation-name: $animationName;
-  animation-name: $animationName;
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-}
-
 .AuthView {
   position: relative;
   height: 100%;
   width: 100%;
+  background: radial-gradient(
+    ellipse at bottom,
+    hsl(213, 58%, 12%) 0%,
+    #0c0d13 100%
+  );
 
   & .filter {
     position: absolute;
@@ -100,6 +90,7 @@ $translateY: -65%;
   margin-top: 20px;
   & .Section {
     padding-top: 15px;
+
     & .ErrorBlock {
       color: $errorColor;
       font-size: $smallFontSize;
