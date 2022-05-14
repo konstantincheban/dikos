@@ -1,7 +1,7 @@
 type ClassMapObjectType = {
   [key: string]: boolean;
 };
-export const classMap = (obj: ClassMapObjectType, baseClass = '') => {
+export const classMap = (obj: ClassMapObjectType, baseClass = ''): string => {
   return Object.entries(obj)
     .reduce((acc, [key, value]) => {
       if (value) {
@@ -14,4 +14,21 @@ export const classMap = (obj: ClassMapObjectType, baseClass = '') => {
 
 export const capitalize = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+/**
+ *
+ * @param {array} array - array to reordering
+ * @param {number} fromIndex - movable item index
+ * @param {number} toIndex - index of the position where the element will be moved to
+ * @returns {array} - reordered cloned array
+ */
+export const immutableMove = (
+  array: any[],
+  fromIndex: number,
+  toIndex: number,
+) => {
+  const clonedArr = [...array];
+  clonedArr.splice(toIndex, 0, clonedArr.splice(fromIndex, 1)[0]);
+  return clonedArr;
 };
