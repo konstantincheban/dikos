@@ -1,6 +1,6 @@
 @mixin gradient {
   background: $purpleAccentColor;
-  background: linear-gradient(90deg, $purpleAccentColor 0%, #cc33cc 100%);
+  background: linear-gradient(100.84deg, $purpleAccentColor 0%, #cc33cc 100%);
 }
 
 @mixin outline {
@@ -11,7 +11,13 @@
   transition: all 0.2s ease-in;
 }
 
-@mixin boxShadow {
-  -webkit-box-shadow: 0px 0px 20px 0px $backgroundColor;
-  box-shadow: 0px 0px 20px 0px $backgroundColor;
+@mixin truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin boxShadow($intensity: 20px) {
+  -webkit-box-shadow: 0px 0px $intensity 0px $backgroundColor;
+  box-shadow: 0px 0px $intensity 0px $backgroundColor;
 }
