@@ -1,0 +1,40 @@
+@import '@styles/shared.scss';
+
+.PageNotFoundContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 70px;
+  width: 100vw;
+  height: 100vh;
+
+  & .InfoContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    & .Title {
+      font-size: 70px;
+      font-weight: 700;
+      font-family: 'Montserrat', 'Roboto', sans-serif;
+      padding-bottom: 15px;
+    }
+
+    & .Description {
+      text-align: center;
+      font-size: 20px;
+      padding-bottom: 40px;
+    }
+
+    & .ActionContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+
+      .WhyNot {
+        color: $secondaryTextColor;
+      }
+    }
+  }
+}
