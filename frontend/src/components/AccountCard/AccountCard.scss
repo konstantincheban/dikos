@@ -1,0 +1,30 @@
+@import '@styles/shared.scss';
+
+.AccountCard {
+  display: grid;
+  grid-template-columns: auto 30px;
+  grid-template-rows: 20px auto 20px;
+  grid-template-areas:
+    'title currency'
+    'description .'
+    'ballance .';
+  @include boxShadow;
+  @include gradient;
+
+  & .AccountTitle {
+    font-weight: 700;
+    grid-area: title;
+  }
+  & .AccountDescription {
+    color: $secondaryTextColor;
+    grid-area: description;
+  }
+  & .AccountBallance {
+    font-weight: 700;
+    grid-area: ballance;
+  }
+  & .AccountCurrency {
+    font-weight: 700;
+    grid-area: currency;
+  }
+}
