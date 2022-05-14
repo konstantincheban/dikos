@@ -1,0 +1,54 @@
+@import '@styles/shared.scss';
+
+.NavigationMenuContainer {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 40px 0;
+}
+
+.LogoSection {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 150px;
+  width: 100%;
+
+  & .IconContainer {
+    color: $secondaryTextColor;
+    @include transition;
+    &:hover,
+    &:focus {
+      cursor: pointer;
+      color: $textColor;
+    }
+  }
+}
+
+.NavigationSection {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  .NavigationWrapper {
+    position: absolute;
+  }
+}
+
+.LogoutSection {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 300px;
+  width: 100%;
+
+  & .LogoutButton {
+    color: $secondaryTextColor;
+    padding: 15px;
+
+    &:hover,
+    &:focus {
+      cursor: pointer;
+      color: $textColor;
+    }
+  }
+}

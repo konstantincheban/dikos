@@ -11,13 +11,8 @@ export const useAuthApi = () => {
     return axios.post(`${BASE_API_URL}/auth/registration`, data);
   };
 
-  const logout = () => {
-    return axios.post(`${BASE_API_URL}/auth/logout`);
-  };
-
   return {
     login,
     registration,
-    logout,
   };
 };

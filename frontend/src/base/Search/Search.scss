@@ -1,0 +1,29 @@
+@import '@styles/shared.scss';
+
+.SearchContainer {
+  display: flex;
+  align-items: center;
+  height: 30px;
+
+  & .IconContainer {
+    padding-right: 10px;
+  }
+
+  & .SearchInputContainer {
+    height: 100%;
+    border-bottom: 1px solid $secondaryTextColor;
+  }
+
+  input {
+    background: transparent;
+    border: none;
+    outline: none;
+    height: 100%;
+    color: $textColor;
+    @include transition;
+
+    &::placeholder {
+      color: $secondaryTextColor;
+    }
+  }
+}

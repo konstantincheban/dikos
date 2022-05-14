@@ -1,6 +1,5 @@
-import RetroBackground from '@components/RetroBackground/RetroBackground';
 import { capitalize, classMap } from '@utils';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field } from 'formik';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -12,11 +11,12 @@ import {
   ISwitcherProps,
 } from './Authentication.types';
 import './Authentication.scss';
-import Input from '@base/Input/Input';
-import Button from '@base/Button/Button';
+import Input from '@base/Input';
+import Button from '@base/Button';
 import * as Yup from 'yup';
 import { useAuthRepository } from '@repos';
 import StarsBackground from '@components/StarsBackground/StarsBackground';
+import FieldErrorMessage from '@base/FieldErrorMessage/FieldErrorMessage';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Required'),
@@ -59,17 +59,19 @@ const Login = (props: ILoginProps<ILoginData>) => {
         {() => (
           <Form className="FormContainer">
             <div className="Section">
+              <label htmlFor="email">Email:</label>
               <Field as={Input} name="email" placeholder="Enter your email" />
-              <ErrorMessage name="email" />
+              <FieldErrorMessage name="email" />
             </div>
             <div className="Section">
+              <label htmlFor="password">Password:</label>
               <Field
                 as={Input}
                 name="password"
                 type="password"
                 placeholder="Enter your password"
               />
-              <ErrorMessage name="password" />
+              <FieldErrorMessage name="password" />
             </div>
             <Button type="submit" className="SubmitButton">
               <span>Submit</span>
@@ -102,24 +104,27 @@ const Registration = (props: IRegistrationProps<IRegistrationData>) => {
         {() => (
           <Form className="FormContainer">
             <div className="Section">
+              <label htmlFor="username">Username:</label>
               <Field
                 as={Input}
                 className="Section"
                 name="username"
                 placeholder="Enter your username"
               />
-              <ErrorMessage name="username" />
+              <FieldErrorMessage name="username" />
             </div>
             <div className="Section">
+              <label htmlFor="email">Email:</label>
               <Field
                 as={Input}
                 className="Section"
                 name="email"
                 placeholder="Enter your email"
               />
-              <ErrorMessage name="email" />
+              <FieldErrorMessage name="email" />
             </div>
             <div className="Section">
+              <label htmlFor="password">Password:</label>
               <Field
                 as={Input}
                 className="Section"
@@ -127,7 +132,7 @@ const Registration = (props: IRegistrationProps<IRegistrationData>) => {
                 type="password"
                 placeholder="Enter your password"
               />
-              <ErrorMessage name="password" />
+              <FieldErrorMessage name="password" />
             </div>
             <Button type="submit" className="SubmitButton">
               <span>Submit</span>

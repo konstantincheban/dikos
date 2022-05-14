@@ -1,0 +1,246 @@
+@import '@styles/shared.scss';
+
+.UserMenuContainer {
+  padding: 40px;
+  display: grid;
+  grid-template-rows: 40px 250px auto 50px;
+  overflow: hidden;
+  position: relative;
+  @include transition;
+
+  // collapsed right shadow
+  &:after {
+    content: '';
+    position: absolute;
+    height: 100vh;
+    width: 100%;
+    z-index: 1000;
+    -webkit-box-shadow: inset -80px 0px 60px -20px rgb(0 0 0 / 60%);
+    box-shadow: inset -80px 0px 60px -20px rgb(0 0 0 / 60%);
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+
+  &.collapsed {
+    width: calc($columnSize * 1.5);
+
+    &::after {
+      opacity: 1;
+    }
+
+    .UtilsHeader {
+      & .SearchContainer {
+        & input {
+          width: 0px;
+          padding: 0;
+          &::placeholder {
+            color: transparent;
+          }
+        }
+      }
+    }
+
+    & .SummaryContainer {
+      & > .SummaryWidgetContainer {
+        display: none;
+        opacity: 0;
+      }
+      & > .SummaryWidgetContainer:first-of-type {
+        display: flex;
+        opacity: 1;
+        width: inherit;
+      }
+    }
+
+    & .DateSummaryContainer {
+      & > .DateSummaryWidgetContainer {
+        display: none;
+        opacity: 0;
+      }
+      & > .DateSummaryWidgetContainer:first-of-type {
+        display: flex;
+        opacity: 1;
+        width: inherit;
+      }
+    }
+  }
+
+  .SectionTitle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    min-width: 170px;
+  }
+
+  .UtilsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: inherit;
+
+    & .SearchContainer {
+      flex: 1;
+      & input {
+        width: 200px;
+      }
+    }
+
+    & > .IconContainer {
+      padding: 0 15px;
+      min-width: $defaultIconContainerSize;
+    }
+    & > .IconContainer:last-of-type {
+      padding-right: 0;
+    }
+  }
+  .AccountsSection {
+    padding: 15px 0;
+    position: relative;
+    width: inherit;
+
+    .CreationCart {
+      border: 3px dashed $disabledColor;
+    }
+  }
+  .AccountSummary {
+    padding: 15px 0;
+    width: inherit;
+
+    & .SummaryContainer,
+    & .DateSummaryContainer {
+      padding: 10px 0;
+      display: flex;
+      gap: 20px;
+    }
+
+    & .SummaryWidgetContainer,
+    & .DateSummaryWidgetContainer {
+      display: flex;
+      background-color: lighten($color: $secondaryBackgroundColor, $amount: 5);
+      border-radius: $borderRadius;
+      padding: 15px;
+      opacity: 1;
+      @include boxShadow;
+    }
+
+    & .SummaryWidgetContainer {
+      height: 50px;
+      align-items: center;
+      flex: 1 1 100px;
+      max-width: 180px;
+      & .Info {
+        display: flex;
+        flex-direction: column;
+        padding-left: 10px;
+        font-size: $smallFontSize;
+        gap: 5px;
+
+        & .InfoTitle {
+          color: $secondaryTextColor;
+        }
+      }
+    }
+
+    & .DateSummaryWidgetContainer {
+      min-height: 150px;
+      min-width: 80px;
+      max-width: calc($columnSize * 1.5);
+      flex-direction: column;
+      align-items: center;
+      flex: 1 1 50px;
+
+      & .Info {
+        padding-top: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+
+        & .InfoTitle,
+        & .InfoPercentage {
+          font-size: $smallFontSize;
+        }
+
+        & .InfoAmount {
+          font-weight: 700;
+        }
+      }
+    }
+
+    & .Graphic,
+    & .Badge {
+      border-radius: $borderRadius;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      @include gradient;
+    }
+
+    & .Graphic {
+      &.Income .IconContainer {
+        transform: rotate(-40deg);
+      }
+
+      &.Outcome .IconContainer {
+        transform: rotate(135deg);
+      }
+    }
+  }
+  .AccountActions {
+    padding: 15px 0;
+    justify-content: flex-end;
+  }
+}
+
+.AccountCard,
+.CreationCart {
+  position: absolute;
+  @include transition;
+
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
+    @include boxShadow(40px);
+  }
+}
+
+.CreationCart {
+  background-color: rgba($secondaryBackgroundColor, 0.3);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+  color: $secondaryTextColor;
+
+  &:hover {
+    color: $textColor;
+  }
+}
+
+.CardPosition {
+  &-0 {
+    transform: translateX(0) scale(1, 1);
+    opacity: 1;
+    z-index: 400;
+  }
+  &-1 {
+    transform: translateX(30px) scale(0.98, 0.98);
+    opacity: 0.8;
+    z-index: 300;
+  }
+  &-2 {
+    transform: translateX(60px) scale(0.96, 0.96);
+    opacity: 0.6;
+    z-index: 200;
+  }
+  &-3 {
+    transform: translateX(90px) scale(0.94, 0.94);
+    opacity: 0.4;
+    z-index: 100;
+  }
+}
