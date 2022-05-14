@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 
-export type IState<T> = T & {
+export type IState<T = {}> = T & {
   loading: boolean;
   error: string;
 };

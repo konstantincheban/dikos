@@ -1,4 +1,5 @@
 export class CreateTransactionDTO {
+  readonly userID: string;
   readonly accountID: string;
   readonly name?: string;
   readonly description?: string;

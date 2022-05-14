@@ -1,3 +1,4 @@
+import { User } from './../../users/schemas/users.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Account } from 'src/accounts/schemas/accounts.schema';
@@ -6,6 +7,9 @@ import mongoose from 'mongoose';
 
 @Schema()
 export class Transaction {
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  userID: User;
+
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Account' })
   accountID: Account;
 
@@ -19,7 +23,7 @@ export class Transaction {
   amount: number;
 
   @Prop({ required: true })
-  currency: number;
+  currency: string;
 
   @Prop()
   category: string;

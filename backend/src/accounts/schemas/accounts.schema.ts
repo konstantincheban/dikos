@@ -17,6 +17,9 @@ export class Account {
   @Prop()
   description: string;
 
+  @Prop({ required: true })
+  currency: string;
+
   @Prop()
   type: string;
 }
