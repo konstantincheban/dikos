@@ -1,9 +1,12 @@
 import { RouteObject, Outlet } from 'react-router-dom';
 import { RouteMiddleware } from '@base/RouteMiddleware';
-import Main from '@components/Main/Main';
+import MainView from '@components/MainView/MainView';
 import Authentication from '@components/Authentication/Authentication';
 import { IState } from 'src/helpers/observables/utils';
 import { AuthState } from '@observables';
+import Transactions from '@components/Transactions/Transactions';
+import Layout from '@components/Layout/Layout';
+import PageNotFound from '@components/PageNotFound/PageNotFound';
 
 export const getRouterConfig = (
   authState: IState<AuthState>,
@@ -24,13 +27,29 @@ export const getRouterConfig = (
   },
   // private routes
   {
-    path: '/',
     element: <RouteMiddleware authState={authState} redirectUrl="/login" />,
     children: [
       {
-        path: '/',
-        element: <Main />,
+        element: <Layout />,
+        children: [
+          {
+            path: '/',
+            element: <MainView />,
+          },
+          {
+            path: '/accounts',
+            element: <MainView currentView="accounts" />,
+          },
+          {
+            path: '/transactions',
+            element: <Transactions />,
+          },
+        ],
       },
     ],
+  },
+  {
+    path: '*',
+    element: <PageNotFound />,
   },
 ];
