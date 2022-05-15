@@ -2,11 +2,13 @@ import { AccountSchema } from './schemas/accounts.schema';
 import { Account } from 'src/accounts/schemas/accounts.schema';
 import { AccountsController } from './accounts.controller';
 import { AccountsService } from './accounts.service';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
+    forwardRef(() => AuthModule),
     MongooseModule.forFeature([{ name: Account.name, schema: AccountSchema }]),
   ],
   providers: [AccountsService],
