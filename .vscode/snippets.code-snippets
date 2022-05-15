@@ -1,0 +1,118 @@
+{
+	// Place your dikos workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+  "Create new Observable": {
+    "prefix": "observable",
+    "body": [
+      "import { Interface } from '@interfaces';",
+      "import { toast } from 'react-toastify';",
+      "import { createSubject, IState } from './utils';",
+      "",
+      "const initialState = {",
+      "  loading: false,",
+      "  error: '',",
+      "};",
+      "",
+      "const ${0:observableName}Subject$ = createSubject<IState<Interface>>(initialState);",
+      "",
+      "export const use${0:observableName}Observable = () => {",
+      "  const update${0:observableName}Data = (${0:observableName}Data: Interface[]) => {",
+      "    setNextState(${0:observableName}Data);",
+      "  };",
+      "",
+      "  const setError = (message: string) => {",
+      "    toast.error(message);",
+      "    setNextState({ error: message });",
+      "  };",
+      "",
+      "  const setLoadingState = (state: boolean) => {",
+      "    setNextState({ loading: state });",
+      "  };",
+      "",
+      "  const setNextState = (payload: Partial<IState<Interface>>) => {",
+      "    const state = ${0:observableName}Subject$.getValue();",
+      "    ${0:observableName}Subject$.next({ ...state, ...payload });",
+      "  };",
+      "",
+      "  const getObservable = () => {",
+      "    return ${0:observableName}Subject$;",
+      "  };",
+      "",
+      "  return {",
+      "    update${0:observableName}Data,",
+      "    setError,",
+      "    setLoadingState,",
+      "    getObservable,",
+      "  };",
+      "};",
+      ""
+    ],
+    "description": "Create new Observable"
+  },
+  "Create new API": {
+    "prefix": "api",
+    "body": [
+      "import { axiosAuthInstance } from './index';",
+      "",
+      "export const use${0:apiName}Api = () => {",
+      "  const create${0:apiName} = <RequestType>(data: RequestType) => {",
+      "    return axiosAuthInstance.post('/${1:endpoint}/create', data);",
+      "  };",
+      "",
+      "  const edit${0:apiName} = <RequestType>(data: RequestType, ${0:apiName}Id: string) => {",
+      "    return axiosAuthInstance.post(`/${1:endpoint}/edit/${${0:apiName}Id}`, data);",
+      "  };",
+      "",
+      "  const get${0:apiName} = () => {",
+      "    return axiosAuthInstance.get('/${1:endpoint}');",
+      "  };",
+      "",
+      "  return {",
+      "    create${0:apiName},",
+      "    edit${0:apiName},",
+      "    get${0:apiName},",
+      "  };",
+      "};",
+      ""
+    ],
+    "description": "Create new API"
+  },
+  "Create new Component": {
+    "prefix": "init",
+    "body": [
+      "import { I${0:$TM_FILENAME_BASE}Props } from './${0:$TM_FILENAME_BASE}.types';",
+      "import './${0:$TM_FILENAME_BASE}.scss';",
+      "",
+      "function ${0:$TM_FILENAME_BASE}(props: I${0:$TM_FILENAME_BASE}Props) {",
+      "  const {  } = props;",
+      "  return (",
+      "    <div className=\"${0:$TM_FILENAME_BASE}Container\"></div>",
+      "  );",
+      "}",
+      "",
+      "export default ${0:$TM_FILENAME_BASE};"
+    ],
+    "description": "Create new Component"
+  },
+  "Shared Styles": {
+    "prefix": "shared",
+    "body": [
+      "@import '@styles/shared.scss'",
+    ],
+    "description": "Create new Component"
+  }
+}
