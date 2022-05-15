@@ -1,11 +1,19 @@
-import { LogoutIcon } from '@base/Icon/IconSet';
 import NavigationMenu from '@components/NavigationMenu/NavigationMenu';
 import UserMenu from '@components/UserMenu/UserMenu';
+import { useAccountsRepository, useAuthRepository } from '@repos';
 import { navigationMenuConfig } from '@shared/navigationMenuConfig';
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import './Layout.scss';
 
 function Layout() {
+  const accountsRepo = useAccountsRepository();
+  const authRepo = useAuthRepository();
+  useEffect(() => {
+    authRepo.getUserData();
+    accountsRepo.getAccounts();
+  }, []);
+
   return (
     <div className="LayoutContainer">
       <NavigationMenu config={navigationMenuConfig} />
