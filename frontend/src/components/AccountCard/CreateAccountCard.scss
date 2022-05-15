@@ -1,0 +1,18 @@
+@import '@styles/shared.scss';
+
+.CreationCart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+  color: $secondaryTextColor;
+  background-color: rgba($secondaryBackgroundColor, 0.3);
+  backdrop-filter: blur(4px);
+  border: 3px dashed $disabledColor;
+
+  &:hover {
+    color: $textColor;
+    cursor: pointer;
+  }
+}

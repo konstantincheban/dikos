@@ -20,7 +20,7 @@ function AccountCard(props: IAccountCardProps) {
         <span>{description}</span>
       </div>
       <div className="AccountBallance">
-        <span>{ballance}</span>
+        <span>{ballance ?? 0}</span>
       </div>
       <div className="AccountCurrency">
         <span>{currency}</span>
