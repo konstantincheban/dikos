@@ -7,21 +7,27 @@ import {
   Get,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
-import { AccountDocument } from './schemas/accounts.schema';
+import { Account, AccountDocument } from './schemas/accounts.schema';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import MongooseClassSerializerInterceptor from 'src/utils/mongooseClassSerializer.interceptor';
 
 @Controller('accounts')
+@UseInterceptors(MongooseClassSerializerInterceptor(Account))
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllAccountsByUserId(@Query('filter') filter: string, @Req() req) {
+  async getAllAccountsByUserId(
+    @Query('filter') filter: string,
+    @Req() req,
+  ): Promise<Account[]> {
     return await this.accountsService.getFilteredAccounts(
       filter ?? '',
       req.user.id,

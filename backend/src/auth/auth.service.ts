@@ -20,15 +20,14 @@ export class AuthService {
   ) {}
 
   private async generateToken(user: UserDocument) {
-    const { id: userId, email, username } = user;
+    const { id, email } = user;
     const payload = {
-      id: userId,
+      id: id,
       email: email,
     };
+    const userData = this.usersService.computeUserData(user);
     return {
-      username,
-      userId,
-      email,
+      ...userData,
       token: this.jwtService.sign(payload),
     };
   }
