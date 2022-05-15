@@ -21,8 +21,14 @@ export class TransactionsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllTransactionsByUserId(@Query('filter') filter: string) {
-    return await this.transactionsService.getFilteredAccounts(filter ?? '');
+  async getAllTransactionsByUserId(
+    @Query('filter') filter: string,
+    @Req() req,
+  ) {
+    return await this.transactionsService.getFilteredAccounts(
+      filter ?? '',
+      req.user.id,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

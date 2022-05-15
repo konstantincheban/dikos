@@ -42,8 +42,13 @@ export class AccountsService {
     }
   }
 
-  async getFilteredAccounts(filter: string): Promise<Account[]> {
+  async getFilteredAccounts(
+    filter: string,
+    userID: string,
+  ): Promise<Account[]> {
     const buildFilterObject = buildFilterExpressions(filter);
-    return await this.accountModel.find({ $and: buildFilterObject }).exec();
+    return await this.accountModel
+      .find({ $and: buildFilterObject, userID })
+      .exec();
   }
 }

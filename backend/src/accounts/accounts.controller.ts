@@ -21,8 +21,11 @@ export class AccountsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllAccountsByUserId(@Query('filter') filter: string) {
-    return await this.accountsService.getFilteredAccounts(filter ?? '');
+  async getAllAccountsByUserId(@Query('filter') filter: string, @Req() req) {
+    return await this.accountsService.getFilteredAccounts(
+      filter ?? '',
+      req.user.id,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

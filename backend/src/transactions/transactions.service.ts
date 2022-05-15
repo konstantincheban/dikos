@@ -47,8 +47,13 @@ export class TransactionsService {
     }
   }
 
-  async getFilteredAccounts(filter: string): Promise<Transaction[]> {
+  async getFilteredAccounts(
+    filter: string,
+    userID: string,
+  ): Promise<Transaction[]> {
     const buildFilterObject = buildFilterExpressions(filter);
-    return await this.transactionModel.find({ $and: buildFilterObject }).exec();
+    return await this.transactionModel
+      .find({ $and: buildFilterObject, userID })
+      .exec();
   }
 }
