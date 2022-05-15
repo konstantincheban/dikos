@@ -14,7 +14,7 @@
     position: absolute;
     height: 100vh;
     width: 100%;
-    z-index: 1000;
+    z-index: -1;
     -webkit-box-shadow: inset -80px 0px 60px -20px rgb(0 0 0 / 60%);
     box-shadow: inset -80px 0px 60px -20px rgb(0 0 0 / 60%);
     opacity: 0;
@@ -26,6 +26,7 @@
 
     &::after {
       opacity: 1;
+      z-index: 1000;
     }
 
     .UtilsHeader {
@@ -99,8 +100,20 @@
     position: relative;
     width: inherit;
 
+    .AccountCard,
     .CreationCart {
-      border: 3px dashed $disabledColor;
+      position: absolute;
+      @include transition;
+
+      &:hover {
+        cursor: pointer;
+        opacity: 1;
+        @include boxShadow(40px);
+      }
+    }
+
+    .CreationCart {
+      top: 65px;
     }
   }
   .AccountSummary {
@@ -192,33 +205,6 @@
   .AccountActions {
     padding: 15px 0;
     justify-content: flex-end;
-  }
-}
-
-.AccountCard,
-.CreationCart {
-  position: absolute;
-  @include transition;
-
-  &:hover {
-    cursor: pointer;
-    opacity: 1;
-    @include boxShadow(40px);
-  }
-}
-
-.CreationCart {
-  background-color: rgba($secondaryBackgroundColor, 0.3);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 15px;
-  color: $secondaryTextColor;
-
-  &:hover {
-    color: $textColor;
   }
 }
 

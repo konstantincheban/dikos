@@ -5,7 +5,7 @@ import {
   IUserMenuProps,
 } from './UserMenu.types';
 import './UserMenu.scss';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { immutableMove, classMap } from '@shared/utils';
 import Search from '@base/Search';
 import {
@@ -21,39 +21,11 @@ import {
 import Button from '@base/Button';
 import AccountCard from '@components/AccountCard/AccountCard';
 import Card from '@base/Card';
+import { useStore } from '@store';
+import { useObservableState } from 'observable-hooks';
+import CreateAccountCard from '@components/AccountCard/CreateAccountCard';
 
 function UserMenu(props: IUserMenuProps) {
-  const accountsDefault = [
-    {
-      name: 'Default',
-      description: 'Default Account',
-      type: 'default',
-      currency: '980',
-      ballance: 3000,
-    },
-    {
-      name: 'Silpo',
-      description: 'Silpo Account',
-      type: 'silpo',
-      currency: '980',
-      ballance: 6000,
-    },
-    {
-      name: 'Resort',
-      description: 'Resort Account',
-      type: 'custom',
-      currency: '980',
-      ballance: 5000,
-    },
-    {
-      name: 'Create new account',
-      description: 'Create new accounts',
-      type: 'create',
-      currency: '',
-      ballance: 0,
-    },
-  ];
-
   const summaryConfig: ISummaryWidgetConfig[] = [
     {
       name: 'Income',
@@ -91,8 +63,26 @@ function UserMenu(props: IUserMenuProps) {
     },
   ];
 
+  const { accountsState$ } = useStore();
+  const { accounts } = useObservableState(accountsState$);
+
   const [collapsedMenu, setCollapsed] = useState(true);
-  const [accounts, setAccounts] = useState(accountsDefault);
+  const [accountsList, setAccounts] = useState(accounts);
+
+  useEffect(() => {
+    setAccounts([
+      ...accounts,
+      {
+        _id: '12345',
+        name: 'Create new Account',
+        description: 'Create new Account',
+        type: 'create',
+        currency: 'UAH',
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+    ]);
+  }, [accounts]);
 
   const handleExpandMenu = () => {
     setCollapsed(false);
@@ -111,7 +101,7 @@ function UserMenu(props: IUserMenuProps) {
 
   const handleReorder = (index: number) => {
     if (index) {
-      const reorderedAccounts = immutableMove(accounts, index, 0);
+      const reorderedAccounts = immutableMove(accountsList, index, 0);
       setAccounts(reorderedAccounts);
     }
   };
@@ -175,7 +165,7 @@ function UserMenu(props: IUserMenuProps) {
       </div>
       <div className="AccountsSection">
         {renderSectionTitle('Your Accounts')}
-        {accounts.map((accountItem, key) =>
+        {accountsList.map((accountItem, key) =>
           accountItem.type !== 'create' ? (
             <AccountCard
               className={`CardPosition-${key}`}
@@ -184,14 +174,11 @@ function UserMenu(props: IUserMenuProps) {
               {...accountItem}
             />
           ) : (
-            <Card
-              className={`CreationCart CardPosition-${key}`}
+            <CreateAccountCard
               key={`${accountItem.name}_${key}`}
+              className={`CardPosition-${key}`}
               onClick={() => handleReorder(key)}
-            >
-              <span>{accountItem.name}</span>
-              <Icon size={45} icon={<PlusIcon />} />
-            </Card>
+            />
           ),
         )}
       </div>
