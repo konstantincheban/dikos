@@ -1,6 +1,5 @@
 import { AxiosResponse } from 'axios';
 import { setErrorToState } from './utils';
-import { useNavigate } from 'react-router-dom';
 import { useAuthObservable } from '../observables';
 import { useAuthApi } from '@api';
 import {
@@ -11,7 +10,6 @@ import {
 } from '@shared/interfaces';
 
 export const useAuthRepository = () => {
-  const navigate = useNavigate();
   const authApi = useAuthApi();
   const authObservable = useAuthObservable();
 
@@ -23,7 +21,6 @@ export const useAuthRepository = () => {
         authObservable.updateUserData(data);
         authObservable.updateToken(data.token);
         authObservable.setLoadingState(false);
-        navigate('/');
       })
       .catch((err) => setErrorToState(err, authObservable));
   };
@@ -36,7 +33,6 @@ export const useAuthRepository = () => {
         authObservable.updateUserData(data);
         authObservable.updateToken(data.token);
         authObservable.setLoadingState(false);
-        navigate('/');
       })
       .catch((err) => setErrorToState(err, authObservable));
   };
@@ -44,10 +40,20 @@ export const useAuthRepository = () => {
   const logout = async () => {
     try {
       authObservable.updateToken('');
-      navigate('/');
     } catch (err) {
       setErrorToState(err, authObservable);
     }
+  };
+
+  const getUserData = async () => {
+    authObservable.setLoadingState(true);
+    authApi
+      .getUserData()
+      .then(({ data }: AxiosResponse<LoginResponse>) => {
+        authObservable.updateUserData(data);
+        authObservable.setLoadingState(false);
+      })
+      .catch((err) => setErrorToState(err, authObservable));
   };
 
   const clearToken = () => {
@@ -61,6 +67,7 @@ export const useAuthRepository = () => {
     login,
     registration,
     logout,
+    getUserData,
     getAuthObservable,
     clearToken,
   };

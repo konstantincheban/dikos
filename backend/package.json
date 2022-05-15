@@ -28,6 +28,7 @@
     "@nestjs/mongoose": "^9.0.3",
     "@nestjs/platform-express": "^8.0.0",
     "bcrypt": "^5.0.1",
+    "class-transformer": "^0.5.1",
     "csurf": "^1.11.0",
     "helmet": "^5.0.2",
     "mongoose": "^6.3.1",

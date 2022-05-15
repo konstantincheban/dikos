@@ -1,5 +1,4 @@
 export class EditTransactionDTO {
-  readonly transactionID: string;
   readonly name?: string;
   readonly description?: string;
   readonly amount: number;
