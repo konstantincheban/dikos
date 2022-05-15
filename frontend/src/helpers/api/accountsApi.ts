@@ -1,18 +1,16 @@
-import axios from 'axios';
-
-const BASE_API_URL = process.env.BASE_API_URL;
+import { axiosAuthInstance } from './index';
 
 export const useAccountsApi = () => {
   const createAccount = <RequestType>(data: RequestType) => {
-    return axios.post(`${BASE_API_URL}/accounts/create`, data);
+    return axiosAuthInstance.post('/accounts/create', data);
   };
 
   const editAccount = <RequestType>(data: RequestType, accountId: string) => {
-    return axios.post(`${BASE_API_URL}/accounts/edit/${accountId}`, data);
+    return axiosAuthInstance.post(`/accounts/edit/${accountId}`, data);
   };
 
   const getAccounts = () => {
-    return axios.get(`${BASE_API_URL}/accounts`);
+    return axiosAuthInstance.get('/accounts');
   };
 
   return {

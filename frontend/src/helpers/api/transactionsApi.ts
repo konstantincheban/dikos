@@ -1,24 +1,19 @@
-import axios from 'axios';
-
-const BASE_API_URL = process.env.BASE_API_URL;
+import { axiosAuthInstance } from '@api';
 
 export const useTransactionsApi = () => {
   const createTransaction = <RequestType>(data: RequestType) => {
-    return axios.post(`${BASE_API_URL}/transactions/create`, data);
+    return axiosAuthInstance.post('/transactions/create', data);
   };
 
   const editTransaction = <RequestType>(
     data: RequestType,
     transactionId: string,
   ) => {
-    return axios.post(
-      `${BASE_API_URL}/transactions/edit/${transactionId}`,
-      data,
-    );
+    return axiosAuthInstance.post(`/transactions/edit/${transactionId}`, data);
   };
 
   const getTransactions = () => {
-    return axios.get(`${BASE_API_URL}/transactions`);
+    return axiosAuthInstance.get('/transactions');
   };
 
   return {
