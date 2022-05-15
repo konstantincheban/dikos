@@ -17,6 +17,8 @@ import * as Yup from 'yup';
 import { useAuthRepository } from '@repos';
 import StarsBackground from '@components/StarsBackground/StarsBackground';
 import FieldErrorMessage from '@base/FieldErrorMessage/FieldErrorMessage';
+import { useStore } from '@store';
+import { useObservableState } from 'observable-hooks';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Required'),
@@ -181,6 +183,9 @@ const Switcher = (props: ISwitcherProps) => {
 };
 
 function Authentication() {
+  const { authState$ } = useStore();
+  const authState = useObservableState(authState$);
+
   const { login, registration, clearToken } = useAuthRepository();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -189,9 +194,10 @@ function Authentication() {
   const [currentAuthMode, setAuthMode] =
     useState<AuthStateEnum>(defaultOptionValue);
 
+  // TODO: navigate to root after token changed
   useEffect(() => {
-    clearToken();
-  }, []);
+    if (authState.token) navigate('/');
+  }, [authState.token]);
 
   useEffect(() => {
     if (pathname.includes('/login') && currentAuthMode !== 'login')
