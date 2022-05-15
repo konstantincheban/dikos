@@ -1,7 +1,7 @@
 export interface IAccount {
-  id: string;
+  _id: string;
   name: string;
-  description?: string;
+  description: string;
   currency: string;
   type: string;
   created_at: Date;
@@ -10,7 +10,7 @@ export interface IAccount {
 
 export type CreateAccountRequest = Omit<
   IAccount,
-  'id' | 'created_at' | 'updated_at'
+  '_id' | 'created_at' | 'updated_at'
 >;
 
 export type EditAccountRequest = Pick<IAccount, 'name' | 'description'>;
