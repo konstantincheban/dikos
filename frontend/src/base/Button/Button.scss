@@ -15,11 +15,11 @@
     outline: transparent;
     @include transition;
 
-    &[secondary] {
+    &.secondary {
       background-color: transparent;
       border: 2px solid $blueAccentColor;
     }
-    &[disruptive] {
+    &.disruptive {
       background-color: darken($color: $errorColor, $amount: 15);
       &:hover {
         background-color: $errorColor;
@@ -29,7 +29,7 @@
     &:focus {
       @include outline;
     }
-    &:not([disruptive]):focus {
+    &:not(.disruptive):focus {
       background-color: $blueAccentColor;
     }
 
@@ -37,7 +37,7 @@
       cursor: pointer;
       @include boxShadow;
     }
-    &:not([disruptive]):hover {
+    &:not(.disruptive):hover {
       background-color: $blueAccentColor;
     }
   }
