@@ -6,5 +6,5 @@ export interface ITabsProps {
 export interface ITab {
   name: string;
   path: string;
-  disabled?: Boolean;
+  disabled?: boolean;
 }

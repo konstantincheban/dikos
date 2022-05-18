@@ -1,5 +1,5 @@
 export interface IModalProps {
-  close: () => {};
+  close: () => unknown;
   /**
    * Open modal window with specific options
    *
@@ -11,7 +11,7 @@ export interface IModalProps {
    * @param {IModalActionConfig[]} actions (optional) - Modal actions config. By default using the cancel button to close the modal
    * @example ```[{ label: 'Button', secondary: true, handler: (e, closeModal) => ... }]```
    */
-  open: (props: IModalOpenProps) => {};
+  open: (props: IModalOpenProps) => unknown;
 }
 
 export interface IModalOpenProps {
@@ -27,7 +27,7 @@ export interface IModalOptions {
 
 export interface IModalActionConfig {
   label: string;
-  secondary?: Boolean;
-  disruptive?: Boolean;
-  handler: (e: React.MouseEvent, closeModal: () => any) => any;
+  secondary?: boolean;
+  disruptive?: boolean;
+  handler: (e: React.MouseEvent, closeModal: () => unknown) => unknown;
 }

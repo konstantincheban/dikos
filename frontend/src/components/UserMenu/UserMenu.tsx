@@ -2,7 +2,6 @@ import Icon from '@base/Icon';
 import {
   IDateSummaryWidgetConfig,
   ISummaryWidgetConfig,
-  IUserMenuProps,
 } from './UserMenu.types';
 import './UserMenu.scss';
 import { useEffect, useState } from 'react';
@@ -16,16 +15,14 @@ import {
   CalendarPlusIcon,
   CalendarCheckIcon,
   CalendarMonthIcon,
-  PlusIcon,
 } from '@base/Icon/IconSet';
 import Button from '@base/Button';
 import AccountCard from '@components/AccountCard/AccountCard';
-import Card from '@base/Card';
 import { useStore } from '@store';
 import { useObservableState } from 'observable-hooks';
 import CreateAccountCard from '@components/AccountCard/CreateAccountCard';
 
-function UserMenu(props: IUserMenuProps) {
+function UserMenu() {
   const summaryConfig: ISummaryWidgetConfig[] = [
     {
       name: 'Income',
@@ -91,7 +88,7 @@ function UserMenu(props: IUserMenuProps) {
     setCollapsed(true);
   };
 
-  const handleSearch = (value: string) => {
+  const handleSearch = () => {
     // console.log('HANDLE SEARCH', value);
   };
 
@@ -119,7 +116,7 @@ function UserMenu(props: IUserMenuProps) {
     widgetConfig: ISummaryWidgetConfig,
     key: number,
   ) => {
-    const { name, amount, currency } = widgetConfig;
+    const { name, amount } = widgetConfig;
     return (
       <div key={key} className="SummaryWidgetContainer">
         <div className={`Graphic ${name}`}>
@@ -137,7 +134,7 @@ function UserMenu(props: IUserMenuProps) {
     widgetConfig: IDateSummaryWidgetConfig,
     key: number,
   ) => {
-    const { name, amount, currency, percentage, icon } = widgetConfig;
+    const { name, amount, percentage, icon } = widgetConfig;
     return (
       <div key={key} className="DateSummaryWidgetContainer">
         <div className="Badge">

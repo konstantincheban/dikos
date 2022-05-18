@@ -1,3 +1,7 @@
 {
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "eslint.options": {
+    "overrideConfigFile": "/Users/kcheban/dikos/frontend/.eslintrc.js"
+  },
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint"
 }
