@@ -1,10 +1,29 @@
 import { IButtonProps } from './Button.types';
 import './Button.scss';
+import { classMap } from '@shared/utils';
 
-function Button({ children, ...rest }: IButtonProps) {
+function Button({
+  children,
+  secondary,
+  disruptive,
+  className,
+  ...rest
+}: IButtonProps) {
   return (
     <div className="ButtonContainer">
-      <button {...rest}>{children}</button>
+      <button
+        className={classMap(
+          {
+            [className as string]: !!className,
+            secondary: !!secondary,
+            disruptive: !!disruptive,
+          },
+          '',
+        )}
+        {...rest}
+      >
+        {children}
+      </button>
     </div>
   );
 }

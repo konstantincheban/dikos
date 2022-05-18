@@ -32,3 +32,7 @@ export const immutableMove = (
   clonedArr.splice(toIndex, 0, clonedArr.splice(fromIndex, 1)[0]);
   return clonedArr;
 };
+
+export const setGlobalCSSVariable = (variableName: string, value: string) => {
+  document.documentElement.style.setProperty(variableName, value);
+};

@@ -1,0 +1,144 @@
+@import '@styles/shared.scss';
+
+/* Animation */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 100%);
+  }
+
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOutDown {
+  from {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, 100%);
+  }
+}
+
+@keyframes opacity {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes reverseOpacity {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@mixin animation($animationName) {
+  animation-duration: var(--modal-animation-duration);
+  animation-fill-mode: both;
+  animation-name: $animationName;
+}
+
+.ModalOverlay {
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  z-index: 10000;
+  background-color: rgba($color: #0000, $alpha: 0.5);
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  @include animation(opacity);
+
+  &.FadeOutDown {
+    @include animation(reverseOpacity);
+    & .ModalWrapper {
+      @include animation(fadeOutDown);
+    }
+  }
+}
+
+.ModalWrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 500px;
+  min-height: 280px;
+  max-height: 800px;
+
+  border-radius: $borderRadius;
+  background-color: $backgroundColor;
+  display: flex;
+  @include animation(fadeInUp);
+}
+
+.ModalContainer {
+  position: relative;
+  padding: 45px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+
+  & .ModalTitle {
+    font-size: $largeFontSize;
+    font-weight: 700;
+  }
+
+  & .ModalCloseButton {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background-color: transparent;
+    border: none;
+    font-size: 40px;
+    color: $secondaryTextColor;
+    @include transition;
+
+    &:hover,
+    &:focus {
+      cursor: pointer;
+      color: $textColor;
+    }
+  }
+
+  & .ModalContent {
+    width: 100%;
+    height: 100%;
+    word-break: break-word;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  & .ModalActions {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+
+    &.left {
+      justify-content: flex-start;
+    }
+    &.center {
+      justify-content: center;
+    }
+    &.right {
+      justify-content: flex-end;
+    }
+
+    & .ModalAction {
+      width: 115px;
+    }
+  }
+}
