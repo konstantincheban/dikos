@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useRoutes } from 'react-router-dom';
+import { useRoutes } from 'react-router-dom';
 import { getRouterConfig } from '@shared/routerConfig';
 import { IState } from 'src/helpers/observables/utils';
 import { AuthState } from '@observables';

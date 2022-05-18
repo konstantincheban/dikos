@@ -12,7 +12,7 @@ function PageNotFound() {
         <div className="Title">404</div>
         <div className="Description">Looks like this page is missing</div>
         <div className="ActionContainer">
-          <span className="WhyNot">Anyway, why don't try again by going</span>
+          <span className="WhyNot">Anyway, why do not try again by going</span>
           <Button>
             <Link to="/">Go To Home</Link>
           </Button>

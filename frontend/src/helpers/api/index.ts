@@ -7,13 +7,15 @@ export * from './accountsApi';
 export * from './transactionsApi';
 export * from './utils';
 
+const BASE_API_URL = '/api/v1';
+
 export const axiosPublicInstance = axios.create({
-  baseURL: process.env.BASE_API_URL,
+  baseURL: BASE_API_URL,
   timeout: 1000,
 });
 
 export const axiosAuthInstance = axios.create({
-  baseURL: process.env.BASE_API_URL,
+  baseURL: BASE_API_URL,
   timeout: 1000,
 });
 

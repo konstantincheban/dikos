@@ -35,9 +35,9 @@ export const useTransactionsRepository = () => {
       .catch((err) => setErrorToState(err, transactionsObservable));
   };
 
-  const deleteTransaction = async () => {
-    // TODO
-  };
+  // const deleteTransaction = async () => {
+  //   // TODO
+  // };
 
   const getTransactions = () => {
     transactionsObservable.setLoadingState(true);

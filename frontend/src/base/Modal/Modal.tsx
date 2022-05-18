@@ -13,7 +13,7 @@ import React, {
 import Button from '@base/Button';
 import { classMap, setGlobalCSSVariable } from '@shared/utils';
 
-const Modal = forwardRef((props: any, ref) => {
+const Modal = forwardRef(function Modal(props: unknown, ref) {
   // Default configurations for the Modal
   const defaultModalOptions: IModalOptions = {
     title: 'ModalTitle',

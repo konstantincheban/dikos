@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IUserMenuProps {}
 export interface ISummaryWidgetConfig {
   name: string;
