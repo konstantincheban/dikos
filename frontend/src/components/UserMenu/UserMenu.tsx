@@ -68,7 +68,7 @@ function UserMenu() {
 
   useEffect(() => {
     setAccounts([
-      ...accounts,
+      ...accounts.slice(0, 3),
       {
         _id: '12345',
         name: 'Create new Account',

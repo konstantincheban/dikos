@@ -15,7 +15,7 @@ import Input from '@base/Input';
 import Button from '@base/Button';
 import * as Yup from 'yup';
 import { useAuthRepository } from '@repos';
-import StarsBackground from '@components/StarsBackground/StarsBackground';
+// import StarsBackground from '@components/StarsBackground/StarsBackground';
 import FieldErrorMessage from '@base/FieldErrorMessage/FieldErrorMessage';
 import { useStore } from '@store';
 import { useObservableState } from 'observable-hooks';
@@ -152,7 +152,7 @@ const Switcher = (props: ISwitcherProps) => {
 
   useEffect(() => {
     if (value !== activeOption) onChange(activeOption);
-  }, [activeOption, onChange]);
+  }, [activeOption, value]);
 
   const handleOptionSelect = (e: React.MouseEvent) => {
     const selectedValue = e.currentTarget.getAttribute('data-value') ?? value;
@@ -186,7 +186,7 @@ function Authentication() {
   const { authState$ } = useStore();
   const authState = useObservableState(authState$);
 
-  const { login, registration, clearToken } = useAuthRepository();
+  const { login, registration } = useAuthRepository();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
@@ -223,7 +223,7 @@ function Authentication() {
     <div className="AuthView">
       <div className="filter"></div>
       {/* <RetroBackground /> */}
-      <StarsBackground />
+      {/* <StarsBackground /> */}
       <div className="AuthBlock">
         <div className="Wrapper">
           <div className="Content">
