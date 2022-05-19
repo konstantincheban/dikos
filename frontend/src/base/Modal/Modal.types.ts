@@ -1,5 +1,5 @@
 export interface IModalProps {
-  close: () => unknown;
+  close: () => void;
   /**
    * Open modal window with specific options
    *
@@ -9,9 +9,14 @@ export interface IModalProps {
    * @param {Element} renderer - Modal Content Component
    * @example <div className="content">I'm inside</div>
    * @param {IModalActionConfig[]} actions (optional) - Modal actions config. By default using the cancel button to close the modal
-   * @example ```[{ label: 'Button', secondary: true, handler: (e, closeModal) => ... }]```
+   * @example ```[{ id: 'idButton', label: 'Button', secondary: true, handler: (e, closeModal) => ... }]```
    */
-  open: (props: IModalOpenProps) => unknown;
+  open: (props: IModalOpenProps) => void;
+  /**
+   * Update Actions config by id
+   * @example ```[{ id: 'idButton', disabled: true }]```
+   */
+  updateActionsState: (updateAction: UpdateActionsConfigType) => void;
 }
 
 export interface IModalOpenProps {
@@ -26,8 +31,19 @@ export interface IModalOptions {
 }
 
 export interface IModalActionConfig {
+  readonly id: string;
   label: string;
   secondary?: boolean;
   disruptive?: boolean;
-  handler: (e: React.MouseEvent, closeModal: () => unknown) => unknown;
+  disabled?: boolean;
+  handler: (
+    e: React.MouseEvent,
+    closeModal: () => void,
+    formData?: unknown,
+  ) => void;
 }
+
+export type UpdateActionsConfigType = Pick<
+  IModalActionConfig,
+  'disabled' | 'id'
+>[];
