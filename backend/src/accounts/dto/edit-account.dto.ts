@@ -1,5 +1,5 @@
 export class EditAccountDTO {
-  readonly name?: string;
-  readonly description?: string;
-  readonly type?: string;
+  name?: string;
+  description?: string;
+  type?: string;
 }

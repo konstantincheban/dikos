@@ -5,18 +5,21 @@ import { Account } from 'src/accounts/schemas/accounts.schema';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';
 
+import { Exclude } from 'class-transformer';
+
 @Schema()
 export class Transaction {
+  @Exclude()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   userID: User;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Account' })
   accountID: Account;
 
-  @Prop()
+  @Prop({ default: 'Transaction Name' })
   name: string;
 
-  @Prop()
+  @Prop({ default: '' })
   description: string;
 
   @Prop({ required: true })
@@ -25,14 +28,17 @@ export class Transaction {
   @Prop({ required: true })
   currency: string;
 
-  @Prop()
+  @Prop({ default: 'default' })
   category: string;
 
-  @Prop()
+  @Prop({ default: new Date() })
   date: Date;
 
-  @Prop()
+  @Prop({ default: 'default' })
   paymaster: string;
+
+  @Exclude()
+  __v: number;
 }
 
 export type TransactionDocument = Transaction & Document;

@@ -31,13 +31,13 @@ export class Account {
   @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ default: 'Custom Account' })
   description: string;
 
   @Prop({ required: true })
   currency: string;
 
-  @Prop()
+  @Prop({ default: 'custom' })
   type: string;
 }
 

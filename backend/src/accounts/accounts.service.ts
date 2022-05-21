@@ -60,4 +60,8 @@ export class AccountsService {
       .find({ $and: buildFilterObject, userID })
       .exec();
   }
+
+  async getAccountById(accountID: string) {
+    return await this.accountModel.findById(accountID);
+  }
 }
