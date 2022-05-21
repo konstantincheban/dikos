@@ -1,9 +1,14 @@
 import { Field, Form, Formik } from 'formik';
 import { classMap } from '@shared/utils';
 import Input from '@base/Input';
-import FieldErrorMessage from '@base/FieldErrorMessage';
-import { IControlProps, IFormBuilderProps } from './FormBuilder.types';
+import {
+  ControlProps,
+  IFormBuilderProps,
+  ISelectControlProps,
+  ISelectOptionControlProps,
+} from './FormBuilder.types';
 import './FormBuilder.scss';
+import { Select, Option } from '@base/Select';
 
 function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
   const {
@@ -16,15 +21,36 @@ function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
     containerClassName,
   } = props;
 
-  const renderSection = (control: IControlProps, key: number) => {
+  const renderInputControl = (control: ControlProps) => {
+    return <Field as={Input} {...control} />;
+  };
+  const renderSelectControl = ({
+    options,
+    ...control
+  }: ISelectControlProps) => {
     return (
-      <div key={`${control.name}_${key}`} className="Section">
+      <Field as="select" component={Select} {...control}>
+        {options.map((option: ISelectOptionControlProps, key: number) => (
+          <Option key={`${option.label}_${key}`} {...option}></Option>
+        ))}
+      </Field>
+    );
+  };
+
+  const renderControlByType = (control: ControlProps) => {
+    if (control.type === 'input') return renderInputControl(control);
+    if (control.type === 'select') return renderSelectControl(control);
+  };
+
+  const renderSection = (control: ControlProps, key: number, errors: any) => {
+    return (
+      <div key={`${control.name}`} className="Section">
         <label htmlFor={control.name}>
           {control.label}
           {control.required ? ' * ' : ''}:
         </label>
-        <Field as={Input} {...control} />
-        <FieldErrorMessage name={control.name} />
+        {renderControlByType(control)}
+        <span className="error-msg">{errors[control.name]}</span>
       </div>
     );
   };
@@ -38,25 +64,29 @@ function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
   };
 
   return (
-    <Formik
-      validateOnBlur
-      validateOnChange
-      initialValues={initialData}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmitForm}
-    >
-      {({ isValid, values }) => (
-        <Form
-          onBlur={() => onBlurValidate(isValid)}
-          onChange={() =>
-            setTimeout(() => handleChangeForm(values, isValid), 300)
-          }
-          className={classMap({ [containerClassName]: !!containerClassName })}
-        >
-          {controls.map((control, key) => renderSection(control, key))}
-        </Form>
-      )}
-    </Formik>
+    <div className="FormBuilderContainer">
+      <Formik
+        validateOnBlur
+        validateOnChange
+        initialValues={initialData}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmitForm}
+      >
+        {({ isValid, values, errors }) => (
+          <Form
+            onBlur={() => onBlurValidate(isValid)}
+            onChange={() =>
+              setTimeout(() => handleChangeForm(values, isValid), 300)
+            }
+            className={classMap({ [containerClassName]: !!containerClassName })}
+          >
+            {controls.map((control, key) =>
+              renderSection(control, key, errors),
+            )}
+          </Form>
+        )}
+      </Formik>
+    </div>
   );
 }
 
