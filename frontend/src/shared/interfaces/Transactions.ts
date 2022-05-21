@@ -1,23 +1,23 @@
 export interface ITransaction {
-  id: string;
+  _id: string;
   accountID: string;
   name: string;
   description: string;
   amount: number;
   currency: string;
   category: string;
-  date: Date;
+  date: string;
   paymaster: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: string;
+  updated_at: string;
 }
 
 export type CreateTransactionRequest = Omit<
   ITransaction,
-  'id' | 'created_at' | 'updated_at'
+  '_id' | 'created_at' | 'updated_at'
 >;
 
 export type EditTransactionRequest = Omit<
   ITransaction,
-  'id' | 'created_at' | 'updated_at' | 'accountID'
+  '_id' | 'created_at' | 'updated_at' | 'accountID'
 >;
