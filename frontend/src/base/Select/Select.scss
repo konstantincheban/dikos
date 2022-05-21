@@ -1,0 +1,47 @@
+@import '@styles/shared.scss';
+
+.SelectContainer {
+  position: relative;
+  max-width: 300px;
+  min-width: 30px;
+
+  &.readOnly {
+    pointer-events: none;
+  }
+
+  & .InputContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    &:hover,
+    &:hover input {
+      cursor: pointer;
+    }
+
+    & .SelectActionsContainer {
+      position: absolute;
+      right: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+    }
+  }
+
+  & .OptionsContainer {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: $secondaryBackgroundColor;
+    border-radius: $borderRadius;
+    padding: 8px 0;
+    transform-origin: top;
+    z-index: 1000;
+
+    &.collapsed {
+      transform: scale(1, 0);
+    }
+  }
+}

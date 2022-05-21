@@ -1,0 +1,22 @@
+@import '@styles/shared.scss';
+
+$activeBackgroundColor: lighten(
+  $color: $secondaryBackgroundColor,
+  $amount: 15,
+);
+.OptionContainer {
+  padding: 15px 40px;
+  flex: 1;
+  @include transition;
+
+  &.active {
+    background: $activeBackgroundColor;
+    font-weight: 700;
+  }
+
+  &:hover,
+  &:focus-within {
+    background-color: $activeBackgroundColor;
+    cursor: pointer;
+  }
+}
