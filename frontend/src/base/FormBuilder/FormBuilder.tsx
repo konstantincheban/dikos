@@ -21,11 +21,12 @@ function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
     containerClassName,
   } = props;
 
-  const renderInputControl = (control: ControlProps) => {
+  const renderInputControl = ({ controlType, ...control }: ControlProps) => {
     return <Field as={Input} {...control} />;
   };
   const renderSelectControl = ({
     options,
+    controlType,
     ...control
   }: ISelectControlProps) => {
     return (
@@ -38,8 +39,8 @@ function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
   };
 
   const renderControlByType = (control: ControlProps) => {
-    if (control.type === 'input') return renderInputControl(control);
-    if (control.type === 'select') return renderSelectControl(control);
+    if (control.controlType === 'input') return renderInputControl(control);
+    if (control.controlType === 'select') return renderSelectControl(control);
   };
 
   const renderSection = (control: ControlProps, key: number, errors: any) => {
