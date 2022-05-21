@@ -1,4 +1,7 @@
 @import '@styles/shared.scss';
 
 .FormBuilderContainer {
+  & .Section {
+    padding-top: 15px;
+  }
 }
