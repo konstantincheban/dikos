@@ -18,6 +18,7 @@ export const useAccountsObservable = () => {
   const updateAccountData = (accountsData: IAccount[]) => {
     setNextState({
       accounts: [...accountsData],
+      error: '',
     });
   };
 

@@ -9,6 +9,10 @@ export const useAccountsApi = () => {
     return axiosAuthInstance.post(`/accounts/edit/${accountId}`, data);
   };
 
+  const deleteAccount = (accountId: string) => {
+    return axiosAuthInstance.post(`/accounts/delete/${accountId}`);
+  };
+
   const getAccounts = () => {
     return axiosAuthInstance.get('/accounts');
   };
@@ -16,6 +20,7 @@ export const useAccountsApi = () => {
   return {
     createAccount,
     editAccount,
+    deleteAccount,
     getAccounts,
   };
 };
