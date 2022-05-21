@@ -1,8 +1,10 @@
-import { CreateAccountRequest } from '@shared/interfaces';
+import { CreateAccountRequest, EditAccountRequest } from '@shared/interfaces';
+
+export type AccountFormData = CreateAccountRequest | EditAccountRequest;
 
 export interface IAccountFormProps {
   type: 'create' | 'edit';
-  data?: CreateAccountRequest;
-  onSubmitForm: (values: CreateAccountRequest) => void;
+  data?: EditAccountRequest;
+  onSubmitForm: (values: AccountFormData) => void;
   validateForm: (valid: boolean) => void;
 }

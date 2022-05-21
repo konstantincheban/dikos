@@ -1,9 +1,8 @@
-import { IAccountFormProps } from './AccountForm.types';
+import { AccountFormData, IAccountFormProps } from './AccountForm.types';
 
 import FormBuilder from '@base/FormBuilder';
-import { CreateAccountRequest } from '@shared/interfaces';
-import { IControlProps } from '@base/FormBuilder/FormBuilder.types';
-import './AccountForm.scss';
+import { EditAccountRequest } from '@shared/interfaces';
+import { ControlProps } from '@base/FormBuilder/FormBuilder.types';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import {
   AccountCreateSchema,
@@ -12,6 +11,7 @@ import {
   defaultData,
   editFields,
 } from './AccountFormConfigurations';
+import './AccountForm.scss';
 
 const AccountForm = forwardRef(function AccountForm(
   props: IAccountFormProps,
@@ -19,7 +19,7 @@ const AccountForm = forwardRef(function AccountForm(
 ) {
   const { data, type, validateForm, onSubmitForm } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [formData, setFormData] = useState(defaultData);
+  const [formData, setFormData] = useState<AccountFormData>(defaultData);
 
   useImperativeHandle(ref, () => ({
     getFormData() {
@@ -29,18 +29,26 @@ const AccountForm = forwardRef(function AccountForm(
 
   const getFormProps = (
     type: 'create' | 'edit',
-  ): [CreateAccountRequest, IControlProps[], unknown] => {
+  ): [AccountFormData, ControlProps[], unknown] => {
     if (type === 'edit') {
       const editFormControls = controls.filter((control) =>
         editFields.includes(control.name),
       );
+      const defaultFormData: EditAccountRequest = {
+        name: '',
+        description: '',
+      };
+      editFields.forEach((fieldName) => {
+        defaultFormData[fieldName as keyof EditAccountRequest] =
+          defaultData[fieldName as keyof EditAccountRequest];
+      });
       return [data ?? defaultData, editFormControls, AccountEditSchema];
     }
 
     return [defaultData, controls, AccountCreateSchema];
   };
 
-  const handleOnChange = (values: CreateAccountRequest, isValid: boolean) => {
+  const handleOnChange = (values: AccountFormData, isValid: boolean) => {
     setFormData(values);
     validateForm(isValid);
   };
@@ -48,7 +56,7 @@ const AccountForm = forwardRef(function AccountForm(
   const [initialData, formControls, validationSchema] = getFormProps(type);
   return (
     <div className="AccountFormContainer">
-      <FormBuilder<CreateAccountRequest>
+      <FormBuilder<AccountFormData>
         containerClassName="AccountForm"
         initialData={initialData}
         validationSchema={validationSchema}

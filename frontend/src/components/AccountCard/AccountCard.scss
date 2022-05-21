@@ -1,6 +1,7 @@
 @import '@styles/shared.scss';
 
 .AccountCard {
+  position: relative;
   display: grid;
   grid-template-columns: auto 30px;
   grid-template-rows: 20px auto 20px;
@@ -26,5 +27,29 @@
   & .AccountCurrency {
     font-weight: 700;
     grid-area: currency;
+  }
+
+  & .AccountCardActionsContainer {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    background-color: rgba($color: #0000, $alpha: 0.3);
+    border-radius: $borderRadius;
+    opacity: 0;
+    @include transition(opacity);
+
+    & .AccountCardAction {
+      &:hover {
+        cursor: pointer;
+        color: darken($color: $textColor, $amount: 15);
+      }
+    }
+    &:hover {
+      opacity: 1;
+    }
   }
 }
