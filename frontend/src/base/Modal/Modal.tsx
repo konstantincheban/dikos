@@ -13,6 +13,8 @@ import React, {
 } from 'react';
 import Button from '@base/Button';
 import { classMap, setGlobalCSSVariable } from '@shared/utils';
+import { CloseIcon } from '@base/Icon/IconSet';
+import Icon from '@base/Icon';
 
 const Modal = forwardRef(function Modal(props: unknown, ref) {
   // Default configurations for the Modal
@@ -138,7 +140,7 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
           <div className="ModalContainer">
             <div className="ModalTitle">{title}</div>
             <button className="ModalCloseButton" onClick={() => closeModal()}>
-              &times;
+              <Icon icon={<CloseIcon />} />
             </button>
             <div className="ModalContent">{renderer}</div>
             {renderActions()}
