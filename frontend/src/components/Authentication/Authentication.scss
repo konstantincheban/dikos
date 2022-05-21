@@ -90,12 +90,6 @@
   margin-top: 20px;
   & .Section {
     padding-top: 15px;
-
-    & .ErrorBlock {
-      color: $errorColor;
-      font-size: $smallFontSize;
-      font-weight: 700;
-    }
   }
   & .ButtonContainer {
     display: flex;
