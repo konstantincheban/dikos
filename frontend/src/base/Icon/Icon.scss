@@ -1,0 +1,14 @@
+.IconContainer {
+  &.Right {
+    transform: rotate(0deg);
+  }
+  &.Down {
+    transform: rotate(90deg);
+  }
+  &.Left {
+    transform: rotate(180deg);
+  }
+  &.Up {
+    transform: rotate(-90deg);
+  }
+}
