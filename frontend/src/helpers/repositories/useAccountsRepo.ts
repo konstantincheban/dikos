@@ -35,9 +35,16 @@ export const useAccountsRepository = () => {
     accountsObservable.setLoadingState(false);
   };
 
-  // const deleteAccount = async () => {
-  //   // TODO
-  // };
+  const deleteAccount = async (accountId: string) => {
+    accountsObservable.setLoadingState(true);
+    accountsApi
+      .deleteAccount(accountId)
+      .then(() => {
+        getAccounts();
+      })
+      .catch((err) => setErrorToState(err, accountsObservable));
+    accountsObservable.setLoadingState(false);
+  };
 
   const getAccounts = () => {
     accountsObservable.setLoadingState(true);
@@ -56,6 +63,7 @@ export const useAccountsRepository = () => {
   return {
     createAccount,
     editAccount,
+    deleteAccount,
     getAccounts,
     getAccountsObservable,
   };

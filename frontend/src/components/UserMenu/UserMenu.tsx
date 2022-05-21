@@ -10,8 +10,8 @@ import Search from '@base/Search';
 import {
   NotificationIcon,
   UserIcon,
-  ArrowLeftIcon,
-  ArrowLeftSecondIcon,
+  ArrowRightIcon,
+  ArrowRightSecondIcon,
   CalendarPlusIcon,
   CalendarCheckIcon,
   CalendarMonthIcon,
@@ -68,7 +68,7 @@ function UserMenu() {
 
   useEffect(() => {
     setAccounts([
-      ...accounts,
+      ...accounts.slice(0, 3),
       {
         _id: '12345',
         name: 'Create new Account',
@@ -107,7 +107,7 @@ function UserMenu() {
     return (
       <div className="SectionTitle">
         <span className="Title">{title}</span>
-        <Icon icon={<ArrowLeftIcon />} />
+        <Icon icon={<ArrowRightIcon />} />
       </div>
     );
   };
@@ -120,7 +120,7 @@ function UserMenu() {
     return (
       <div key={key} className="SummaryWidgetContainer">
         <div className={`Graphic ${name}`}>
-          <Icon icon={<ArrowLeftSecondIcon />} />
+          <Icon icon={<ArrowRightSecondIcon />} />
         </div>
         <div className="Info">
           <span className="InfoTitle">{name}</span>

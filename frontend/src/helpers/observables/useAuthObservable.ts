@@ -21,7 +21,7 @@ const authSubject$ = createSubject<IState<AuthState>>(initialState);
 
 export const useAuthObservable = () => {
   const updateUserData = (userData: AuthState) => {
-    setNextState(userData);
+    setNextState({ ...userData, error: '' });
   };
 
   const updateToken = (token: string) => {

@@ -2,6 +2,7 @@ import {
   IModalActionConfig,
   IModalOpenProps,
   IModalOptions,
+  UpdateActionsConfigType,
 } from './Modal.types';
 import './Modal.scss';
 import React, {
@@ -12,6 +13,8 @@ import React, {
 } from 'react';
 import Button from '@base/Button';
 import { classMap, setGlobalCSSVariable } from '@shared/utils';
+import { CloseIcon } from '@base/Icon/IconSet';
+import Icon from '@base/Icon';
 
 const Modal = forwardRef(function Modal(props: unknown, ref) {
   // Default configurations for the Modal
@@ -21,6 +24,7 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
   };
   const defaultActions: IModalActionConfig[] = [
     {
+      id: 'defaultCancel',
       label: 'Cancel',
       secondary: true,
       handler: (e, closeModal) => closeModal(),
@@ -45,6 +49,10 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
       setModalOptions(getModalOptions(options));
       setActions([...defaultActions, ...(actions ?? [])]);
       setShowState(true);
+    },
+    updateActionsState(updateActions: UpdateActionsConfigType) {
+      const updatedActionsConfig = mergeActionConfigs(actions, updateActions);
+      setActions(updatedActionsConfig);
     },
   }));
 
@@ -72,6 +80,26 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
     ...options,
   });
 
+  const mergeActionConfigs = (
+    actions: IModalActionConfig[],
+    updateActions: UpdateActionsConfigType,
+  ): IModalActionConfig[] => {
+    return actions.map((actionConfig) => {
+      // find existing action config by id
+      const newActionConfig = updateActions.find(
+        (item) => item.id === actionConfig.id,
+      );
+      // merge configs if there is one
+      if (newActionConfig) {
+        return {
+          ...actionConfig,
+          ...newActionConfig,
+        };
+      }
+      return actionConfig;
+    });
+  };
+
   const handleActionClick = (
     e: React.MouseEvent<HTMLButtonElement>,
     handler: IModalActionConfig['handler'],
@@ -93,6 +121,7 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
             key={`${actionConfig.label}_${index}`}
             secondary={actionConfig.secondary}
             disruptive={actionConfig.disruptive}
+            disabled={actionConfig.disabled}
             className="ModalAction"
             onClick={(e) => handleActionClick(e, actionConfig.handler)}
           >
@@ -111,7 +140,7 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
           <div className="ModalContainer">
             <div className="ModalTitle">{title}</div>
             <button className="ModalCloseButton" onClick={() => closeModal()}>
-              &times;
+              <Icon icon={<CloseIcon />} />
             </button>
             <div className="ModalContent">{renderer}</div>
             {renderActions()}

@@ -1,12 +1,17 @@
+import { classMap } from '@shared/utils';
 import { IPropsIcon } from './Icon.types';
+import './Icon.scss';
 
 function Icon(props: IPropsIcon) {
   const defaultContainerSize = 24;
   const defaultViewBoxSize = 16;
-  const { icon, size, viewBox } = props;
+  const { icon, size, viewBox, className } = props;
   return (
     <div
-      className="IconContainer"
+      className={classMap(
+        { [className as string]: !!className },
+        'IconContainer',
+      )}
       style={{
         height: size ?? defaultContainerSize,
         width: size ?? defaultContainerSize,

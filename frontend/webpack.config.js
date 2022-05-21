@@ -61,7 +61,7 @@ module.exports = {
     historyApiFallback: true,
     port: 3000,
     proxy: {
-      '*': `http://localhost:${process.env.PORT ?? 5000}`,
+      '/api/v1/*': `http://localhost:${process.env.PORT ?? 5000}/`,
     },
     hot: 'only',
     compress: true,

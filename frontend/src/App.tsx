@@ -12,12 +12,7 @@ function App() {
   return (
     <div className="App">
       <Router authState={authState}></Router>
-      <ToastContainer
-        theme="dark"
-        autoClose={false}
-        draggablePercent={30}
-        hideProgressBar
-      />
+      <ToastContainer theme="dark" draggablePercent={30} hideProgressBar />
     </div>
   );
 }
