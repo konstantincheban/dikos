@@ -26,14 +26,14 @@ type CommonProperties = {
 type PossibleControls = IInputControlProps | ISelectControlProps;
 
 export type IInputControlProps = IInputProps & {
-  type: 'input';
+  controlType: 'input';
 };
 
 export type ISelectControlProps = Omit<
   ISelectProps,
   'className' | 'onChange'
 > & {
-  type: 'select';
+  controlType: 'select';
   options: ISelectOptionControlProps[];
 };
 export type ISelectOptionControlProps = Pick<IOptionProps, 'value' | 'label'>;

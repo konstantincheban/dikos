@@ -4,7 +4,7 @@ import MainView from '@components/MainView/MainView';
 import Authentication from '@components/Authentication/Authentication';
 import { IState } from 'src/helpers/observables/utils';
 import { AuthState } from '@observables';
-import Transactions from '@components/Transactions/Transactions';
+import TransactionsView from '@components/TransactionsView/TransactionsView';
 import Layout from '@components/Layout/Layout';
 import PageNotFound from '@components/PageNotFound/PageNotFound';
 
@@ -42,7 +42,7 @@ export const getRouterConfig = (
           },
           {
             path: '/transactions',
-            element: <Transactions />,
+            element: <TransactionsView />,
           },
         ],
       },

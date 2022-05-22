@@ -10,6 +10,7 @@
 .NavigationMenuContainer {
   width: $columnSize;
   background-color: $secondaryBackgroundColor;
+  z-index: 10000;
 }
 
 .MainContainer {

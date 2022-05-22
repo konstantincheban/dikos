@@ -46,5 +46,13 @@ a:active {
 
 // TOSTIFY Restyling
 :root {
-  --toastify-color-dark: #{$vineColor};
+  --toastify-icon-color-error: #{$textColor};
+  --toastify-color-info: #{$textColor};
+}
+.Toastify__toast--error {
+  background-color: $vineColor;
+}
+
+.Toastify__toast--info {
+  background-color: $blueAccentColor;
 }

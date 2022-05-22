@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { AccountsService } from 'src/accounts/accounts.service';
 import { buildFilterExpressions } from 'src/utils/utils';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
 import { EditTransactionDTO } from './dto/edit-transaction.dto';
@@ -14,11 +15,20 @@ export class TransactionsService {
   constructor(
     @InjectModel(Transaction.name)
     private readonly transactionModel: Model<TransactionDocument>,
+    private readonly accountsService: AccountsService,
   ) {}
 
   async createTransaction(
     data: CreateTransactionDTO,
   ): Promise<TransactionDocument> {
+    const relatedAccount = await this.accountsService.getAccountById(
+      data.accountID,
+    );
+    if (relatedAccount.currency !== data.currency) {
+      throw new BadRequestException(
+        `Transaction currency is not equal to the currency of the associated Account [${relatedAccount.name}]`,
+      );
+    }
     return await new this.transactionModel(data).save();
   }
 

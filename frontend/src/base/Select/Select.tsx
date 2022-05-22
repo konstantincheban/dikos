@@ -19,7 +19,7 @@ function Select(
     form,
     field,
   } = props;
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState(field?.value ?? '');
   const [options, setOptions] = useState<React.ReactElement[]>();
   const [collapsed, setCollapsed] = useState(true);
 
@@ -56,6 +56,11 @@ function Select(
   useEffect(() => {
     defaultValue && setValue(defaultValue);
   }, []);
+
+  const getRelatedLabelByValue = (value: string) => {
+    const option = options?.find((option) => option.props.value === value);
+    return option?.props.label ?? value;
+  };
 
   const handleKeyDownEvent = (e: React.KeyboardEvent) => {
     switch (e.key) {
@@ -111,7 +116,7 @@ function Select(
         ref={inputRef}
         readOnly
         className="SelectInput"
-        value={value}
+        value={getRelatedLabelByValue(value)}
         name={field?.name ?? 'selectInput'}
         onClick={() => setCollapsed(!collapsed)}
         onKeyDown={handleKeyDownEvent}

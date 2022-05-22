@@ -17,7 +17,7 @@
   text-overflow: ellipsis;
 }
 
-@mixin boxShadow($intensity: 20px) {
-  -webkit-box-shadow: 0px 0px $intensity 0px $backgroundColor;
-  box-shadow: 0px 0px $intensity 0px $backgroundColor;
+@mixin boxShadow($intensity: 20px, $color: $backgroundColor) {
+  -webkit-box-shadow: 0px 0px $intensity 0px $color;
+  box-shadow: 0px 0px $intensity 0px $color;
 }

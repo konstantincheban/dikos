@@ -12,6 +12,10 @@ export const useTransactionsApi = () => {
     return axiosAuthInstance.post(`/transactions/edit/${transactionId}`, data);
   };
 
+  const deleteTransaction = (transactionId: string) => {
+    return axiosAuthInstance.post(`/transactions/delete/${transactionId}`);
+  };
+
   const getTransactions = () => {
     return axiosAuthInstance.get('/transactions');
   };
@@ -19,6 +23,7 @@ export const useTransactionsApi = () => {
   return {
     createTransaction,
     editTransaction,
+    deleteTransaction,
     getTransactions,
   };
 };

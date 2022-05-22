@@ -1,7 +1,7 @@
 import { ControlProps } from '@base/FormBuilder';
 import * as Yup from 'yup';
 
-const validCurrencies = ['UAH', 'USD', 'EUR'];
+export const validCurrencies = ['UAH', 'USD', 'EUR'];
 
 const EditShape = {
   name: Yup.string()
@@ -27,18 +27,18 @@ export const AccountEditSchema = Yup.object().shape(EditShape);
 
 export const controls: ControlProps[] = [
   {
-    type: 'input',
+    controlType: 'input',
     name: 'name',
     label: 'Name',
     required: true,
   },
   {
-    type: 'input',
+    controlType: 'input',
     name: 'description',
     label: 'Description',
   },
   {
-    type: 'select',
+    controlType: 'select',
     name: 'currency',
     label: 'Currency',
     value: 'UAH',
@@ -59,7 +59,7 @@ export const controls: ControlProps[] = [
     ],
   },
   {
-    type: 'select',
+    controlType: 'select',
     name: 'type',
     label: 'Type',
     value: 'custom',

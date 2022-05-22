@@ -4,7 +4,7 @@ import {
   ISummaryWidgetConfig,
 } from './UserMenu.types';
 import './UserMenu.scss';
-import { useEffect, useState } from 'react';
+import { createRef, useEffect, useState } from 'react';
 import { immutableMove, classMap } from '@shared/utils';
 import Search from '@base/Search';
 import {
@@ -21,6 +21,12 @@ import AccountCard from '@components/AccountCard/AccountCard';
 import { useStore } from '@store';
 import { useObservableState } from 'observable-hooks';
 import CreateAccountCard from '@components/AccountCard/CreateAccountCard';
+import { useModalAPI } from 'src/helpers/modalAPI/modalAPI';
+import TransactionForm from '@components/TransactionsView/TransactionForm/TransactionForm';
+import { ITransactionFormProps } from '@components/TransactionsView/TransactionForm/TransactionForm.types';
+import { useTransactionsRepository } from '@repos';
+import { defaultData } from '@components/TransactionsView/TransactionForm/TransactionFormConfigurations';
+import { CreateTransactionRequest } from '@shared/interfaces';
 
 function UserMenu() {
   const summaryConfig: ISummaryWidgetConfig[] = [
@@ -60,11 +66,17 @@ function UserMenu() {
     },
   ];
 
-  const { accountsState$ } = useStore();
+  const { accountsState$, transactionsState$ } = useStore();
   const { accounts } = useObservableState(accountsState$);
+  const { error: transactionErrors } = useObservableState(transactionsState$);
+  const { createTransaction } = useTransactionsRepository();
 
   const [collapsedMenu, setCollapsed] = useState(true);
   const [accountsList, setAccounts] = useState(accounts);
+
+  const { modalRef } = useModalAPI();
+
+  const transactionModalRef = createRef<any>();
 
   useEffect(() => {
     setAccounts([
@@ -92,8 +104,67 @@ function UserMenu() {
     // console.log('HANDLE SEARCH', value);
   };
 
+  const handleCreateTransaction = (values: CreateTransactionRequest) => {
+    createTransaction(values).then(() => {
+      if (!transactionErrors) modalRef.current?.close();
+    });
+  };
+
+  const handleValidateTransactionForm = (validState: boolean) => {
+    modalRef.current?.updateActionsState([
+      {
+        id: 'createTransaction',
+        disabled: !validState,
+      },
+    ]);
+  };
+
   const handleCreateNewTransaction = () => {
-    console.log('CREATE NEW TRANSACTION');
+    const associatedAccountID =
+      accountsList[0].type !== 'create'
+        ? accountsList[0]._id
+        : accountsList[1]._id;
+    const defaultFormData = {
+      ...defaultData,
+      accountID: associatedAccountID,
+    };
+    const accountOptions: ITransactionFormProps['availableAccounts'] =
+      accounts.reduce((acc, account) => {
+        if (account.type !== 'create') {
+          acc?.push({
+            value: account._id,
+            label: account.name,
+          });
+        }
+        return acc;
+      }, [] as ITransactionFormProps['availableAccounts']);
+    modalRef.current?.open({
+      options: {
+        title: 'Create Transaction',
+      },
+      renderer: (
+        <TransactionForm
+          ref={transactionModalRef}
+          type="create"
+          availableAccounts={accountOptions}
+          data={defaultFormData}
+          onSubmitForm={(values) =>
+            handleCreateTransaction(values as CreateTransactionRequest)
+          }
+          validateForm={handleValidateTransactionForm}
+        />
+      ),
+      actions: [
+        {
+          id: 'createTransaction',
+          label: 'Create',
+          handler: () => {
+            const formData = transactionModalRef?.current?.getFormData();
+            handleCreateTransaction(formData);
+          },
+        },
+      ],
+    });
   };
 
   const handleReorder = (index: number) => {
