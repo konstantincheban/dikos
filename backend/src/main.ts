@@ -13,7 +13,7 @@ import { ValidationPipe as CustomValidationPipe } from './utils/pipes/validation
 async function bootstrap() {
   const PORT = process.env.PORT || 5000;
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new HttpExceptionFilter(), new ValidationFilter());
+  app.useGlobalFilters(new ValidationFilter());
   app.useGlobalPipes(
     new CustomValidationPipe(),
     new ValidationPipe({
