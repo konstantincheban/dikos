@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 type ClassMapObjectType = {
   [key: string]: boolean;
 };
@@ -36,3 +38,6 @@ export const immutableMove = (
 export const setGlobalCSSVariable = (variableName: string, value: string) => {
   document.documentElement.style.setProperty(variableName, value);
 };
+
+export const formatDate = (ICOString: string) =>
+  moment(ICOString).format('lll');
