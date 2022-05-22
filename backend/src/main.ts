@@ -6,7 +6,6 @@ import {
 import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './utils/filters/http-exception.filter';
 import { ValidationFilter } from './utils/filters/validation.filter';
 import { ValidationPipe as CustomValidationPipe } from './utils/pipes/validation.pipe';
 
