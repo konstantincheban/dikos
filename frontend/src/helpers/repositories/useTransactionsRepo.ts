@@ -18,6 +18,7 @@ export const useTransactionsRepository = () => {
       .createTransaction<CreateTransactionRequest>(data)
       .then(() => {
         transactionsObservable.setLoadingState(false);
+        transactionsObservable.setUpToDateState(false);
       })
       .catch((err) => setErrorToState(err, transactionsObservable));
   };
@@ -31,13 +32,21 @@ export const useTransactionsRepository = () => {
       .editTransaction<EditTransactionRequest>(data, transactionId)
       .then(() => {
         transactionsObservable.setLoadingState(false);
+        transactionsObservable.setUpToDateState(false);
       })
       .catch((err) => setErrorToState(err, transactionsObservable));
   };
 
-  // const deleteTransaction = async () => {
-  //   // TODO
-  // };
+  const deleteTransaction = async (transactionId: string) => {
+    transactionsObservable.setLoadingState(true);
+    transactionsApi
+      .deleteTransaction(transactionId)
+      .then(() => {
+        transactionsObservable.setLoadingState(false);
+        transactionsObservable.setUpToDateState(false);
+      })
+      .catch((err) => setErrorToState(err, transactionsObservable));
+  };
 
   const getTransactions = () => {
     transactionsObservable.setLoadingState(true);
@@ -45,6 +54,7 @@ export const useTransactionsRepository = () => {
       .getTransactions()
       .then(({ data }: AxiosResponse<ITransaction[]>) => {
         transactionsObservable.setLoadingState(false);
+        transactionsObservable.setUpToDateState(true);
         return data;
       })
       .catch((err) => setErrorToState(err, transactionsObservable));
@@ -56,6 +66,7 @@ export const useTransactionsRepository = () => {
   return {
     createTransaction,
     editTransaction,
+    deleteTransaction,
     getTransactions,
     getTransactionsObservable,
   };

@@ -9,15 +9,18 @@ import { forwardRef, useImperativeHandle, useState } from 'react';
 import {
   controls,
   defaultData,
+  editFields,
   TransactionCreateSchema,
+  TransactionEditSchema,
 } from './TransactionFormConfigurations';
 import './TransactionForm.scss';
+import { EditTransactionRequest } from '@shared/interfaces';
 
 const TransactionForm = forwardRef(function TransactionForm(
   props: ITransactionFormProps,
   ref,
 ) {
-  const { data, validateForm, availableAccounts, onSubmitForm } = props;
+  const { data, type, validateForm, availableAccounts, onSubmitForm } = props;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [formData, setFormData] = useState<TransactionFormData>(defaultData);
 
@@ -28,9 +31,20 @@ const TransactionForm = forwardRef(function TransactionForm(
   }));
 
   const getFormProps = (): [TransactionFormData, ControlProps[], unknown] => {
+    if (type === 'edit') {
+      const editFormControls = controls.filter((control) =>
+        editFields.includes(control.name),
+      );
+      const defaultFormData: any = {};
+      editFields.forEach((fieldName) => {
+        defaultFormData[fieldName as keyof EditTransactionRequest] =
+          defaultData[fieldName as keyof EditTransactionRequest];
+      });
+      return [data, editFormControls, TransactionEditSchema];
+    }
     const processedControls = controls.map((control) => {
       if (control.name === 'accountID' && control.controlType === 'select')
-        control.options = availableAccounts;
+        control.options = availableAccounts ?? [];
       return control;
     });
     return [data, processedControls, TransactionCreateSchema];

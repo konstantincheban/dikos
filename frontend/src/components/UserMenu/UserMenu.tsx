@@ -23,12 +23,10 @@ import { useObservableState } from 'observable-hooks';
 import CreateAccountCard from '@components/AccountCard/CreateAccountCard';
 import { useModalAPI } from 'src/helpers/modalAPI/modalAPI';
 import TransactionForm from '@components/TransactionsView/TransactionForm/TransactionForm';
-import {
-  ITransactionFormProps,
-  TransactionFormData,
-} from '@components/TransactionsView/TransactionForm/TransactionForm.types';
+import { ITransactionFormProps } from '@components/TransactionsView/TransactionForm/TransactionForm.types';
 import { useTransactionsRepository } from '@repos';
 import { defaultData } from '@components/TransactionsView/TransactionForm/TransactionFormConfigurations';
+import { CreateTransactionRequest } from '@shared/interfaces';
 
 function UserMenu() {
   const summaryConfig: ISummaryWidgetConfig[] = [
@@ -106,7 +104,7 @@ function UserMenu() {
     // console.log('HANDLE SEARCH', value);
   };
 
-  const handleCreateTransaction = (values: TransactionFormData) => {
+  const handleCreateTransaction = (values: CreateTransactionRequest) => {
     createTransaction(values).then(() => {
       if (!transactionErrors) modalRef.current?.close();
     });
@@ -133,7 +131,7 @@ function UserMenu() {
     const accountOptions: ITransactionFormProps['availableAccounts'] =
       accounts.reduce((acc, account) => {
         if (account.type !== 'create') {
-          acc.push({
+          acc?.push({
             value: account._id,
             label: account.name,
           });
@@ -147,16 +145,19 @@ function UserMenu() {
       renderer: (
         <TransactionForm
           ref={transactionModalRef}
+          type="create"
           availableAccounts={accountOptions}
           data={defaultFormData}
-          onSubmitForm={handleCreateTransaction}
+          onSubmitForm={(values) =>
+            handleCreateTransaction(values as CreateTransactionRequest)
+          }
           validateForm={handleValidateTransactionForm}
         />
       ),
       actions: [
         {
           id: 'createTransaction',
-          label: 'Create Transaction',
+          label: 'Create',
           handler: () => {
             const formData = transactionModalRef?.current?.getFormData();
             handleCreateTransaction(formData);

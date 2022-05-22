@@ -1,14 +1,24 @@
 import { toast } from 'react-toastify';
 import { createSubject, IState } from './utils';
 
+export type TransactionsState = {
+  isUpToDate: boolean;
+};
+
 const initialState = {
+  isUpToDate: false,
   loading: false,
   error: '',
 };
 
-const transactionsSubject$ = createSubject<IState>(initialState);
+const transactionsSubject$ =
+  createSubject<IState<TransactionsState>>(initialState);
 
 export const useTransactionsObservable = () => {
+  const setUpToDateState = (state: boolean) => {
+    setNextState({ isUpToDate: state });
+  };
+
   const setError = (message: string) => {
     toast.error(message);
     setNextState({ error: message });
@@ -18,7 +28,7 @@ export const useTransactionsObservable = () => {
     setNextState({ loading: state });
   };
 
-  const setNextState = (payload: Partial<IState>) => {
+  const setNextState = (payload: Partial<IState<TransactionsState>>) => {
     const state = transactionsSubject$.getValue();
     transactionsSubject$.next({ ...state, ...payload });
   };
@@ -30,6 +40,7 @@ export const useTransactionsObservable = () => {
   return {
     setError,
     setLoadingState,
+    setUpToDateState,
     getObservable,
   };
 };

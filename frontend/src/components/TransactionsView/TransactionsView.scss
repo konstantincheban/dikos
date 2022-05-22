@@ -1,7 +1,108 @@
 @import '@styles/shared.scss';
 
+@keyframes removingAnimation {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .TransactionsViewContainer {
   position: relative;
   height: 100%;
   width: 100%;
+
+  .TransactionViewTitle {
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  .TransactionListContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 30px 0;
+
+    .TransactionItem {
+      display: grid;
+      grid-template-columns: 60px repeat(4, minmax(50px, 1fr)) 1fr;
+      column-gap: 20px;
+      align-items: center;
+      justify-items: flex-start;
+      height: 55px;
+      min-width: 600px;
+      padding: 10px;
+      background-color: $secondaryBackgroundColor;
+      border-radius: $borderRadius;
+      @include transition(background-color);
+
+      &.removing {
+        animation: removingAnimation;
+        animation-duration: var(--undo-animation-duration);
+      }
+
+      &:hover {
+        cursor: pointer;
+        background-color: rgba($color: $purpleAccentColor, $alpha: 0.2);
+      }
+
+      .Block {
+        width: 100%;
+        span {
+          @include truncate;
+        }
+      }
+
+      .TransactionName.Block {
+        display: flex;
+        flex-direction: column;
+
+        & .description {
+          color: $secondaryTextColor;
+        }
+      }
+
+      .TransactionCategory.Block {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: $borderRadius;
+        background-color: rgba($color: $darkPurpleAccentColor, $alpha: 0.7);
+        &.income {
+          outline: 2px solid rgba($color: $successColor, $alpha: 0.3);
+        }
+        &.outcome {
+          outline: 2px solid rgba($color: $errorColor, $alpha: 0.3);
+        }
+      }
+
+      .TransactionActions.Block {
+        display: flex;
+        justify-content: end;
+
+        button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 40px;
+          width: 40px;
+          border-radius: $borderRadius;
+          background-color: rgba($color: $darkPurpleAccentColor, $alpha: 0.4);
+          margin: 0 10px;
+          color: $textColor;
+          @include transition(background-color);
+
+          &:hover,
+          &:focus {
+            cursor: pointer;
+            background-color: rgba($color: $darkPurpleAccentColor, $alpha: 0.7);
+          }
+        }
+      }
+    }
+  }
 }

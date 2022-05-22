@@ -1,7 +1,9 @@
 import NavigationMenu from '@components/NavigationMenu/NavigationMenu';
 import UserMenu from '@components/UserMenu/UserMenu';
 import { useAccountsRepository, useAuthRepository } from '@repos';
+import { UNDO_DELAY } from '@shared/constants';
 import { navigationMenuConfig } from '@shared/navigationMenuConfig';
+import { setGlobalCSSVariable } from '@shared/utils';
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import './Layout.scss';
@@ -12,6 +14,7 @@ function Layout() {
   useEffect(() => {
     authRepo.getUserData();
     accountsRepo.getAccounts();
+    setGlobalCSSVariable('--undo-animation-duration', `${UNDO_DELAY}ms`);
   }, []);
 
   return (
