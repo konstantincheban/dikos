@@ -1,3 +1,4 @@
+import Loader from '@base/Loader';
 import AccountCard from '@components/AccountCard/AccountCard';
 import CreateAccountCard from '@components/AccountCard/CreateAccountCard';
 import { useAccountsRepository } from '@repos';
@@ -15,7 +16,7 @@ function AccountsView() {
   const { modalRef } = useModalAPI();
   const { createAccount, editAccount, deleteAccount } = useAccountsRepository();
   const { accountsState$ } = useStore();
-  const { accounts, error } = useObservableState(accountsState$);
+  const { accounts, error, loading } = useObservableState(accountsState$);
 
   const accountFormRef = createRef<any>();
 
@@ -159,6 +160,7 @@ function AccountsView() {
 
   return (
     <div className="AccountsViewContainer">
+      {loading && <Loader />}
       {accounts.map((account) => (
         <AccountCard
           key={account._id}

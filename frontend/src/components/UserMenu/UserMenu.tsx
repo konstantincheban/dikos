@@ -24,9 +24,14 @@ import CreateAccountCard from '@components/AccountCard/CreateAccountCard';
 import { useModalAPI } from 'src/helpers/modalAPI/modalAPI';
 import TransactionForm from '@components/TransactionsView/TransactionForm/TransactionForm';
 import { ITransactionFormProps } from '@components/TransactionsView/TransactionForm/TransactionForm.types';
-import { useTransactionsRepository } from '@repos';
+import { useAccountsRepository, useTransactionsRepository } from '@repos';
 import { defaultData } from '@components/TransactionsView/TransactionForm/TransactionFormConfigurations';
-import { CreateTransactionRequest } from '@shared/interfaces';
+import {
+  CreateAccountRequest,
+  CreateTransactionRequest,
+} from '@shared/interfaces';
+import { AccountFormData } from '@components/AccountsView/AccountForm/AccountForm.types';
+import AccountForm from '@components/AccountsView/AccountForm/AccountForm';
 
 function UserMenu() {
   const summaryConfig: ISummaryWidgetConfig[] = [
@@ -69,7 +74,9 @@ function UserMenu() {
   const { accountsState$, transactionsState$ } = useStore();
   const { accounts } = useObservableState(accountsState$);
   const { error: transactionErrors } = useObservableState(transactionsState$);
+  const { error: accountsErrors } = useObservableState(accountsState$);
   const { createTransaction } = useTransactionsRepository();
+  const { createAccount } = useAccountsRepository();
 
   const [collapsedMenu, setCollapsed] = useState(true);
   const [accountsList, setAccounts] = useState(accounts);
@@ -77,6 +84,7 @@ function UserMenu() {
   const { modalRef } = useModalAPI();
 
   const transactionModalRef = createRef<any>();
+  const accountModalRef = createRef<any>();
 
   useEffect(() => {
     setAccounts([
@@ -110,10 +118,10 @@ function UserMenu() {
     });
   };
 
-  const handleValidateTransactionForm = (validState: boolean) => {
+  const handleValidateModalForm = (validState: boolean, actionId: string) => {
     modalRef.current?.updateActionsState([
       {
-        id: 'createTransaction',
+        id: actionId,
         disabled: !validState,
       },
     ]);
@@ -151,7 +159,9 @@ function UserMenu() {
           onSubmitForm={(values) =>
             handleCreateTransaction(values as CreateTransactionRequest)
           }
-          validateForm={handleValidateTransactionForm}
+          validateForm={(validState: boolean) =>
+            handleValidateModalForm(validState, 'createTransaction')
+          }
         />
       ),
       actions: [
@@ -165,6 +175,48 @@ function UserMenu() {
         },
       ],
     });
+  };
+
+  const handleCreateAccount = (values: CreateAccountRequest) => {
+    createAccount(values).then(() => {
+      if (!accountsErrors) modalRef.current?.close();
+    });
+  };
+
+  const handleOpenCreateAccountModal = () => {
+    modalRef.current?.open({
+      options: {
+        title: 'Create Account',
+      },
+      renderer: (
+        <AccountForm
+          ref={accountModalRef}
+          type="create"
+          onSubmitForm={(values: AccountFormData) =>
+            handleCreateAccount(values as CreateAccountRequest)
+          }
+          validateForm={(validState: boolean) =>
+            handleValidateModalForm(validState, 'createAccount')
+          }
+        />
+      ),
+      actions: [
+        {
+          id: 'createAccount',
+          label: 'Create',
+          disabled: true,
+          handler: () => {
+            const formData = accountModalRef?.current?.getFormData();
+            handleCreateAccount(formData as CreateAccountRequest);
+          },
+        },
+      ],
+    });
+  };
+
+  const handleClickOnCreateAccountCard = (index: number) => {
+    if (index) handleReorder(index);
+    else handleOpenCreateAccountModal();
   };
 
   const handleReorder = (index: number) => {
@@ -245,7 +297,7 @@ function UserMenu() {
             <CreateAccountCard
               key={`${accountItem.name}_${key}`}
               className={`CardPosition-${key}`}
-              onClick={() => handleReorder(key)}
+              onClick={() => handleClickOnCreateAccountCard(key)}
             />
           ),
         )}
