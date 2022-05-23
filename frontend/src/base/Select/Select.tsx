@@ -28,7 +28,10 @@ function Select(
   const updateValue = (value: string) => {
     setValue(value);
     // Field Mode
-    if (form && field) form.setFieldValue(field.name, value);
+    if (form && field) {
+      form.setFieldValue(field.name, value);
+      setTimeout(() => form.setFieldTouched(field.name, true, true));
+    }
     setCollapsed(true);
     inputRef?.current?.focus();
   };

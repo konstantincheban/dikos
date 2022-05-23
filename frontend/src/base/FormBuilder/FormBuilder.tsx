@@ -1,4 +1,4 @@
-import { Field, Form, Formik } from 'formik';
+import { Field, Form, Formik, FormikProps } from 'formik';
 import { classMap } from '@shared/utils';
 import Input from '@base/Input';
 import {
@@ -9,17 +9,27 @@ import {
 } from './FormBuilder.types';
 import './FormBuilder.scss';
 import { Select, Option } from '@base/Select';
+import FileUploader from '@base/FileUploader';
+import { createRef, forwardRef, useImperativeHandle } from 'react';
 
-function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
+function FormBuilder<FormData>(
+  props: IFormBuilderProps<FormData>,
+  ref: React.ForwardedRef<any>,
+) {
   const {
     initialData,
     validationSchema,
     onSubmit,
-    onChange,
     onBlurValidate,
     controls,
     containerClassName,
   } = props;
+
+  const formRef = createRef<FormikProps<FormData>>();
+
+  useImperativeHandle(ref, () => ({
+    submitForm: () => formRef?.current?.handleSubmit(),
+  }));
 
   const renderInputControl = ({ controlType, ...control }: ControlProps) => {
     return <Field as={Input} {...control} />;
@@ -37,10 +47,14 @@ function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
       </Field>
     );
   };
+  const renderFileControl = ({ controlType, ...control }: ControlProps) => {
+    return <Field as="file" component={FileUploader} {...control} />;
+  };
 
   const renderControlByType = (control: ControlProps) => {
     if (control.controlType === 'input') return renderInputControl(control);
     if (control.controlType === 'select') return renderSelectControl(control);
+    if (control.controlType === 'file') return renderFileControl(control);
   };
 
   const renderSection = (control: ControlProps, key: number, errors: any) => {
@@ -56,10 +70,6 @@ function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
     );
   };
 
-  const handleChangeForm = (values: FormData, isValid: boolean) => {
-    onChange(values, isValid);
-  };
-
   const handleSubmitForm = (values: FormData) => {
     onSubmit(values);
   };
@@ -67,18 +77,17 @@ function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
   return (
     <div className="FormBuilderContainer">
       <Formik
+        innerRef={formRef}
         validateOnBlur
         validateOnChange
         initialValues={initialData}
         validationSchema={validationSchema}
         onSubmit={handleSubmitForm}
       >
-        {({ isValid, values, errors }) => (
+        {({ isValid, errors }) => (
           <Form
             onBlur={() => onBlurValidate(isValid)}
-            onChange={() =>
-              setTimeout(() => handleChangeForm(values, isValid), 300)
-            }
+            onChange={() => onBlurValidate(isValid)}
             className={classMap({ [containerClassName]: !!containerClassName })}
           >
             {controls.map((control, key) =>
@@ -91,4 +100,8 @@ function FormBuilder<FormData>(props: IFormBuilderProps<FormData>) {
   );
 }
 
-export default FormBuilder;
+const FormBuilderRef = forwardRef(FormBuilder) as <T>(
+  props: IFormBuilderProps<T> & { ref?: React.ForwardedRef<any> },
+) => ReturnType<typeof FormBuilder>;
+
+export default FormBuilderRef;
