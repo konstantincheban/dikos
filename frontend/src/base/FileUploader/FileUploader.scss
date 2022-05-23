@@ -1,0 +1,50 @@
+@import '@styles/shared.scss';
+
+.FileUploaderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin: 10px 0;
+  .FileUploaderManager {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    & .FileUploaderInput {
+      width: 0;
+    }
+  }
+
+  .FileUploaderDragDropPlace {
+    position: relative;
+    width: auto;
+    height: 40px;
+    border-radius: $borderRadius;
+    border: 2px dashed $disabledColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $disabledColor;
+
+    & .DropArea {
+      position: absolute;
+      z-index: 1000;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    & .DropMessage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &.highlight {
+      border: 2px dashed $blueAccentColor;
+      color: $blueAccentColor;
+    }
+  }
+}
