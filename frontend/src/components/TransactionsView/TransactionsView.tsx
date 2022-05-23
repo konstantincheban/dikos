@@ -18,12 +18,13 @@ import './TransactionsView.scss';
 function TransactionsView() {
   const { getTransactions, editTransaction, deleteTransaction } =
     useTransactionsRepository();
-  const { transactionsState$ } = useStore();
+  const { transactionsState$, accountsState$ } = useStore();
   const {
     loading,
     isUpToDate,
     error: transactionErrors,
   } = useObservableState(transactionsState$);
+  const { accounts } = useObservableState(accountsState$);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [undoEntries, setUndoEntries] = useState<string[]>([]);
 
@@ -32,13 +33,13 @@ function TransactionsView() {
   const transactionModalRef = createRef<any>();
 
   useEffect(() => {
+    getTransactions().then((data) => data?.length && setTransactions(data));
+  }, []);
+
+  useEffect(() => {
     !isUpToDate &&
       getTransactions().then((data) => data?.length && setTransactions(data));
   }, [isUpToDate]);
-
-  useEffect(() => {
-    console.log(undoEntries);
-  }, [undoEntries]);
 
   const handleEditTransaction = (
     values: TransactionFormData,
@@ -119,8 +120,19 @@ function TransactionsView() {
   };
 
   const renderTransactionItem = (transaction: ITransaction) => {
-    const { _id, name, description, paymaster, date, amount, currency } =
-      transaction;
+    const {
+      _id,
+      name,
+      description,
+      paymaster,
+      date,
+      amount,
+      currency,
+      accountID,
+    } = transaction;
+    const associatedAccountName = accounts.find(
+      (account) => account._id === accountID,
+    )?.name;
     return (
       <div
         key={`${name}_${amount}`}
@@ -148,6 +160,9 @@ function TransactionsView() {
         <div className="Block">
           <span>{`${amount} ${currency}`}</span>
         </div>
+        <div className="Block">
+          <span>{associatedAccountName}</span>
+        </div>
         <div className="Block">{formatDate(date)}</div>
         <div className="Block">{paymaster}</div>
         <div className="TransactionActions Block">
@@ -163,8 +178,24 @@ function TransactionsView() {
   };
 
   const renderTransactionList = () => {
+    const headerConfig = [
+      'Category',
+      'Name & Description',
+      'Amount & Currency',
+      'Associated Account',
+      'Date',
+      'Paymaster',
+      'Actions',
+    ];
     return (
       <div className="TransactionListContainer">
+        <div className="TransactionListHeader">
+          {headerConfig.map((item) => (
+            <div key={item} className="Block">
+              <span title={item}>{item}</span>
+            </div>
+          ))}
+        </div>
         {transactions.map(renderTransactionItem)}
       </div>
     );

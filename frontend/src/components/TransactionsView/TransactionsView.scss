@@ -9,6 +9,15 @@
   }
 }
 
+@mixin tableColumns {
+  display: grid;
+  grid-template-columns: 60px repeat(5, minmax(50px, 1fr)) 1fr;
+  column-gap: 20px;
+  align-items: center;
+  justify-items: flex-start;
+  min-width: 600px;
+}
+
 .TransactionsViewContainer {
   position: relative;
   height: 100%;
@@ -25,17 +34,31 @@
     gap: 10px;
     padding: 30px 0;
 
+    & .Block {
+      width: 100%;
+      span {
+        display: block;
+        @include truncate;
+      }
+    }
+
+    & .TransactionListHeader {
+      padding: 10px 20px 10px 10px;
+      @include tableColumns;
+      & .Block {
+        &:last-of-type {
+          display: flex;
+          justify-content: end;
+        }
+      }
+    }
+
     .TransactionItem {
-      display: grid;
-      grid-template-columns: 60px repeat(4, minmax(50px, 1fr)) 1fr;
-      column-gap: 20px;
-      align-items: center;
-      justify-items: flex-start;
       height: 55px;
-      min-width: 600px;
       padding: 10px;
       background-color: $secondaryBackgroundColor;
       border-radius: $borderRadius;
+      @include tableColumns;
       @include transition(background-color);
 
       &.removing {
@@ -46,13 +69,6 @@
       &:hover {
         cursor: pointer;
         background-color: rgba($color: $purpleAccentColor, $alpha: 0.2);
-      }
-
-      .Block {
-        width: 100%;
-        span {
-          @include truncate;
-        }
       }
 
       .TransactionName.Block {
