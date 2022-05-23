@@ -4,8 +4,11 @@ import {
 } from './TransactionForm.types';
 
 import FormBuilder from '@base/FormBuilder';
-import { ControlProps } from '@base/FormBuilder/FormBuilder.types';
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import {
+  ControlProps,
+  FormBuilderRef,
+} from '@base/FormBuilder/FormBuilder.types';
+import { createRef, forwardRef, useImperativeHandle } from 'react';
 import {
   controls,
   defaultData,
@@ -13,7 +16,6 @@ import {
   TransactionCreateSchema,
   TransactionEditSchema,
 } from './TransactionFormConfigurations';
-import './TransactionForm.scss';
 import { EditTransactionRequest } from '@shared/interfaces';
 
 const TransactionForm = forwardRef(function TransactionForm(
@@ -21,13 +23,11 @@ const TransactionForm = forwardRef(function TransactionForm(
   ref,
 ) {
   const { data, type, validateForm, availableAccounts, onSubmitForm } = props;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [formData, setFormData] = useState<TransactionFormData>(defaultData);
+
+  const formBuilderRef = createRef<FormBuilderRef>();
 
   useImperativeHandle(ref, () => ({
-    getFormData() {
-      return formData;
-    },
+    submitForm: () => formBuilderRef?.current?.submitForm(),
   }));
 
   const getFormProps = (): [TransactionFormData, ControlProps[], unknown] => {
@@ -50,21 +50,16 @@ const TransactionForm = forwardRef(function TransactionForm(
     return [data, processedControls, TransactionCreateSchema];
   };
 
-  const handleOnChange = (values: TransactionFormData, isValid: boolean) => {
-    setFormData(values);
-    validateForm(isValid);
-  };
-
   const [initialData, formControls, validationSchema] = getFormProps();
   return (
     <div className="TransactionFormContainer">
       <FormBuilder<TransactionFormData>
+        ref={formBuilderRef}
         containerClassName="TransactionForm"
         initialData={initialData}
         validationSchema={validationSchema}
         controls={formControls}
         onSubmit={onSubmitForm}
-        onChange={handleOnChange}
         onBlurValidate={(isValid) => validateForm(isValid)}
       />
     </div>

@@ -1,3 +1,4 @@
+import { FileUploaderProps } from '@base/FileUploader/FileUploader.types';
 import { IInputProps } from '@base/Input';
 import { IOptionProps, ISelectProps } from '@base/Select';
 
@@ -7,7 +8,6 @@ export interface IFormBuilderProps<FormData> {
   containerClassName: string;
   controls: ControlProps[];
   onSubmit: (values: FormData) => void;
-  onChange: (values: FormData, isValid: boolean) => void;
   onBlurValidate: (isValid: boolean) => void;
 }
 
@@ -23,10 +23,17 @@ type CommonProperties = {
   required?: boolean;
 };
 
-type PossibleControls = IInputControlProps | ISelectControlProps;
+type PossibleControls =
+  | IInputControlProps
+  | IInputFileControlProps
+  | ISelectControlProps;
 
 export type IInputControlProps = IInputProps & {
   controlType: 'input';
+};
+
+export type IInputFileControlProps = FileUploaderProps & {
+  controlType: 'file';
 };
 
 export type ISelectControlProps = Omit<
@@ -37,3 +44,8 @@ export type ISelectControlProps = Omit<
   options: ISelectOptionControlProps[];
 };
 export type ISelectOptionControlProps = Pick<IOptionProps, 'value' | 'label'>;
+
+// Reference types
+export type FormBuilderRef = {
+  submitForm: () => void;
+};

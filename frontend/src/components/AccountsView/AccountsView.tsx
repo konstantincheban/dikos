@@ -92,10 +92,7 @@ function AccountsView() {
           id: 'account',
           label: 'Create',
           disabled: true,
-          handler: () => {
-            const formData = accountFormRef?.current?.getFormData();
-            handleCreateAccount(formData as CreateAccountRequest);
-          },
+          handler: () => accountFormRef?.current?.submitForm(),
         },
       ],
     });
@@ -126,13 +123,7 @@ function AccountsView() {
           id: 'account',
           label: 'Save',
           disabled: true,
-          handler: () => {
-            const formData = accountFormRef?.current?.getFormData();
-            handleEditAccount(
-              formData as EditAccountRequest,
-              accountId as string,
-            );
-          },
+          handler: () => accountFormRef?.current?.submitForm(),
         },
       ],
     });

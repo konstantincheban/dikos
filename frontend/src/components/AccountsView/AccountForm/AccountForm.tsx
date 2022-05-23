@@ -2,8 +2,11 @@ import { AccountFormData, IAccountFormProps } from './AccountForm.types';
 
 import FormBuilder from '@base/FormBuilder';
 import { EditAccountRequest } from '@shared/interfaces';
-import { ControlProps } from '@base/FormBuilder/FormBuilder.types';
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import {
+  ControlProps,
+  FormBuilderRef,
+} from '@base/FormBuilder/FormBuilder.types';
+import { createRef, forwardRef, useImperativeHandle } from 'react';
 import {
   AccountCreateSchema,
   AccountEditSchema,
@@ -18,13 +21,11 @@ const AccountForm = forwardRef(function AccountForm(
   ref,
 ) {
   const { data, type, validateForm, onSubmitForm } = props;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [formData, setFormData] = useState<AccountFormData>(defaultData);
+
+  const formBuilderRef = createRef<FormBuilderRef>();
 
   useImperativeHandle(ref, () => ({
-    getFormData() {
-      return formData;
-    },
+    submitForm: () => formBuilderRef?.current?.submitForm(),
   }));
 
   const getFormProps = (
@@ -48,21 +49,16 @@ const AccountForm = forwardRef(function AccountForm(
     return [defaultData, controls, AccountCreateSchema];
   };
 
-  const handleOnChange = (values: AccountFormData, isValid: boolean) => {
-    setFormData(values);
-    validateForm(isValid);
-  };
-
   const [initialData, formControls, validationSchema] = getFormProps(type);
   return (
     <div className="AccountFormContainer">
       <FormBuilder<AccountFormData>
+        ref={formBuilderRef}
         containerClassName="AccountForm"
         initialData={initialData}
         validationSchema={validationSchema}
         controls={formControls}
         onSubmit={onSubmitForm}
-        onChange={handleOnChange}
         onBlurValidate={(isValid) => validateForm(isValid)}
       />
     </div>
