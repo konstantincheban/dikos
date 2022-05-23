@@ -21,7 +21,7 @@ export const useTransactionsObservable = () => {
 
   const setError = (message: string) => {
     toast.error(message);
-    setNextState({ error: message });
+    setNextState({ error: message, loading: false });
   };
 
   const setLoadingState = (state: boolean) => {

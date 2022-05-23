@@ -1,6 +1,6 @@
 import { setErrorToState } from './utils';
 import { useTransactionsObservable } from '../observables';
-import { useTransactionsApi } from '@api';
+import { useTransactionsApi, useImportApi } from '@api';
 import {
   CreateTransactionRequest,
   EditTransactionRequest,
@@ -10,12 +10,24 @@ import { AxiosResponse } from 'axios';
 
 export const useTransactionsRepository = () => {
   const transactionsApi = useTransactionsApi();
+  const importApi = useImportApi();
   const transactionsObservable = useTransactionsObservable();
 
   const createTransaction = async (data: CreateTransactionRequest) => {
     transactionsObservable.setLoadingState(true);
     transactionsApi
       .createTransaction<CreateTransactionRequest>(data)
+      .then(() => {
+        transactionsObservable.setLoadingState(false);
+        transactionsObservable.setUpToDateState(false);
+      })
+      .catch((err) => setErrorToState(err, transactionsObservable));
+  };
+
+  const importTransactions = async (data: FormData) => {
+    transactionsObservable.setLoadingState(true);
+    importApi
+      .importMetroTransactions<FormData>(data)
       .then(() => {
         transactionsObservable.setLoadingState(false);
         transactionsObservable.setUpToDateState(false);
@@ -68,6 +80,7 @@ export const useTransactionsRepository = () => {
     editTransaction,
     deleteTransaction,
     getTransactions,
+    importTransactions,
     getTransactionsObservable,
   };
 };
