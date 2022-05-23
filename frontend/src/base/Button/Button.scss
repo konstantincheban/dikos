@@ -30,6 +30,11 @@
         background-color: $errorColor;
       }
     }
+    &.small {
+      font-size: $smallFontSize;
+      height: 35px;
+      padding: 5px 8px;
+    }
 
     &:focus {
       @include outline;

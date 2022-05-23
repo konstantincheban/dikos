@@ -7,6 +7,7 @@ function Button({
   secondary,
   disruptive,
   className,
+  size,
   ...rest
 }: IButtonProps) {
   return (
@@ -15,6 +16,7 @@ function Button({
         className={classMap(
           {
             [className as string]: !!className,
+            [size as string]: !!size,
             secondary: !!secondary,
             disruptive: !!disruptive,
           },
