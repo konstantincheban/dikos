@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
+import { MetroModule } from './metro/metro.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UsersModule } from './users/users.module';
     AuthModule,
     AccountsModule,
     TransactionsModule,
+    MetroModule,
   ],
   controllers: [AppController],
   providers: [AppService],
