@@ -17,7 +17,7 @@ export const axiosPublicInstance = axios.create({
 
 export const axiosAuthInstance = axios.create({
   baseURL: BASE_API_URL,
-  timeout: 1000,
+  timeout: 10000,
 });
 
 axiosAuthInstance.interceptors.request.use(
