@@ -11,6 +11,9 @@ import './FormBuilder.scss';
 import { Select, Option } from '@base/Select';
 import FileUploader from '@base/FileUploader';
 import { createRef, forwardRef, useImperativeHandle } from 'react';
+import { InfoIcon } from '@base/Icon/IconSet';
+import Icon from '@base/Icon';
+import Tooltip from '@base/Tooltip';
 
 function FormBuilder<FormData>(
   props: IFormBuilderProps<FormData>,
@@ -60,9 +63,17 @@ function FormBuilder<FormData>(
   const renderSection = (control: ControlProps, key: number, errors: any) => {
     return (
       <div key={`${control.name}`} className="Section">
-        <label htmlFor={control.name}>
+        <label className="FieldLabel" htmlFor={control.name}>
           {control.label}
-          {control.required ? ' * ' : ''}:
+          {control.required ? ' * ' : ''}
+          {control.description ? (
+            <Tooltip content={control.description}>
+              <Icon size={13} className="InfoIconCommon" icon={<InfoIcon />} />
+            </Tooltip>
+          ) : (
+            ''
+          )}
+          {`:`}
         </label>
         {renderControlByType(control)}
         <span className="error-msg">{errors[control.name]}</span>

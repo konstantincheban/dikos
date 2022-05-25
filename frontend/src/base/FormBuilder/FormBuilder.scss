@@ -3,5 +3,11 @@
 .FormBuilderContainer {
   & .Section {
     padding-top: 15px;
+
+    & .FieldLabel {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
   }
 }

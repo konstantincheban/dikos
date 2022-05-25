@@ -21,6 +21,7 @@ type CommonProperties = {
   label: string;
   name: string;
   required?: boolean;
+  description?: string;
 };
 
 type PossibleControls =
