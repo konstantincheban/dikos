@@ -48,6 +48,7 @@ a:active {
 :root {
   --toastify-icon-color-error: #{$textColor};
   --toastify-color-info: #{$textColor};
+  --toastify-color-dark: #{$backgroundColor};
 }
 .Toastify__toast--error {
   background-color: $vineColor;
