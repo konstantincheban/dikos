@@ -1,23 +1,36 @@
+import Button from '@base/Button';
 import Icon from '@base/Icon';
-import { CloseIcon, EditIcon, ShoppingCategoryIcon } from '@base/Icon/IconSet';
+import {
+  CloseIcon,
+  EditIcon,
+  InfoIcon,
+  ShoppingCategoryIcon,
+} from '@base/Icon/IconSet';
 import Loader from '@base/Loader';
+import Tooltip from '@base/Tooltip';
 import Undo from '@base/Undo';
 import { useTransactionsRepository } from '@repos';
 import { UNDO_DELAY } from '@shared/constants';
-import { ITransaction } from '@shared/interfaces';
+import { ImportTransactions, ITransaction } from '@shared/interfaces';
 import { classMap, formatDate } from '@shared/utils';
 import { useStore } from '@store';
 import { useObservableState } from 'observable-hooks';
 import { createRef, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useModalAPI } from 'src/helpers/modalAPI/modalAPI';
+import ImportTransactionsForm from './ImportTransactionsForm/ImportTransactionsForm';
+import { IImportTransactionsFormProps } from './ImportTransactionsForm/ImportTransactionsForm.types';
 import TransactionForm from './TransactionForm/TransactionForm';
 import { TransactionFormData } from './TransactionForm/TransactionForm.types';
 import './TransactionsView.scss';
 
 function TransactionsView() {
-  const { getTransactions, editTransaction, deleteTransaction } =
-    useTransactionsRepository();
+  const {
+    getTransactions,
+    editTransaction,
+    deleteTransaction,
+    importTransactions,
+  } = useTransactionsRepository();
   const { transactionsState$, accountsState$ } = useStore();
   const {
     loading,
@@ -41,6 +54,24 @@ function TransactionsView() {
       getTransactions().then((data) => data?.length && setTransactions(data));
   }, [isUpToDate]);
 
+  const handleImportTransactions = (values: ImportTransactions) => {
+    const formData = new FormData();
+    formData.append('accountID', values.accountID);
+    formData.append('aggregationType', values.aggregationType);
+    formData.append('file', values.file);
+
+    toast.promise(
+      importTransactions(formData).then(() => {
+        if (!transactionErrors) modalRef.current?.close();
+      }),
+      {
+        pending: 'Import & Migration is progress',
+        success: 'Import finished successfully',
+        error: 'Import failed',
+      },
+    );
+  };
+
   const handleEditTransaction = (
     values: TransactionFormData,
     transactionId: string,
@@ -56,13 +87,52 @@ function TransactionsView() {
     });
   };
 
-  const handleValidateTransactionForm = (validState: boolean) => {
+  const handleValidateTransactionForm = (
+    validState: boolean,
+    actionID: string,
+  ) => {
     modalRef.current?.updateActionsState([
       {
-        id: 'editTransaction',
+        id: actionID,
         disabled: !validState,
       },
     ]);
+  };
+
+  const handleOpenImportTransactionsModal = () => {
+    const accountOptions: IImportTransactionsFormProps['availableAccounts'] =
+      accounts.reduce((acc, account) => {
+        if (account.type !== 'create') {
+          acc?.push({
+            value: account._id,
+            label: account.name,
+          });
+        }
+        return acc;
+      }, [] as IImportTransactionsFormProps['availableAccounts']);
+    modalRef.current?.open({
+      options: {
+        title: 'Import Transactions',
+      },
+      renderer: (
+        <ImportTransactionsForm
+          ref={transactionModalRef}
+          availableAccounts={accountOptions}
+          onSubmitForm={handleImportTransactions}
+          validateForm={(validState: boolean) =>
+            handleValidateTransactionForm(validState, 'importTransactions')
+          }
+        />
+      ),
+      actions: [
+        {
+          id: 'importTransactions',
+          label: 'Save',
+          disabled: true,
+          handler: () => transactionModalRef?.current?.submitForm(),
+        },
+      ],
+    });
   };
 
   const handleOpenEditTransactionModal = (transactionId: string) => {
@@ -81,17 +151,17 @@ function TransactionsView() {
           onSubmitForm={(values) =>
             handleEditTransaction(values, transactionId)
           }
-          validateForm={handleValidateTransactionForm}
+          validateForm={(validState) =>
+            handleValidateTransactionForm(validState, 'editTransaction')
+          }
         />
       ),
       actions: [
         {
           id: 'editTransaction',
           label: 'Save',
-          handler: () => {
-            const formData = transactionModalRef?.current?.getFormData();
-            handleEditTransaction(formData, transactionId);
-          },
+          disabled: true,
+          handler: () => transactionModalRef?.current?.submitForm(),
         },
       ],
     });
@@ -119,7 +189,7 @@ function TransactionsView() {
     );
   };
 
-  const renderTransactionItem = (transaction: ITransaction) => {
+  const renderTransactionItem = (transaction: ITransaction, key: number) => {
     const {
       _id,
       name,
@@ -135,7 +205,7 @@ function TransactionsView() {
     )?.name;
     return (
       <div
-        key={`${name}_${amount}`}
+        key={`${name}_${amount}_${key}`}
         className={classMap(
           {
             removing: !!undoEntries.find((item) => item === _id),
@@ -202,9 +272,31 @@ function TransactionsView() {
   };
   return (
     <div className="TransactionsViewContainer">
-      <div className="TransactionViewTitle">Transactions</div>
-      {loading && <Loader />}
-      {renderTransactionList()}
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <div className="TransactionsViewTopSection">
+            <div className="TransactionViewTitle">Transactions</div>
+            <div className="TransactionViewImportBlock">
+              <div className="TransactionViewImportInfo">
+                <span>ImportTransactions</span>
+                <Tooltip content="Click to import transactions from fileName.xls. Currently, we only have support for exported Metro receipts">
+                  <Icon
+                    size={17}
+                    className="InfoIconCommon"
+                    icon={<InfoIcon />}
+                  />
+                </Tooltip>
+              </div>
+              <Button onClick={handleOpenImportTransactionsModal}>
+                <span>Import Transactions</span>
+              </Button>
+            </div>
+          </div>
+          {renderTransactionList()}
+        </>
+      )}
     </div>
   );
 }

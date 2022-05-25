@@ -7,6 +7,10 @@
 
   &.readOnly {
     pointer-events: none;
+    color: $disabledColor;
+    input {
+      color: $disabledColor;
+    }
   }
 
   & .InputContainer {

@@ -21,3 +21,9 @@ export type EditTransactionRequest = Omit<
   ITransaction,
   '_id' | 'created_at' | 'updated_at' | 'accountID'
 >;
+
+export type ImportTransactions = {
+  accountID: string;
+  aggregationType: 'productsAsTransactions' | 'checkAsTransaction';
+  file: File;
+};

@@ -1,6 +1,6 @@
 import { setErrorToState } from './utils';
 import { useTransactionsObservable } from '../observables';
-import { useTransactionsApi } from '@api';
+import { useTransactionsApi, useImportApi } from '@api';
 import {
   CreateTransactionRequest,
   EditTransactionRequest,
@@ -10,11 +10,12 @@ import { AxiosResponse } from 'axios';
 
 export const useTransactionsRepository = () => {
   const transactionsApi = useTransactionsApi();
+  const importApi = useImportApi();
   const transactionsObservable = useTransactionsObservable();
 
   const createTransaction = async (data: CreateTransactionRequest) => {
     transactionsObservable.setLoadingState(true);
-    transactionsApi
+    await transactionsApi
       .createTransaction<CreateTransactionRequest>(data)
       .then(() => {
         transactionsObservable.setLoadingState(false);
@@ -23,12 +24,20 @@ export const useTransactionsRepository = () => {
       .catch((err) => setErrorToState(err, transactionsObservable));
   };
 
+  const importTransactions = async (data: FormData) => {
+    transactionsObservable.setLoadingState(true);
+    return importApi.importMetroTransactions<FormData>(data).then(() => {
+      transactionsObservable.setLoadingState(false);
+      transactionsObservable.setUpToDateState(false);
+    });
+  };
+
   const editTransaction = async (
     data: EditTransactionRequest,
     transactionId: string,
   ) => {
     transactionsObservable.setLoadingState(true);
-    transactionsApi
+    await transactionsApi
       .editTransaction<EditTransactionRequest>(data, transactionId)
       .then(() => {
         transactionsObservable.setLoadingState(false);
@@ -39,7 +48,7 @@ export const useTransactionsRepository = () => {
 
   const deleteTransaction = async (transactionId: string) => {
     transactionsObservable.setLoadingState(true);
-    transactionsApi
+    await transactionsApi
       .deleteTransaction(transactionId)
       .then(() => {
         transactionsObservable.setLoadingState(false);
@@ -68,6 +77,7 @@ export const useTransactionsRepository = () => {
     editTransaction,
     deleteTransaction,
     getTransactions,
+    importTransactions,
     getTransactionsObservable,
   };
 };

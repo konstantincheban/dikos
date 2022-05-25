@@ -5,6 +5,7 @@ import axios from 'axios';
 export * from './authApi';
 export * from './accountsApi';
 export * from './transactionsApi';
+export * from './importApi';
 export * from './utils';
 
 const BASE_API_URL = '/api/v1';
@@ -16,7 +17,7 @@ export const axiosPublicInstance = axios.create({
 
 export const axiosAuthInstance = axios.create({
   baseURL: BASE_API_URL,
-  timeout: 1000,
+  timeout: 10000,
 });
 
 axiosAuthInstance.interceptors.request.use(
@@ -39,7 +40,7 @@ axiosAuthInstance.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response.status === 401) {
+    if (error?.response?.status === 401) {
       const authRepo = useAuthRepository();
       authRepo.logout();
     }
