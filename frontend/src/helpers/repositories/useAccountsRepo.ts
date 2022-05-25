@@ -14,7 +14,7 @@ export const useAccountsRepository = () => {
 
   const createAccount = async (data: CreateAccountRequest) => {
     accountsObservable.setLoadingState(true);
-    accountsApi
+    await accountsApi
       .createAccount<CreateAccountRequest>(data)
       .then(() => {
         getAccounts();
@@ -26,7 +26,7 @@ export const useAccountsRepository = () => {
 
   const editAccount = async (data: EditAccountRequest, accountId: string) => {
     accountsObservable.setLoadingState(true);
-    accountsApi
+    await accountsApi
       .editAccount<EditAccountRequest>(data, accountId)
       .then(() => {
         getAccounts();
@@ -37,7 +37,7 @@ export const useAccountsRepository = () => {
 
   const deleteAccount = async (accountId: string) => {
     accountsObservable.setLoadingState(true);
-    accountsApi
+    await accountsApi
       .deleteAccount(accountId)
       .then(() => {
         getAccounts();
@@ -46,9 +46,9 @@ export const useAccountsRepository = () => {
     accountsObservable.setLoadingState(false);
   };
 
-  const getAccounts = () => {
+  const getAccounts = async () => {
     accountsObservable.setLoadingState(true);
-    accountsApi
+    await accountsApi
       .getAccounts()
       .then(({ data }: AxiosResponse<IAccount[]>) => {
         accountsObservable.updateAccountData(data);

@@ -19,13 +19,28 @@
 }
 
 .TransactionsViewContainer {
-  position: relative;
   height: 100%;
   width: 100%;
 
-  .TransactionViewTitle {
-    font-size: 30px;
-    font-weight: 700;
+  .TransactionsViewTopSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    & .TransactionViewTitle {
+      font-size: 30px;
+      font-weight: 700;
+    }
+    & .TransactionViewImportBlock {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      & .TransactionViewImportInfo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+    }
   }
 
   .TransactionListContainer {

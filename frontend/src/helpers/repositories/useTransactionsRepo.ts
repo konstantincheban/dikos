@@ -15,7 +15,7 @@ export const useTransactionsRepository = () => {
 
   const createTransaction = async (data: CreateTransactionRequest) => {
     transactionsObservable.setLoadingState(true);
-    transactionsApi
+    await transactionsApi
       .createTransaction<CreateTransactionRequest>(data)
       .then(() => {
         transactionsObservable.setLoadingState(false);
@@ -26,13 +26,10 @@ export const useTransactionsRepository = () => {
 
   const importTransactions = async (data: FormData) => {
     transactionsObservable.setLoadingState(true);
-    importApi
-      .importMetroTransactions<FormData>(data)
-      .then(() => {
-        transactionsObservable.setLoadingState(false);
-        transactionsObservable.setUpToDateState(false);
-      })
-      .catch((err) => setErrorToState(err, transactionsObservable));
+    return importApi.importMetroTransactions<FormData>(data).then(() => {
+      transactionsObservable.setLoadingState(false);
+      transactionsObservable.setUpToDateState(false);
+    });
   };
 
   const editTransaction = async (
@@ -40,7 +37,7 @@ export const useTransactionsRepository = () => {
     transactionId: string,
   ) => {
     transactionsObservable.setLoadingState(true);
-    transactionsApi
+    await transactionsApi
       .editTransaction<EditTransactionRequest>(data, transactionId)
       .then(() => {
         transactionsObservable.setLoadingState(false);
@@ -51,7 +48,7 @@ export const useTransactionsRepository = () => {
 
   const deleteTransaction = async (transactionId: string) => {
     transactionsObservable.setLoadingState(true);
-    transactionsApi
+    await transactionsApi
       .deleteTransaction(transactionId)
       .then(() => {
         transactionsObservable.setLoadingState(false);

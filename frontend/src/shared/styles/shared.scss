@@ -1,3 +1,7 @@
 @import 'variables/colors.scss';
 @import 'variables/mixins.scss';
 @import 'variables/sizes.scss';
+
+.InfoIconCommon {
+  color: $secondaryTextColor;
+}

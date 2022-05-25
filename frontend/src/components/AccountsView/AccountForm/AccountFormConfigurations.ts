@@ -62,6 +62,7 @@ export const controls: ControlProps[] = [
     controlType: 'select',
     name: 'type',
     label: 'Type',
+    description: 'For now we support only one type of account - custom',
     value: 'custom',
     readOnly: true,
     required: true,

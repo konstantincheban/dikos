@@ -48,6 +48,9 @@ export const controls: ControlProps[] = [
     name: 'aggregationType',
     label: 'Aggregation Type',
     value: 'productsAsTransactions',
+    description: `* Products as Transactions - each product in your receipt will be migrated to transactions
+      * Check as Transaction - all of yours products will be migrated to one transaction without details
+    `,
     required: true,
     options: [
       {
@@ -68,6 +71,8 @@ export const controls: ControlProps[] = [
     accept: '.xls',
     name: 'file',
     label: 'Transaction File',
+    description:
+      'Select your exported receipt in .xls format from Metro account',
   },
 ];
 

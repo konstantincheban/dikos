@@ -1,7 +1,13 @@
 import Button from '@base/Button';
 import Icon from '@base/Icon';
-import { CloseIcon, EditIcon, ShoppingCategoryIcon } from '@base/Icon/IconSet';
+import {
+  CloseIcon,
+  EditIcon,
+  InfoIcon,
+  ShoppingCategoryIcon,
+} from '@base/Icon/IconSet';
 import Loader from '@base/Loader';
+import Tooltip from '@base/Tooltip';
 import Undo from '@base/Undo';
 import { useTransactionsRepository } from '@repos';
 import { UNDO_DELAY } from '@shared/constants';
@@ -54,9 +60,16 @@ function TransactionsView() {
     formData.append('aggregationType', values.aggregationType);
     formData.append('file', values.file);
 
-    importTransactions(formData).then(() => {
-      if (!transactionErrors) modalRef.current?.close();
-    });
+    toast.promise(
+      importTransactions(formData).then(() => {
+        if (!transactionErrors) modalRef.current?.close();
+      }),
+      {
+        pending: 'Import & Migration is progress',
+        success: 'Import finished successfully',
+        error: 'Import failed',
+      },
+    );
   };
 
   const handleEditTransaction = (
@@ -259,12 +272,31 @@ function TransactionsView() {
   };
   return (
     <div className="TransactionsViewContainer">
-      <div className="TransactionViewTitle">Transactions</div>
-      <Button onClick={handleOpenImportTransactionsModal}>
-        <span>Import Transactions</span>
-      </Button>
-      {loading && <Loader />}
-      {renderTransactionList()}
+      {loading ? (
+        <Loader />
+      ) : (
+        <>
+          <div className="TransactionsViewTopSection">
+            <div className="TransactionViewTitle">Transactions</div>
+            <div className="TransactionViewImportBlock">
+              <div className="TransactionViewImportInfo">
+                <span>ImportTransactions</span>
+                <Tooltip content="Click to import transactions from fileName.xls. Currently, we only have support for exported Metro receipts">
+                  <Icon
+                    size={17}
+                    className="InfoIconCommon"
+                    icon={<InfoIcon />}
+                  />
+                </Tooltip>
+              </div>
+              <Button onClick={handleOpenImportTransactionsModal}>
+                <span>Import Transactions</span>
+              </Button>
+            </div>
+          </div>
+          {renderTransactionList()}
+        </>
+      )}
     </div>
   );
 }

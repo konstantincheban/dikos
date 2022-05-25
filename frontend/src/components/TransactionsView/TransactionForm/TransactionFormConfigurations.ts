@@ -87,6 +87,7 @@ export const controls: ControlProps[] = [
   },
   {
     controlType: 'input',
+    description: 'Shop/Place where you made the transaction',
     name: 'paymaster',
     label: 'Paymaster',
   },
