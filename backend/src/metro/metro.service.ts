@@ -39,6 +39,13 @@ export class MetroService {
     return worksheets.flat();
   }
 
+  // TEST PURPOSES
+  randomDate(start, end) {
+    return new Date(
+      start.getTime() + Math.random() * (end.getTime() - start.getTime()),
+    );
+  }
+
   aggregateData(metroData: MetroProductDTO[], config: AggregationConfig) {
     const { userID, relatedAccount, aggregationType } = config;
     const transactionSkeleton = {
@@ -49,13 +56,14 @@ export class MetroService {
       amount: 0,
       currency: relatedAccount.currency,
       category: '',
-      date: new Date(),
+      date: this.randomDate(new Date(2021, 0, 1), new Date()),
       paymaster: 'Metro',
     };
     // aggregation strategy - productsAsTransactions
     if (aggregationType === 'productsAsTransactions') {
       return metroData.map((metroProduct) => ({
         ...transactionSkeleton,
+        date: this.randomDate(new Date(2021, 0, 1), new Date()),
         name: metroProduct['Описание'],
         description: `Code of product - ${metroProduct['Код продукта']}`,
         amount: -metroProduct['Общая сумма с НДС'],
@@ -71,7 +79,7 @@ export class MetroService {
       return [
         {
           ...transactionSkeleton,
-          amount: checkAmount,
+          amount: Number(checkAmount.toFixed(2)),
           name: `Metro check for the date - ${new Date().toISOString()}`,
         },
       ];
@@ -108,7 +116,6 @@ export class MetroService {
     });
     const statuses = await this.migrateImportedTransactions(dikosTransactions);
     return {
-      statuses: statuses,
       message: 'Transactions imported successfully',
     };
   }
