@@ -4,6 +4,7 @@ import App from './App';
 import { StoreProvider } from '@store';
 import './index.scss';
 import { ModalAPIProvider } from './helpers/modalAPI/modalAPI';
+import { TooltipProvider } from '@base/Tooltip';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement,
@@ -11,9 +12,11 @@ const root = ReactDOM.createRoot(
 root.render(
   <BrowserRouter>
     <StoreProvider>
-      <ModalAPIProvider>
-        <App />
-      </ModalAPIProvider>
+      <TooltipProvider>
+        <ModalAPIProvider>
+          <App />
+        </ModalAPIProvider>
+      </TooltipProvider>
     </StoreProvider>
   </BrowserRouter>,
 );

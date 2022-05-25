@@ -1,0 +1,87 @@
+@import '@styles/shared.scss';
+
+$tooltipArrowSize: 6px;
+$tooltipMargin: 10px;
+
+/* Absolute positioning */
+.Tooltip-Tip {
+  position: fixed;
+  border-radius: $borderRadius;
+  padding: 15px;
+  color: $secondaryTextColor;
+  background: $secondaryBackgroundColor;
+  font-size: $smallFontSize;
+  line-height: 1.3;
+  z-index: 10001;
+  width: 180px;
+  white-space: pre-line;
+  @include boxShadow;
+  @include transitionMultiple(opacity, visibility);
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  &.hidden {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+// /* CSS border triangles */
+.Tooltip-Tip::before {
+  content: ' ';
+  left: 50%;
+  border: solid transparent;
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  border-width: $tooltipArrowSize;
+  margin-left: calc($tooltipArrowSize * -1);
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.top {
+  transform: translateY(calc(-100% - $tooltipMargin)) translateX(-54%);
+}
+/* CSS border triangles */
+.Tooltip-Tip.top::before {
+  top: 100%;
+  border-top-color: $secondaryBackgroundColor;
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.right {
+  transform: translateX($tooltipMargin) translateY(-40%);
+}
+/* CSS border triangles */
+.Tooltip-Tip.right::before {
+  left: calc($tooltipArrowSize * -1);
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+  border-right-color: $secondaryBackgroundColor;
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.bottom {
+  transform: translateY($tooltipMargin) translateX(-54%);
+}
+/* CSS border triangles */
+.Tooltip-Tip.bottom::before {
+  bottom: 100%;
+  border-bottom-color: $secondaryBackgroundColor;
+}
+
+/* Absolute positioning */
+.Tooltip-Tip.left {
+  transform: translateX(calc(-100% - $tooltipMargin)) translateY(-40%);
+}
+/* CSS border triangles */
+.Tooltip-Tip.left::before {
+  left: auto;
+  right: calc($tooltipArrowSize * -2);
+  top: 50%;
+  transform: translateX(0) translateY(-50%);
+  border-left-color: $secondaryBackgroundColor;
+}
