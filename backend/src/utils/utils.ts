@@ -1,11 +1,32 @@
-export const buildFilterExpressions = (filter: string) =>
-  filter.split('and').reduce((acc, item) => {
-    let [key, value] = item.split('eq');
+export const buildFilterExpressions = (filter: string) => {
+  const getValueBySeparator = (item: string, separator: 'eq' | 'contains') => {
+    let [key, value] = item.split(separator);
     key = key?.trim() ?? '';
     value = value?.replace(/'|"|\s/g, '') ?? '';
-    acc.push({ [key]: value });
+
+    return [key, value];
+  };
+  const decodedFilter = atob(filter.replace(/\(|\)/g, ''));
+  return decodedFilter.split('and').reduce((acc, item) => {
+    if (item.includes('eq')) {
+      const [key, value] = getValueBySeparator(item, 'eq');
+      acc.push({ [key]: value });
+    }
+    if (item.includes('contains')) {
+      const [key, value] = getValueBySeparator(item, 'contains');
+      acc.push({ [key]: { $regex: new RegExp(value, 'g') } });
+    }
+    // placeholder for the $and operation in case of missing parameters
+    if (!item) acc.push({ '': '' });
     return acc;
   }, []);
+};
+
+export const buildSortByOrderBy = (orderBy: string) => {
+  const [field, criteria] = orderBy.split(' ');
+  if (field && criteria) return { [field]: criteria };
+  return '';
+};
 
 export const immutableObjectFiltering = <T>(
   object: unknown,

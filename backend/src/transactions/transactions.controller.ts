@@ -23,10 +23,12 @@ export class TransactionsController {
   @Get()
   async getAllTransactionsByUserId(
     @Query('filter') filter: string,
+    @Query('orderby') orderBy: string,
     @Req() req,
   ) {
     return await this.transactionsService.getFilteredAccounts(
       filter ?? '',
+      orderBy ?? '',
       req.user.id,
     );
   }
