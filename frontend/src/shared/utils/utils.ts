@@ -1,3 +1,4 @@
+import { KeyValueType } from '@shared/interfaces';
 import moment from 'moment';
 
 type ClassMapObjectType = {
@@ -41,3 +42,16 @@ export const setGlobalCSSVariable = (variableName: string, value: string) => {
 
 export const formatDate = (ICOString: string) =>
   moment(ICOString).format('lll');
+
+export const textToID = (string: string) => {
+  return string.replaceAll(' ', '_').toUpperCase();
+};
+
+export const filterArrayOfObjects = (
+  arr: KeyValueType[],
+  uniqueProperty: string,
+) => {
+  return [
+    ...new Map([...arr].map((item) => [item[uniqueProperty], item])).values(),
+  ];
+};

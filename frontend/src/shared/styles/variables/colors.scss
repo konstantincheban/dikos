@@ -5,8 +5,13 @@ $blueAccentColor: #4799eb;
 $purpleAccentColor: #4d33cc;
 $darkPurpleAccentColor: #2a1945;
 
+$lightPurpleColor: rgba(
+  $color: $darkPurpleAccentColor,
+  $alpha: 0.4,
+);
+
 $secondaryTextColor: #afb5c0;
-$disabledColor: #6d7992;
+$disabledColor: #737687;
 $textColor: #e2e4e9;
 
 $errorColor: #c73b43;

@@ -32,20 +32,20 @@
       padding: 0 10px;
     }
   }
+}
 
-  & .OptionsContainer {
-    position: absolute;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    background-color: $secondaryBackgroundColor;
-    border-radius: $borderRadius;
-    padding: 8px 0;
-    transform-origin: top;
-    z-index: 1000;
-
-    &.collapsed {
-      transform: scale(1, 0);
-    }
+.OptionsContainer {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: $secondaryBackgroundColor;
+  border-radius: $borderRadius;
+  padding: 8px 0;
+  transform-origin: top;
+  z-index: 1000;
+  @include boxShadow;
+  &.collapsed {
+    transform: scale(1, 0);
   }
 }
