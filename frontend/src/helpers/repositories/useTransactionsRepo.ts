@@ -57,10 +57,10 @@ export const useTransactionsRepository = () => {
       .catch((err) => setErrorToState(err, transactionsObservable));
   };
 
-  const getTransactions = () => {
+  const getTransactions = (filterStr?: string) => {
     transactionsObservable.setLoadingState(true);
     return transactionsApi
-      .getTransactions()
+      .getTransactions(filterStr)
       .then(({ data }: AxiosResponse<ITransaction[]>) => {
         transactionsObservable.setLoadingState(false);
         transactionsObservable.setUpToDateState(true);

@@ -16,8 +16,8 @@ export const useTransactionsApi = () => {
     return axiosAuthInstance.post(`/transactions/delete/${transactionId}`);
   };
 
-  const getTransactions = () => {
-    return axiosAuthInstance.get('/transactions');
+  const getTransactions = (filterStr?: string) => {
+    return axiosAuthInstance.get(`/transactions${filterStr ?? ''}`);
   };
 
   return {

@@ -43,6 +43,21 @@
     }
   }
 
+  .TransactionsViewFilterSection {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    .AmountOfItems {
+      display: flex;
+      align-items: center;
+      padding-right: 20px;
+      height: 30px;
+      color: $secondaryTextColor;
+      border-right: 2px solid $disabledColor;
+    }
+  }
+
   .TransactionListContainer {
     display: flex;
     flex-direction: column;
@@ -122,7 +137,7 @@
           height: 40px;
           width: 40px;
           border-radius: $borderRadius;
-          background-color: rgba($color: $darkPurpleAccentColor, $alpha: 0.4);
+          background-color: $lightPurpleColor;
           margin: 0 10px;
           color: $textColor;
           @include transition(background-color);

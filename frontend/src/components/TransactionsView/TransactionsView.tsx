@@ -7,13 +7,24 @@ import {
   ShoppingCategoryIcon,
 } from '@base/Icon/IconSet';
 import Loader from '@base/Loader';
+import TagEditor from '@base/TagEditor';
+import { ITagItem } from '@base/TagEditor/TagEditor.types';
 import Tooltip from '@base/Tooltip';
 import Undo from '@base/Undo';
 import { useTransactionsRepository } from '@repos';
-import { UNDO_DELAY } from '@shared/constants';
-import { ImportTransactions, ITransaction } from '@shared/interfaces';
+import {
+  TABLE_FILTER_KEY_VALUE_SEPARATOR,
+  TABLE_FILTER_SEPARATOR,
+  UNDO_DELAY,
+} from '@shared/constants';
+import {
+  IModalFormRef,
+  ImportTransactions,
+  ITransaction,
+} from '@shared/interfaces';
 import { classMap, formatDate } from '@shared/utils';
 import { useStore } from '@store';
+import { createBrowserHistory } from 'history';
 import { useObservableState } from 'observable-hooks';
 import { createRef, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -22,7 +33,10 @@ import ImportTransactionsForm from './ImportTransactionsForm/ImportTransactionsF
 import { IImportTransactionsFormProps } from './ImportTransactionsForm/ImportTransactionsForm.types';
 import TransactionForm from './TransactionForm/TransactionForm';
 import { TransactionFormData } from './TransactionForm/TransactionForm.types';
+import { columnsConfig, filterConfig } from './TransactionsViewConfig';
 import './TransactionsView.scss';
+import { useLocation } from 'react-router-dom';
+import { usePrevious } from '@hooks';
 
 function TransactionsView() {
   const {
@@ -41,18 +55,82 @@ function TransactionsView() {
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [undoEntries, setUndoEntries] = useState<string[]>([]);
 
+  const [filters, setFilters] = useState<ITagItem[]>([]);
+  const [filterString, setFilterString] = useState('');
+  const previousFilterStr = usePrevious(filterString);
+
+  const history = createBrowserHistory({ window });
+  const location = useLocation();
+
   const { modalRef } = useModalAPI();
 
-  const transactionModalRef = createRef<any>();
+  const transactionModalRef = createRef<IModalFormRef>();
 
+  // set filters by query params
   useEffect(() => {
-    getTransactions().then((data) => data?.length && setTransactions(data));
-  }, []);
+    const filtersFromUrl = getFiltersFromUrl();
+    setFilterString(getFilterStringByFilters(filtersFromUrl));
+    setFilters(filtersFromUrl);
+  }, [location.search]);
 
+  // --------------------------
+  // Transactions fetching Logic
+  // --------------------------
+
+  // get filtered transactions
   useEffect(() => {
-    !isUpToDate &&
-      getTransactions().then((data) => data?.length && setTransactions(data));
-  }, [isUpToDate]);
+    previousFilterStr !== filterString &&
+      (!isUpToDate || !loading) &&
+      getTransactions(filterString).then(
+        (data) => data?.length && setTransactions(data),
+      );
+  }, [filters, isUpToDate, loading]);
+
+  // --------------------------
+  // Filtering Logic
+  // --------------------------
+
+  const getFiltersFromUrl = (): ITagItem[] => {
+    const filtersFromUrl = new URLSearchParams(location.search);
+    return filtersFromUrl.get('filter')
+      ? parseFilterParamsToTags(filtersFromUrl.get('filter') ?? '')
+      : [];
+  };
+
+  const getParamByTag = (tag: ITagItem) => {
+    return `${tag.key}${TABLE_FILTER_KEY_VALUE_SEPARATOR}${tag.value}`;
+  };
+
+  const parseFilterParamsToTags = (filter: string): ITagItem[] => {
+    const filterString = atob(filter.replace(/\(|\)/g, ''));
+    return filterString.split(TABLE_FILTER_SEPARATOR).map((filterItem) => {
+      const [key, value] = filterItem.split(TABLE_FILTER_KEY_VALUE_SEPARATOR);
+      return { key, value };
+    });
+  };
+
+  const getFilterStringByFilters = (filters: ITagItem[]) => {
+    return filters.length
+      ? `?filter=(${btoa(
+          filters
+            .map((filter) => getParamByTag(filter))
+            .join(TABLE_FILTER_SEPARATOR),
+        )})`
+      : '';
+  };
+
+  const setFiltersToUrl = (filters: ITagItem[]) => {
+    // filter example - ?filters=(name contains Test and category contains shopping)
+    setFilterString(getFilterStringByFilters(filters));
+    history.replace({
+      pathname: window.location.pathname,
+      search: getFilterStringByFilters(filters),
+    });
+  };
+
+  // -------------------------------
+  // Transactions Edit/Delete/Import
+  // -------------------------------
 
   const handleImportTransactions = (values: ImportTransactions) => {
     const formData = new FormData();
@@ -189,6 +267,11 @@ function TransactionsView() {
     );
   };
 
+  const handleChangeFilterTags = (tags: ITagItem[]) => {
+    setFiltersToUrl(tags);
+    setFilters(tags);
+  };
+
   const renderTransactionItem = (transaction: ITransaction, key: number) => {
     const {
       _id,
@@ -248,21 +331,12 @@ function TransactionsView() {
   };
 
   const renderTransactionList = () => {
-    const headerConfig = [
-      'Category',
-      'Name & Description',
-      'Amount & Currency',
-      'Associated Account',
-      'Date',
-      'Paymaster',
-      'Actions',
-    ];
     return (
       <div className="TransactionListContainer">
         <div className="TransactionListHeader">
-          {headerConfig.map((item) => (
-            <div key={item} className="Block">
-              <span title={item}>{item}</span>
+          {columnsConfig.map((item) => (
+            <div key={item.name} className="Block">
+              <span title={item.label}>{item.label}</span>
             </div>
           ))}
         </div>
@@ -270,33 +344,41 @@ function TransactionsView() {
       </div>
     );
   };
+
+  const renderFilterSection = () => {
+    return (
+      <div className="TransactionsViewFilterSection">
+        <div className="AmountOfItems">{transactions.length} Transactions</div>
+        <div className="TagFilterSection">
+          <TagEditor
+            categories={filterConfig}
+            tags={filters}
+            onChange={handleChangeFilterTags}
+          ></TagEditor>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="TransactionsViewContainer">
-      {loading ? (
-        <Loader />
-      ) : (
-        <>
-          <div className="TransactionsViewTopSection">
-            <div className="TransactionViewTitle">Transactions</div>
-            <div className="TransactionViewImportBlock">
-              <div className="TransactionViewImportInfo">
-                <span>ImportTransactions</span>
-                <Tooltip content="Click to import transactions from fileName.xls. Currently, we only have support for exported Metro receipts">
-                  <Icon
-                    size={17}
-                    className="InfoIconCommon"
-                    icon={<InfoIcon />}
-                  />
-                </Tooltip>
-              </div>
-              <Button onClick={handleOpenImportTransactionsModal}>
-                <span>Import Transactions</span>
-              </Button>
-            </div>
+      {loading && <Loader />}
+      <div className="TransactionsViewTopSection">
+        <div className="TransactionViewTitle">Transactions</div>
+        <div className="TransactionViewImportBlock">
+          <div className="TransactionViewImportInfo">
+            <span>ImportTransactions</span>
+            <Tooltip content="Click to import transactions from fileName.xls. Currently, we only have support for exported Metro receipts">
+              <Icon size={17} className="InfoIconCommon" icon={<InfoIcon />} />
+            </Tooltip>
           </div>
-          {renderTransactionList()}
-        </>
-      )}
+          <Button onClick={handleOpenImportTransactionsModal}>
+            <span>Import Transactions</span>
+          </Button>
+        </div>
+      </div>
+      {renderFilterSection()}
+      {renderTransactionList()}
     </div>
   );
 }

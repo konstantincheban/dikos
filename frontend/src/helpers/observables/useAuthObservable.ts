@@ -1,3 +1,4 @@
+import { textToID } from '@shared/utils';
 import { toast } from 'react-toastify';
 import { createSubject, IState } from './utils';
 
@@ -32,7 +33,9 @@ export const useAuthObservable = () => {
   };
 
   const setError = (message: string) => {
-    toast.error(message);
+    toast.error(message, {
+      toastId: textToID(message),
+    });
     setNextState({ error: message });
   };
 
