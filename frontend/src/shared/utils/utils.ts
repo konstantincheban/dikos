@@ -55,3 +55,12 @@ export const filterArrayOfObjects = (
     ...new Map([...arr].map((item) => [item[uniqueProperty], item])).values(),
   ];
 };
+
+export const buildQueryParamsString = (params: KeyValueType) => {
+  return Object.keys(params).reduce((acc, paramName, index) => {
+    if (params[paramName]) {
+      return `${acc}${index ? '&' : '?'}${paramName}=${params[paramName]}`;
+    }
+    return acc;
+  }, '');
+};

@@ -1,6 +1,7 @@
 import Button from '@base/Button';
 import Icon from '@base/Icon';
 import {
+  CaretRightIcon,
   CloseIcon,
   EditIcon,
   InfoIcon,
@@ -22,7 +23,7 @@ import {
   ImportTransactions,
   ITransaction,
 } from '@shared/interfaces';
-import { classMap, formatDate } from '@shared/utils';
+import { buildQueryParamsString, classMap, formatDate } from '@shared/utils';
 import { useStore } from '@store';
 import { createBrowserHistory } from 'history';
 import { useObservableState } from 'observable-hooks';
@@ -56,8 +57,10 @@ function TransactionsView() {
   const [undoEntries, setUndoEntries] = useState<string[]>([]);
 
   const [filters, setFilters] = useState<ITagItem[]>([]);
-  const [filterString, setFilterString] = useState('');
-  const previousFilterStr = usePrevious(filterString);
+  const [filterValue, setFilterValue] = useState('');
+  const [sortValue, setSortValue] = useState('');
+  const previousFilterValue = usePrevious(filterValue);
+  const previousSortValue = usePrevious(sortValue);
 
   const history = createBrowserHistory({ window });
   const location = useLocation();
@@ -66,12 +69,19 @@ function TransactionsView() {
 
   const transactionModalRef = createRef<IModalFormRef>();
 
-  // set filters by query params
+  // set filters & sortValue by query params
   useEffect(() => {
     const filtersFromUrl = getFiltersFromUrl();
-    setFilterString(getFilterStringByFilters(filtersFromUrl));
+    const sortValueFromUrl = getSortValueFromUrl();
+    setFilterValue(getFilterStringByFilters(filtersFromUrl));
+    setSortValue(sortValueFromUrl);
     setFilters(filtersFromUrl);
   }, [location.search]);
+
+  // update url by changing the sorting value
+  useEffect(() => {
+    setParamsToUrl(filters, sortValue);
+  }, [sortValue]);
 
   // --------------------------
   // Transactions fetching Logic
@@ -79,16 +89,24 @@ function TransactionsView() {
 
   // get filtered transactions
   useEffect(() => {
-    previousFilterStr !== filterString &&
+    (previousFilterValue !== filterValue || previousSortValue !== sortValue) &&
       (!isUpToDate || !loading) &&
-      getTransactions(filterString).then(
-        (data) => data?.length && setTransactions(data),
-      );
-  }, [filters, isUpToDate, loading]);
+      getTransactions(
+        buildQueryParamsString({
+          filter: `(${atob(filterValue.replace(/\(|\)/g, ''))})`,
+          orderby: sortValue,
+        }),
+      ).then((data) => data && setTransactions(data));
+  }, [filters, sortValue, isUpToDate, loading]);
 
   // --------------------------
   // Filtering Logic
   // --------------------------
+
+  const getSortValueFromUrl = () => {
+    const filtersFromUrl = new URLSearchParams(location.search);
+    return filtersFromUrl.get('orderby') ?? '';
+  };
 
   const getFiltersFromUrl = (): ITagItem[] => {
     const filtersFromUrl = new URLSearchParams(location.search);
@@ -111,7 +129,7 @@ function TransactionsView() {
 
   const getFilterStringByFilters = (filters: ITagItem[]) => {
     return filters.length
-      ? `?filter=(${btoa(
+      ? `(${btoa(
           filters
             .map((filter) => getParamByTag(filter))
             .join(TABLE_FILTER_SEPARATOR),
@@ -119,12 +137,15 @@ function TransactionsView() {
       : '';
   };
 
-  const setFiltersToUrl = (filters: ITagItem[]) => {
+  const setParamsToUrl = (filters: ITagItem[], sortValue: string) => {
     // filter example - ?filters=(name contains Test and category contains shopping)
-    setFilterString(getFilterStringByFilters(filters));
+    setFilterValue(getFilterStringByFilters(filters));
     history.replace({
       pathname: window.location.pathname,
-      search: getFilterStringByFilters(filters),
+      search: buildQueryParamsString({
+        filter: filters.length ? getFilterStringByFilters(filters) : '',
+        orderby: sortValue,
+      }),
     });
   };
 
@@ -268,8 +289,20 @@ function TransactionsView() {
   };
 
   const handleChangeFilterTags = (tags: ITagItem[]) => {
-    setFiltersToUrl(tags);
+    setParamsToUrl(tags, sortValue);
     setFilters(tags);
+  };
+
+  const handleSortTableByColumn = (sortItemName: string) => {
+    let updatedSortValue = '';
+    const [sortProperty, criteria] = sortValue.split(' ');
+    if (sortItemName === sortProperty) {
+      if (criteria === 'asc') updatedSortValue = `${sortItemName} desc`;
+      if (criteria === 'desc') updatedSortValue = ``;
+    } else {
+      updatedSortValue = `${sortItemName} asc`;
+    }
+    setSortValue(updatedSortValue);
   };
 
   const renderTransactionItem = (transaction: ITransaction, key: number) => {
@@ -330,17 +363,53 @@ function TransactionsView() {
     );
   };
 
+  const renderListPlaceholder = () => {
+    return (
+      <div className="EmptyListPlaceholderContainer">
+        <span>No transaction was found</span>
+      </div>
+    );
+  };
+
   const renderTransactionList = () => {
+    const [sortProperty, criteria] = sortValue.split(' ');
     return (
       <div className="TransactionListContainer">
         <div className="TransactionListHeader">
           {columnsConfig.map((item) => (
             <div key={item.name} className="Block">
               <span title={item.label}>{item.label}</span>
+              {item.sortable ? (
+                <div
+                  className={classMap(
+                    {
+                      [criteria as string]:
+                        sortProperty === item.name && !!criteria,
+                    },
+                    'SortButtons',
+                  )}
+                  onClick={() => handleSortTableByColumn(item.name)}
+                >
+                  <div className="Sort-asc">
+                    <Icon size={10} className="Up" icon={<CaretRightIcon />} />
+                  </div>
+                  <div className="Sort-desc">
+                    <Icon
+                      size={10}
+                      className="Down"
+                      icon={<CaretRightIcon />}
+                    />
+                  </div>
+                </div>
+              ) : (
+                ''
+              )}
             </div>
           ))}
         </div>
-        {transactions.map(renderTransactionItem)}
+        {transactions.length
+          ? transactions.map(renderTransactionItem)
+          : renderListPlaceholder()}
       </div>
     );
   };

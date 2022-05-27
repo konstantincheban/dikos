@@ -6,20 +6,22 @@ export const buildFilterExpressions = (filter: string) => {
 
     return [key, value];
   };
-  const decodedFilter = atob(filter.replace(/\(|\)/g, ''));
-  return decodedFilter.split('and').reduce((acc, item) => {
-    if (item.includes('eq')) {
-      const [key, value] = getValueBySeparator(item, 'eq');
-      acc.push({ [key]: value });
-    }
-    if (item.includes('contains')) {
-      const [key, value] = getValueBySeparator(item, 'contains');
-      acc.push({ [key]: { $regex: new RegExp(value, 'g') } });
-    }
-    // placeholder for the $and operation in case of missing parameters
-    if (!item) acc.push({ '': '' });
-    return acc;
-  }, []);
+  return filter
+    .replace(/\(|\)/g, '')
+    .split('and')
+    .reduce((acc, item) => {
+      if (item.includes('eq')) {
+        const [key, value] = getValueBySeparator(item, 'eq');
+        acc.push({ [key]: value });
+      }
+      if (item.includes('contains')) {
+        const [key, value] = getValueBySeparator(item, 'contains');
+        acc.push({ [key]: { $regex: new RegExp(value, 'g') } });
+      }
+      // placeholder for the $and operation in case of missing parameters
+      if (!item) acc.push({ '': '' });
+      return acc;
+    }, []);
 };
 
 export const buildSortByOrderBy = (orderBy: string) => {

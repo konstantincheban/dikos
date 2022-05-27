@@ -38,7 +38,7 @@ export const columnsConfig = [
     label: 'Name & Description',
   },
   {
-    name: 'amount_currency',
+    name: 'amount',
     label: 'Amount & Currency',
     sortable: true,
   },

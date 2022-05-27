@@ -263,6 +263,15 @@ const FilterIcon = (): React.ReactElement => {
   );
 };
 
+const CaretRightIcon = (): React.ReactElement => {
+  return (
+    <path
+      d="M10.2034 8.54676L6.12658 12.6236C5.82418 12.926 5.57778 12.8252 5.57778 12.3964L5.57778 3.59956C5.57778 3.17076 5.82418 3.06996 6.12658 3.37236L10.2034 7.45076C10.5058 7.75316 10.5058 8.24436 10.2034 8.54676Z"
+      fill="currentColor"
+    />
+  );
+};
+
 export {
   LogoutIcon,
   LogoIcon,
@@ -283,5 +292,6 @@ export {
   EditIcon,
   ShoppingCategoryIcon,
   InfoIcon,
-  FilterIcon
+  FilterIcon,
+  CaretRightIcon,
 };
