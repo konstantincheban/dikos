@@ -28,6 +28,7 @@ export interface IModalOpenProps {
 export interface IModalOptions {
   title: string;
   actionsAlignment?: 'left' | 'center' | 'right';
+  closeOnBackdrop?: boolean;
 }
 
 export interface IModalActionConfig {
