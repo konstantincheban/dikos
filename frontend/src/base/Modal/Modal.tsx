@@ -7,8 +7,10 @@ import {
 import './Modal.scss';
 import React, {
   forwardRef,
+  LegacyRef,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react';
 import Button from '@base/Button';
@@ -21,6 +23,7 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
   const defaultModalOptions: IModalOptions = {
     title: 'ModalTitle',
     actionsAlignment: 'right',
+    closeOnBackdrop: true,
   };
   const defaultActions: IModalActionConfig[] = [
     {
@@ -39,6 +42,8 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
 
   const [fadeOut, setFadeOut] = useState(false);
 
+  const wrapperRef = useRef<HTMLDivElement>();
+
   useImperativeHandle(ref, () => ({
     close() {
       closeModal();
@@ -49,6 +54,7 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
       setModalOptions(getModalOptions(options));
       setActions([...defaultActions, ...(actions ?? [])]);
       setShowState(true);
+      setTimeout(() => wrapperRef?.current?.focus(), 300);
     },
     updateActionsState(updateActions: UpdateActionsConfigType) {
       const updatedActionsConfig = mergeActionConfigs(actions, updateActions);
@@ -107,6 +113,11 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
     handler(e, closeModal);
   };
 
+  const handleModalKeydown = (evt: React.KeyboardEvent) => {
+    const { key } = evt;
+    if (key === 'Escape') closeModal();
+  };
+
   const renderActions = () => {
     const { actionsAlignment } = modalOptions;
     return (
@@ -133,10 +144,19 @@ const Modal = forwardRef(function Modal(props: unknown, ref) {
   };
 
   if (showState) {
-    const { title } = modalOptions;
+    const { title, closeOnBackdrop } = modalOptions;
     return (
-      <div className={classMap({ FadeOutDown: !!fadeOut }, 'ModalOverlay')}>
-        <div className="ModalWrapper">
+      <div
+        className={classMap({ FadeOutDown: !!fadeOut }, 'ModalOverlay')}
+        onClick={() => closeOnBackdrop && closeModal()}
+      >
+        <div
+          ref={wrapperRef as LegacyRef<HTMLDivElement>}
+          tabIndex={0}
+          className="ModalWrapper"
+          onKeyDown={handleModalKeydown}
+          onClick={(evt) => evt.stopPropagation()}
+        >
           <div className="ModalContainer">
             <div className="ModalTitle">{title}</div>
             <button className="ModalCloseButton" onClick={() => closeModal()}>

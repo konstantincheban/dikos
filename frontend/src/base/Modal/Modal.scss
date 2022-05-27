@@ -80,6 +80,7 @@
 
   border-radius: $borderRadius;
   background-color: $backgroundColor;
+  outline: none !important;
   display: flex;
   @include animation(fadeInUp);
 }
