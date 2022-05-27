@@ -1,4 +1,5 @@
 import { IAccount } from '@interfaces';
+import { textToID } from '@shared/utils';
 import { toast } from 'react-toastify';
 import { createSubject, IState } from './utils';
 
@@ -23,7 +24,9 @@ export const useAccountsObservable = () => {
   };
 
   const setError = (message: string) => {
-    toast.error(message);
+    toast.error(message, {
+      toastId: textToID(message),
+    });
     setNextState({ error: message });
   };
 

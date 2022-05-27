@@ -1,0 +1,60 @@
+@import '@styles/shared.scss';
+
+.TagEditorContainer {
+  position: relative;
+  min-width: 30px;
+
+  & .InputContainer {
+    min-width: 300px;
+    max-width: 300px;
+  }
+
+  & .CategoryTitle {
+    padding: 10px 40px;
+    background-color: $lightPurpleColor;
+    color: $secondaryTextColor;
+  }
+
+  & .OptionsContainer {
+    min-width: 300px;
+    max-width: 300px;
+    top: 45px;
+  }
+}
+
+.TagsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .TagItem {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 50px;
+    width: auto;
+    line-height: 1;
+    font-size: $smallFontSize;
+    padding: 5px 8px;
+    background-color: $disabledColor;
+    border-radius: 5px;
+
+    .TagKey {
+      color: $secondaryTextColor;
+    }
+    .TagValue {
+      color: $textColor;
+    }
+
+    .RemoveTag {
+      background-color: transparent;
+      color: $secondaryTextColor;
+      @include transition(color);
+
+      &:hover {
+        cursor: pointer;
+        color: $vineColor;
+      }
+    }
+  }
+}

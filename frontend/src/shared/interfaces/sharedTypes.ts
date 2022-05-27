@@ -5,3 +5,7 @@ export type KeyValueType = {
 export type Error = {
   message: string;
 };
+
+export interface IModalFormRef {
+  submitForm: () => void;
+}

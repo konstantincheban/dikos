@@ -26,10 +26,12 @@ export class AccountsController {
   @Get()
   async getAllAccountsByUserId(
     @Query('filter') filter: string,
+    @Query('orderby') orderBy: string,
     @Req() req,
   ): Promise<Account[]> {
     return await this.accountsService.getFilteredAccounts(
       filter ?? '',
+      orderBy ?? '',
       req.user.id,
     );
   }

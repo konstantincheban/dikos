@@ -1,4 +1,7 @@
 .IconContainer {
+  display: flex;
+  align-items: center;
+
   &.Right {
     transform: rotate(0deg);
   }
