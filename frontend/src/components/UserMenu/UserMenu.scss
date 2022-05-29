@@ -82,16 +82,17 @@
 
     & .SearchContainer {
       flex: 1;
+      padding: 0;
       & input {
         width: 200px;
       }
     }
 
-    & > .IconContainer {
+    & > div {
       padding: 0 15px;
       min-width: $defaultIconContainerSize;
     }
-    & > .IconContainer:last-of-type {
+    & > div:last-child {
       padding-right: 0;
     }
   }
@@ -177,6 +178,7 @@
 
         & .InfoAmount {
           font-weight: 700;
+          text-align: center;
         }
       }
     }

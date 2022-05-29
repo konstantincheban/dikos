@@ -35,9 +35,9 @@ import { IImportTransactionsFormProps } from './ImportTransactionsForm/ImportTra
 import TransactionForm from './TransactionForm/TransactionForm';
 import { TransactionFormData } from './TransactionForm/TransactionForm.types';
 import { columnsConfig, filterConfig } from './TransactionsViewConfig';
-import './TransactionsView.scss';
 import { useLocation } from 'react-router-dom';
 import { usePrevious } from '@hooks';
+import './TransactionsView.scss';
 
 function TransactionsView() {
   const {
@@ -89,15 +89,21 @@ function TransactionsView() {
 
   // get filtered transactions
   useEffect(() => {
-    (previousFilterValue !== filterValue || previousSortValue !== sortValue) &&
-      (!isUpToDate || !loading) &&
+    if (
+      previousFilterValue !== filterValue ||
+      previousSortValue !== sortValue ||
+      (!isUpToDate && !loading)
+    ) {
       getTransactions(
         buildQueryParamsString({
-          filter: `(${atob(filterValue.replace(/\(|\)/g, ''))})`,
+          filter: filterValue
+            ? `(${atob(filterValue.replace(/\(|\)/g, ''))})`
+            : '',
           orderby: sortValue,
         }),
       ).then((data) => data && setTransactions(data));
-  }, [filters, sortValue, isUpToDate, loading]);
+    }
+  }, [filterValue, sortValue, isUpToDate, loading]);
 
   // --------------------------
   // Filtering Logic
@@ -278,7 +284,7 @@ function TransactionsView() {
       {
         // hook will be called when the component unmount
         onClose: () => {
-          if (updatedEntries.find((item) => item === transactionId))
+          if (undoEntries.find((item) => item === transactionId))
             handleDeleteTransaction(transactionId);
         },
         hideProgressBar: false,
@@ -340,8 +346,10 @@ function TransactionsView() {
           </div>
         </div>
         <div className="TransactionName Block">
-          <span>{name}</span>
-          <span className="description">{description}</span>
+          <span title={name}>{name}</span>
+          <span title={description} className="description">
+            {description}
+          </span>
         </div>
         <div className="Block">
           <span>{`${amount} ${currency}`}</span>
@@ -407,9 +415,11 @@ function TransactionsView() {
             </div>
           ))}
         </div>
-        {transactions.length
-          ? transactions.map(renderTransactionItem)
-          : renderListPlaceholder()}
+        <div className="TransactionsList">
+          {transactions.length
+            ? transactions.map(renderTransactionItem)
+            : renderListPlaceholder()}
+        </div>
       </div>
     );
   };

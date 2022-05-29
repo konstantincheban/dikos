@@ -57,10 +57,9 @@ export const filterArrayOfObjects = (
 };
 
 export const buildQueryParamsString = (params: KeyValueType) => {
-  return Object.keys(params).reduce((acc, paramName, index) => {
-    if (params[paramName]) {
-      return `${acc}${index ? '&' : '?'}${paramName}=${params[paramName]}`;
-    }
-    return acc;
-  }, '');
+  return Object.entries(params)
+    .filter(([key, value]) => value)
+    .reduce((acc, [key, value], index) => {
+      return `${acc}${index ? '&' : '?'}${key}=${value}`;
+    }, '');
 };

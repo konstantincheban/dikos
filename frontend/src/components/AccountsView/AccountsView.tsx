@@ -134,7 +134,12 @@ function AccountsView() {
       options: {
         title: 'Delete Account',
       },
-      renderer: <span>Are you sure that you want to delete this account?</span>,
+      renderer: (
+        <span>
+          {`Are you sure that you want to delete this account?
+          All transactions related to this account will be deleted`}
+        </span>
+      ),
       actions: [
         {
           id: 'account',

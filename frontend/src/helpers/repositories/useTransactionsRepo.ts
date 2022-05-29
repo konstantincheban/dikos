@@ -7,6 +7,7 @@ import {
   ITransaction,
 } from '@shared/interfaces';
 import { AxiosResponse } from 'axios';
+import { toast } from 'react-toastify';
 
 export const useTransactionsRepository = () => {
   const transactionsApi = useTransactionsApi();
@@ -18,6 +19,7 @@ export const useTransactionsRepository = () => {
     await transactionsApi
       .createTransaction<CreateTransactionRequest>(data)
       .then(() => {
+        toast.success(`Transaction ${data.name} was created successfully`);
         transactionsObservable.setLoadingState(false);
         transactionsObservable.setUpToDateState(false);
       })
@@ -40,6 +42,7 @@ export const useTransactionsRepository = () => {
     await transactionsApi
       .editTransaction<EditTransactionRequest>(data, transactionId)
       .then(() => {
+        toast.success(`Transaction ${data.name} was edited successfully`);
         transactionsObservable.setLoadingState(false);
         transactionsObservable.setUpToDateState(false);
       })
@@ -51,6 +54,7 @@ export const useTransactionsRepository = () => {
     await transactionsApi
       .deleteTransaction(transactionId)
       .then(() => {
+        toast.success(`Transaction was deleted successfully`);
         transactionsObservable.setLoadingState(false);
         transactionsObservable.setUpToDateState(false);
       })

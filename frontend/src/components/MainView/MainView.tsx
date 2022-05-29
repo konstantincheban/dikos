@@ -1,8 +1,8 @@
 import { IMainViewProps } from './MainView.types';
-import './MainView.scss';
 import Tabs, { ITab } from '@base/Tabs';
 import AccountsView from '@components/AccountsView/AccountsView';
 import SummaryView from '@components/SummaryView/SummaryView';
+import './MainView.scss';
 
 function MainView(props: IMainViewProps) {
   const { currentView } = props;

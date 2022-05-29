@@ -27,59 +27,69 @@ import { ITransactionFormProps } from '@components/TransactionsView/TransactionF
 import { useAccountsRepository, useTransactionsRepository } from '@repos';
 import { defaultData } from '@components/TransactionsView/TransactionForm/TransactionFormConfigurations';
 import {
+  AccountSummaryData,
   CreateAccountRequest,
   CreateTransactionRequest,
 } from '@shared/interfaces';
 import { AccountFormData } from '@components/AccountsView/AccountForm/AccountForm.types';
 import AccountForm from '@components/AccountsView/AccountForm/AccountForm';
+import Tooltip from '@base/Tooltip';
 
 function UserMenu() {
-  const summaryConfig: ISummaryWidgetConfig[] = [
+  const summaryConfigDefault: ISummaryWidgetConfig[] = [
     {
+      ref: 'income',
       name: 'Income',
-      amount: 460.0,
-      currency: '980',
+      amount: 0,
+      currency: 'UAH',
     },
     {
+      ref: 'outcome',
       name: 'Outcome',
-      amount: 900.0,
-      currency: '980',
+      amount: 0,
+      currency: 'UAH',
     },
   ];
 
-  const dateSummaryConfig: IDateSummaryWidgetConfig[] = [
+  const dateSummaryConfigDefault: IDateSummaryWidgetConfig[] = [
     {
-      name: 'Day',
-      amount: 30.0,
-      currency: '980',
-      percentage: 10,
+      ref: 'byWeek',
+      name: 'Week',
+      amount: 0,
+      currency: 'UAH',
       icon: <CalendarPlusIcon />,
     },
     {
-      name: 'Week',
-      amount: 200.0,
-      currency: '980',
-      percentage: -10,
+      ref: 'byMonth',
+      name: 'Month',
+      amount: 0,
+      currency: 'UAH',
       icon: <CalendarCheckIcon />,
     },
     {
-      name: 'Month',
-      amount: 600.0,
-      currency: '980',
-      percentage: -30,
+      ref: 'byYear',
+      name: 'Year',
+      amount: 0,
+      currency: 'UAH',
       icon: <CalendarMonthIcon />,
     },
   ];
 
-  const { accountsState$, transactionsState$ } = useStore();
-  const { accounts } = useObservableState(accountsState$);
+  const { authState$, accountsState$, transactionsState$ } = useStore();
+  const { accounts, error: accountsErrors } =
+    useObservableState(accountsState$);
+  const { createAccount, getAccountSummary } = useAccountsRepository();
   const { error: transactionErrors } = useObservableState(transactionsState$);
-  const { error: accountsErrors } = useObservableState(accountsState$);
   const { createTransaction } = useTransactionsRepository();
-  const { createAccount } = useAccountsRepository();
+  const { username } = useObservableState(authState$);
 
   const [collapsedMenu, setCollapsed] = useState(true);
   const [accountsList, setAccounts] = useState(accounts);
+  const [currentAccount, setCurrentAccount] = useState(accounts[0]);
+  const [summaryConfig, setSummaryConfig] = useState(summaryConfigDefault);
+  const [dateSummaryConfig, setDateSummaryConfig] = useState(
+    dateSummaryConfigDefault,
+  );
 
   const { modalRef } = useModalAPI();
 
@@ -94,12 +104,39 @@ function UserMenu() {
         name: 'Create new Account',
         description: 'Create new Account',
         type: 'create',
+        ballance: 0,
         currency: 'UAH',
         created_at: new Date(),
         updated_at: new Date(),
       },
     ]);
+    if (accounts?.length) {
+      getAccountSummary(accounts[0]._id).then(
+        (data) => data && setSummaryDataToConfig(data),
+      );
+    }
   }, [accounts]);
+
+  useEffect(() => {
+    if (currentAccount && currentAccount.type !== 'create') {
+      getAccountSummary(currentAccount._id).then(
+        (data) => data && setSummaryDataToConfig(data),
+      );
+    }
+  }, [currentAccount]);
+
+  const setSummaryDataToConfig = (data: AccountSummaryData) => {
+    const updatedSummaryConfig = summaryConfig.map((configItem) => ({
+      ...configItem,
+      amount: data[configItem.ref] ?? 0,
+    }));
+    const updatedDateSummaryConfig = dateSummaryConfig.map((configItem) => ({
+      ...configItem,
+      amount: data[configItem.ref] ?? 0,
+    }));
+    setSummaryConfig(updatedSummaryConfig);
+    setDateSummaryConfig(updatedDateSummaryConfig);
+  };
 
   const handleExpandMenu = () => {
     setCollapsed(false);
@@ -168,10 +205,7 @@ function UserMenu() {
         {
           id: 'createTransaction',
           label: 'Create',
-          handler: () => {
-            const formData = transactionModalRef?.current?.getFormData();
-            handleCreateTransaction(formData);
-          },
+          handler: () => transactionModalRef?.current?.submitForm(),
         },
       ],
     });
@@ -205,10 +239,7 @@ function UserMenu() {
           id: 'createAccount',
           label: 'Create',
           disabled: true,
-          handler: () => {
-            const formData = accountModalRef?.current?.getFormData();
-            handleCreateAccount(formData as CreateAccountRequest);
-          },
+          handler: () => accountModalRef?.current?.submitForm(),
         },
       ],
     });
@@ -223,6 +254,7 @@ function UserMenu() {
     if (index) {
       const reorderedAccounts = immutableMove(accountsList, index, 0);
       setAccounts(reorderedAccounts);
+      setCurrentAccount(reorderedAccounts[0]);
     }
   };
 
@@ -239,7 +271,7 @@ function UserMenu() {
     widgetConfig: ISummaryWidgetConfig,
     key: number,
   ) => {
-    const { name, amount } = widgetConfig;
+    const { name, amount, currency } = widgetConfig;
     return (
       <div key={key} className="SummaryWidgetContainer">
         <div className={`Graphic ${name}`}>
@@ -247,7 +279,9 @@ function UserMenu() {
         </div>
         <div className="Info">
           <span className="InfoTitle">{name}</span>
-          <span className="InfoAmount">${amount}</span>
+          <span className="InfoAmount">
+            {amount} {currency}
+          </span>
         </div>
       </div>
     );
@@ -257,7 +291,7 @@ function UserMenu() {
     widgetConfig: IDateSummaryWidgetConfig,
     key: number,
   ) => {
-    const { name, amount, percentage, icon } = widgetConfig;
+    const { name, amount, currency, icon } = widgetConfig;
     return (
       <div key={key} className="DateSummaryWidgetContainer">
         <div className="Badge">
@@ -265,8 +299,9 @@ function UserMenu() {
         </div>
         <div className="Info">
           <span className="InfoTitle">This {name}</span>
-          <span className="InfoAmount">${amount}</span>
-          <span className="InfoPercentage">{percentage}%</span>
+          <span className="InfoAmount">
+            {amount} {currency}
+          </span>
         </div>
       </div>
     );
@@ -281,7 +316,9 @@ function UserMenu() {
       <div className="UtilsHeader">
         <Search onChange={handleSearch} />
         <Icon icon={<NotificationIcon />} />
-        <Icon icon={<UserIcon />} />
+        <Tooltip content={username} size="small">
+          <Icon icon={<UserIcon />} />
+        </Tooltip>
       </div>
       <div className="AccountsSection">
         {renderSectionTitle('Your Accounts')}
@@ -303,15 +340,23 @@ function UserMenu() {
         )}
       </div>
       <div className="AccountSummary">
-        {renderSectionTitle('Account Summary')}
-        <div className="SummaryContainer">
-          {summaryConfig.map((config, key) => renderSummaryWidget(config, key))}
-        </div>
-        <div className="DateSummaryContainer">
-          {dateSummaryConfig.map((config, key) =>
-            renderDateSummaryWidget(config, key),
-          )}
-        </div>
+        {currentAccount?.type !== 'create' ? (
+          <>
+            {renderSectionTitle('Account Summary')}
+            <div className="SummaryContainer">
+              {summaryConfig.map((config, key) =>
+                renderSummaryWidget(config, key),
+              )}
+            </div>
+            <div className="DateSummaryContainer">
+              {dateSummaryConfig.map((config, key) =>
+                renderDateSummaryWidget(config, key),
+              )}
+            </div>
+          </>
+        ) : (
+          ''
+        )}
       </div>
       <div className="AccountActions">
         <Button onClick={handleCreateNewTransaction}>
