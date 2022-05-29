@@ -64,7 +64,7 @@ export class MetroService {
       return metroData.map((metroProduct) => ({
         ...transactionSkeleton,
         date: this.randomDate(new Date(2021, 0, 1), new Date()),
-        name: metroProduct['Описание'],
+        name: `${metroProduct['Описание']}`,
         description: `Code of product - ${metroProduct['Код продукта']}`,
         amount: -metroProduct['Общая сумма с НДС'],
         category: 'Shopping',

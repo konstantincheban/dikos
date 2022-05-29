@@ -57,9 +57,10 @@ export class TransactionsService {
     }
   }
 
-  async getFilteredAccounts(
+  async getFilteredTransactions(
     filter: string,
     orderBy: string,
+    top: number,
     userID: string,
   ): Promise<Transaction[]> {
     const buildFilterObject = buildFilterExpressions(filter);
@@ -67,6 +68,6 @@ export class TransactionsService {
     return await this.transactionModel
       .find({ $and: buildFilterObject, userID })
       .sort(sortValue)
-      .exec();
+      .limit(top);
   }
 }
