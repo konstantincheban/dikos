@@ -1,6 +1,6 @@
 import Card from '@base/Card';
 import Icon from '@base/Icon';
-import { PlusIcon } from '@base/Icon/IconSet';
+import { OutlinedPlusIcon } from '@base/Icon/IconSet';
 import { classMap } from '@shared/utils';
 import { ICreateAccountCardProps } from './AccountCard.types';
 import './CreateAccountCard.scss';
@@ -16,7 +16,7 @@ function CreateAccountCard(props: ICreateAccountCardProps) {
       onClick={onClick}
     >
       <span>Create New Account</span>
-      <Icon size={45} icon={<PlusIcon />} />
+      <Icon size={45} icon={<OutlinedPlusIcon />} />
     </Card>
   );
 }

@@ -23,6 +23,11 @@ a:active {
   text-decoration: none;
 }
 
+span {
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
 :focus-visible {
   outline: $blueAccentColor dashed 2px;
   outline-offset: -2px;

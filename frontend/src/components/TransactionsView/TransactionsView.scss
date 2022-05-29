@@ -63,6 +63,7 @@
     flex-direction: column;
     gap: 10px;
     padding: 30px 0;
+    height: 85%;
 
     & .Block {
       width: 100%;
@@ -120,69 +121,79 @@
       color: $disabledColor;
     }
 
-    .TransactionItem {
-      height: 55px;
-      padding: 10px;
-      background-color: $secondaryBackgroundColor;
-      border-radius: $borderRadius;
-      @include tableColumns;
-      @include transition(background-color);
+    & .TransactionsList {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
 
-      &.removing {
-        animation: removingAnimation;
-        animation-duration: var(--undo-animation-duration);
-      }
-
-      &:hover {
-        cursor: pointer;
-        background-color: rgba($color: $purpleAccentColor, $alpha: 0.2);
-      }
-
-      .TransactionName.Block {
-        display: flex;
-        flex-direction: column;
-
-        & .description {
-          color: $secondaryTextColor;
-        }
-      }
-
-      .TransactionCategory.Block {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 50px;
-        height: 50px;
+      & .TransactionItem {
+        height: 55px;
+        padding: 10px;
+        background-color: $secondaryBackgroundColor;
         border-radius: $borderRadius;
-        background-color: rgba($color: $darkPurpleAccentColor, $alpha: 0.7);
-        &.income {
-          outline: 2px solid rgba($color: $successColor, $alpha: 0.3);
-        }
-        &.outcome {
-          outline: 2px solid rgba($color: $errorColor, $alpha: 0.3);
-        }
-      }
+        @include tableColumns;
+        @include transition(background-color);
 
-      .TransactionActions.Block {
-        display: flex;
-        justify-content: end;
+        &.removing {
+          animation: removingAnimation;
+          animation-duration: var(--undo-animation-duration);
+        }
 
-        button {
+        &:hover {
+          cursor: pointer;
+          background-color: rgba($color: $purpleAccentColor, $alpha: 0.2);
+        }
+
+        .TransactionName.Block {
+          display: flex;
+          flex-direction: column;
+
+          & .description {
+            color: $secondaryTextColor;
+          }
+        }
+
+        .TransactionCategory.Block {
           display: flex;
           align-items: center;
           justify-content: center;
-          height: 40px;
-          width: 40px;
+          width: 50px;
+          height: 50px;
           border-radius: $borderRadius;
-          background-color: $lightPurpleColor;
-          margin: 0 10px;
-          color: $textColor;
-          @include transition(background-color);
+          background-color: rgba($color: $darkPurpleAccentColor, $alpha: 0.7);
+          &.income {
+            outline: 2px solid rgba($color: $successColor, $alpha: 0.3);
+          }
+          &.outcome {
+            outline: 2px solid rgba($color: $errorColor, $alpha: 0.3);
+          }
+        }
 
-          &:hover,
-          &:focus {
-            cursor: pointer;
-            background-color: rgba($color: $darkPurpleAccentColor, $alpha: 0.7);
+        .TransactionActions.Block {
+          display: flex;
+          justify-content: end;
+
+          button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            width: 40px;
+            border-radius: $borderRadius;
+            background-color: $lightPurpleColor;
+            margin: 0 10px;
+            color: $textColor;
+            @include transition(background-color);
+
+            &:hover,
+            &:focus {
+              cursor: pointer;
+              background-color: rgba(
+                $color: $darkPurpleAccentColor,
+                $alpha: 0.7
+              );
+            }
           }
         }
       }

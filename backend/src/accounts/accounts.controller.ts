@@ -1,4 +1,9 @@
 import {
+  instanceToPlain,
+  plainToClass,
+  plainToInstance,
+} from 'class-transformer';
+import {
   Body,
   Controller,
   Post,
@@ -16,6 +21,7 @@ import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import MongooseClassSerializerInterceptor from 'src/utils/mongooseClassSerializer.interceptor';
+import { AccountSummaryDTO } from './dto/account-summary-dto';
 
 @Controller('accounts')
 @UseInterceptors(MongooseClassSerializerInterceptor(Account))
@@ -29,11 +35,20 @@ export class AccountsController {
     @Query('orderby') orderBy: string,
     @Req() req,
   ): Promise<Account[]> {
-    return await this.accountsService.getFilteredAccounts(
+    const test = await this.accountsService.getFilteredAccounts(
       filter ?? '',
       orderBy ?? '',
       req.user.id,
     );
+    return test;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/summaryData/:id')
+  async getAccountSummaryData(
+    @Param('id') accountID: string,
+  ): Promise<AccountSummaryDTO> {
+    return await this.accountsService.getAccountSummary(accountID);
   }
 
   @UseGuards(JwtAuthGuard)

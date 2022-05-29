@@ -6,18 +6,20 @@ import {
   useImperativeHandle,
   useState,
 } from 'react';
-import { Directions, ITooltipProps } from './Tooltip.types';
+import { Directions, ITooltipProps, Sizes } from './Tooltip.types';
 import { classMap } from '@shared/utils';
 import './Tooltip.scss';
 
 const DEFAULT_MARGIN = 10;
 const DEFAULT_DIRECTION: Directions = 'right';
+const DEFAULT_SIZE: Sizes = 'medium';
 
 const TooltipContent = forwardRef(function TooltipContent(props, ref) {
   const [active, setActive] = useState(false);
   const [content, setContent] = useState<ITooltipProps['content']>('');
   const [wrapperRef, setWrapperRef] = useState<RefObject<HTMLDivElement>>();
   const [direction, setDirection] = useState<Directions>(DEFAULT_DIRECTION);
+  const [size, setSize] = useState<Sizes>(DEFAULT_SIZE);
   const [coordinates, setCoordinates] = useState({
     x: 0,
     y: 0,
@@ -36,6 +38,7 @@ const TooltipContent = forwardRef(function TooltipContent(props, ref) {
     wrapperRef: RefObject<HTMLDivElement>,
   ) => {
     setDirection(options.direction ?? DEFAULT_DIRECTION);
+    setSize(options.size ?? DEFAULT_SIZE);
     setWrapperRef(wrapperRef);
     setContent(options.content);
     setActive(true);
@@ -130,6 +133,7 @@ const TooltipContent = forwardRef(function TooltipContent(props, ref) {
       className={classMap(
         {
           [direction as string]: !!direction,
+          [size as string]: !!size,
           visible: active,
           hidden: !active,
         },

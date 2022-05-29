@@ -7,7 +7,9 @@ import mongoose from 'mongoose';
 
 import { Exclude } from 'class-transformer';
 
-@Schema()
+@Schema({
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+})
 export class Transaction {
   @Exclude()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })

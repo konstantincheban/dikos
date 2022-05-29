@@ -14,7 +14,7 @@ function Layout() {
   useEffect(() => {
     authRepo.getUserData();
     accountsRepo.getAccounts();
-    setGlobalCSSVariable('--undo-animation-duration', `${UNDO_DELAY}ms`);
+    setGlobalCSSVariable('--undo-animation-duration', `${UNDO_DELAY + 3000}ms`);
   }, []);
 
   return (
