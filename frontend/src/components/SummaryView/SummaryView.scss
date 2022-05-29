@@ -1,0 +1,79 @@
+@import '@styles/shared.scss';
+
+.SummaryViewContainer {
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 20px;
+  height: 100%;
+  width: 100%;
+
+  .BlockTitle {
+    font-size: 25px;
+    font-weight: 700;
+  }
+
+  .RecentTransactionsBlock {
+    flex: 1 1 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 95%;
+
+    & .RecentTransactionsList {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+
+      & .TransactionItemBlock {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        height: 55px;
+        padding: 10px;
+        background-color: $secondaryBackgroundColor;
+        border-radius: $borderRadius;
+        @include transition(background-color);
+
+        &:hover {
+          cursor: pointer;
+          background-color: rgba($color: $purpleAccentColor, $alpha: 0.2);
+        }
+
+        .NameBlock {
+          flex: 1;
+        }
+
+        .AmountBlock {
+          padding-right: 10px;
+        }
+
+        span {
+          display: block;
+          @include truncate;
+        }
+      }
+
+      & .TypeOfTransaction {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: $borderRadius;
+        background-color: rgba($color: $darkPurpleAccentColor, $alpha: 0.7);
+        &.income {
+          color: rgba($color: $successColor, $alpha: 0.3);
+          outline: 2px solid rgba($color: $successColor, $alpha: 0.3);
+        }
+        &.outcome {
+          color: rgba($color: $errorColor, $alpha: 0.3);
+          outline: 2px solid rgba($color: $errorColor, $alpha: 0.3);
+        }
+      }
+    }
+  }
+  .RatingBlocks {
+    flex: 1 1 100px;
+  }
+}
