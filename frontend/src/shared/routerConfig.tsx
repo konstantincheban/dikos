@@ -41,6 +41,10 @@ export const getRouterConfig = (
             element: <MainView currentView="accounts" />,
           },
           {
+            path: '/budget',
+            element: <MainView currentView="budget" />,
+          },
+          {
             path: '/transactions',
             element: <TransactionsView />,
           },

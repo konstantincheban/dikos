@@ -47,8 +47,9 @@ export class AccountsController {
   @Get('/summaryData/:id')
   async getAccountSummaryData(
     @Param('id') accountID: string,
+    @Req() req,
   ): Promise<AccountSummaryDTO> {
-    return await this.accountsService.getAccountSummary(accountID);
+    return await this.accountsService.getAccountSummary(accountID, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)

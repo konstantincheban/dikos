@@ -2,6 +2,7 @@ import { IMainViewProps } from './MainView.types';
 import Tabs, { ITab } from '@base/Tabs';
 import AccountsView from '@components/AccountsView/AccountsView';
 import SummaryView from '@components/SummaryView/SummaryView';
+import BudgetView from '@components/BudgetView/BudgetView';
 import './MainView.scss';
 
 function MainView(props: IMainViewProps) {
@@ -16,14 +17,14 @@ function MainView(props: IMainViewProps) {
       path: '/accounts',
     },
     {
-      name: 'Coming Soon',
-      path: '/comingsoon',
-      disabled: true,
+      name: 'Budgeting',
+      path: '/budget',
     },
   ];
 
   const renderContent = (currentView?: string) => {
     if (currentView === 'accounts') return <AccountsView />;
+    if (currentView === 'budget') return <BudgetView />;
     return <SummaryView />;
   };
 

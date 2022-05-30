@@ -176,6 +176,14 @@
           font-size: $smallFontSize;
         }
 
+        & .InfoPercentage {
+          color: $successColor;
+        }
+
+        & .InfoPercentage.negative {
+          color: $errorColor;
+        }
+
         & .InfoAmount {
           font-weight: 700;
           text-align: center;

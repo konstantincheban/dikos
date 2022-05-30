@@ -7,6 +7,7 @@ import {
   LoginRequest,
   RegistrationRequest,
   RegistrationResponse,
+  UserData,
 } from '@shared/interfaces';
 
 export const useAuthRepository = () => {
@@ -18,7 +19,6 @@ export const useAuthRepository = () => {
     authApi
       .login<LoginRequest>(data)
       .then(({ data }: AxiosResponse<LoginResponse>) => {
-        authObservable.updateUserData(data);
         authObservable.updateToken(data.token);
         authObservable.setLoadingState(false);
       })
@@ -30,7 +30,6 @@ export const useAuthRepository = () => {
     authApi
       .registration<RegistrationRequest>(data)
       .then(({ data }: AxiosResponse<RegistrationResponse>) => {
-        authObservable.updateUserData(data);
         authObservable.updateToken(data.token);
         authObservable.setLoadingState(false);
       })
@@ -47,11 +46,12 @@ export const useAuthRepository = () => {
 
   const getUserData = async () => {
     authObservable.setLoadingState(true);
-    authApi
+    return await authApi
       .getUserData()
-      .then(({ data }: AxiosResponse<LoginResponse>) => {
+      .then(({ data }: AxiosResponse<UserData>) => {
         authObservable.updateUserData(data);
         authObservable.setLoadingState(false);
+        return data;
       })
       .catch((err) => setErrorToState(err, authObservable));
   };

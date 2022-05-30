@@ -7,9 +7,10 @@ export interface ISummaryWidgetConfig {
   currency: string;
 }
 export interface IDateSummaryWidgetConfig {
-  ref: 'byWeek' | 'byMonth' | 'byYear';
+  ref: 'byDay' | 'byWeek' | 'byMonth';
   name: string;
   amount: number;
+  percentage: string;
   currency: string;
   icon: React.ReactElement;
 }

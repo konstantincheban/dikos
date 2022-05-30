@@ -1,0 +1,32 @@
+@import '@styles/shared.scss';
+
+.BudgetViewContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding-top: 20px;
+
+  & .BudgetingContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 70px;
+
+    & .BudgetingForm {
+      flex: 0.5 1 100px;
+      & .SubmitBudgetForm {
+        margin-top: 30px;
+      }
+    }
+
+    & .BudgetingInfo {
+      flex: 1 1 100px;
+      display: flex;
+      padding-top: 80px;
+      justify-content: center;
+      font-family: 'Montserrat';
+      font-weight: 700;
+      font-size: 25px;
+    }
+  }
+}
