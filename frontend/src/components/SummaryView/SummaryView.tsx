@@ -64,10 +64,16 @@ function SummaryView() {
     <div className="SummaryViewContainer">
       {loading && <Loader />}
       <div className="RecentTransactionsBlock">
-        <div className="BlockTitle">Recent Transactions</div>
+        <div className="ViewTitle">Recent Transactions</div>
         <div className="RecentTransactionsList">
-          {recentTransactions.map((transaction, index) =>
-            renderTransaction(transaction, index),
+          {recentTransactions?.length ? (
+            recentTransactions.map((transaction, index) =>
+              renderTransaction(transaction, index),
+            )
+          ) : (
+            <div className="EmptyListPlaceholderContainer">
+              <span>No transaction was found</span>
+            </div>
           )}
         </div>
       </div>

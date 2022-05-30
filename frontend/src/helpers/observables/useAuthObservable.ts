@@ -1,18 +1,19 @@
-import { textToID } from '@shared/utils';
+import { UserData } from '@interfaces';
+import { textToID } from '@utils';
 import { toast } from 'react-toastify';
 import { createSubject, IState } from './utils';
 
 export interface AuthState {
   username: string;
-  userId: string;
   email: string;
   token: string;
+  budgetID: string;
 }
 
 const initialState = {
   username: '',
-  userId: '',
   email: '',
+  budgetID: '',
   token: localStorage.getItem('token') ?? '',
   loading: false,
   error: '',
@@ -21,7 +22,7 @@ const initialState = {
 const authSubject$ = createSubject<IState<AuthState>>(initialState);
 
 export const useAuthObservable = () => {
-  const updateUserData = (userData: AuthState) => {
+  const updateUserData = (userData: UserData) => {
     setNextState({ ...userData, error: '' });
   };
 
@@ -43,7 +44,9 @@ export const useAuthObservable = () => {
     setNextState({ loading: state });
   };
 
-  const setNextState = (payload: Partial<IState<AuthState>>) => {
+  const setNextState = (
+    payload: Partial<IState<Omit<AuthState, 'budgetID'>>>,
+  ) => {
     const state = authSubject$.getValue();
     authSubject$.next({ ...state, ...payload });
   };

@@ -53,23 +53,26 @@ function UserMenu() {
 
   const dateSummaryConfigDefault: IDateSummaryWidgetConfig[] = [
     {
+      ref: 'byDay',
+      name: 'Day',
+      amount: 0,
+      percentage: '0%',
+      currency: 'UAH',
+      icon: <CalendarPlusIcon />,
+    },
+    {
       ref: 'byWeek',
       name: 'Week',
       amount: 0,
+      percentage: '0%',
       currency: 'UAH',
-      icon: <CalendarPlusIcon />,
+      icon: <CalendarCheckIcon />,
     },
     {
       ref: 'byMonth',
       name: 'Month',
       amount: 0,
-      currency: 'UAH',
-      icon: <CalendarCheckIcon />,
-    },
-    {
-      ref: 'byYear',
-      name: 'Year',
-      amount: 0,
+      percentage: '0%',
       currency: 'UAH',
       icon: <CalendarMonthIcon />,
     },
@@ -132,7 +135,8 @@ function UserMenu() {
     }));
     const updatedDateSummaryConfig = dateSummaryConfig.map((configItem) => ({
       ...configItem,
-      amount: data[configItem.ref] ?? 0,
+      amount: data[configItem.ref]?.amount ?? 0,
+      percentage: data[configItem.ref]?.percentage ?? '0%',
     }));
     setSummaryConfig(updatedSummaryConfig);
     setDateSummaryConfig(updatedDateSummaryConfig);
@@ -291,7 +295,7 @@ function UserMenu() {
     widgetConfig: IDateSummaryWidgetConfig,
     key: number,
   ) => {
-    const { name, amount, currency, icon } = widgetConfig;
+    const { name, amount, currency, percentage, icon } = widgetConfig;
     return (
       <div key={key} className="DateSummaryWidgetContainer">
         <div className="Badge">
@@ -301,6 +305,14 @@ function UserMenu() {
           <span className="InfoTitle">This {name}</span>
           <span className="InfoAmount">
             {amount} {currency}
+          </span>
+          <span
+            className={classMap(
+              { negative: percentage.includes('-') },
+              'InfoPercentage',
+            )}
+          >
+            {percentage}
           </span>
         </div>
       </div>
