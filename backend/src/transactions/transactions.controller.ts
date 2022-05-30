@@ -7,15 +7,21 @@ import {
   Get,
   UseGuards,
   Req,
+  UseInterceptors,
 } from '@nestjs/common';
 
-import { TransactionDocument } from './schemas/transactions.schema';
+import {
+  TransactionDocument,
+  Transaction,
+} from './schemas/transactions.schema';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
 import { EditTransactionDTO } from './dto/edit-transaction.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import MongooseClassSerializerInterceptor from 'src/utils/mongooseClassSerializer.interceptor';
 
 @Controller('transactions')
+@UseInterceptors(MongooseClassSerializerInterceptor(Transaction))
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 

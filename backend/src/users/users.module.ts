@@ -1,3 +1,4 @@
+import { BudgetModule } from './../budget/budget.module';
 import { AccountsModule } from './../accounts/accounts.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -10,6 +11,7 @@ import { User, UserSchema } from './schemas/users.schema';
   imports: [
     forwardRef(() => AuthModule),
     forwardRef(() => AccountsModule),
+    forwardRef(() => BudgetModule),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [UsersController],

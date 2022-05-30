@@ -5,16 +5,36 @@ import { Account } from 'src/accounts/schemas/accounts.schema';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';
 
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 
 @Schema({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
 })
 export class Transaction {
+  @Transform((value) => {
+    if ('value' in value) {
+      // HACK: this is changed because of https://github.com/typestack/class-transformer/issues/879
+      // return value.value.toString(); // because "toString" is also a wrapper for "toHexString"
+      return value.obj[value.key].toString();
+    }
+
+    return 'unknown value';
+  })
+  _id: string;
+
   @Exclude()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   userID: User;
 
+  @Transform((value) => {
+    if ('value' in value) {
+      // HACK: this is changed because of https://github.com/typestack/class-transformer/issues/879
+      // return value.value.toString(); // because "toString" is also a wrapper for "toHexString"
+      return value.obj[value.key].toString();
+    }
+
+    return 'unknown value';
+  })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Account' })
   accountID: Account;
 

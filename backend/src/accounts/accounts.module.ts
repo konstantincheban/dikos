@@ -1,3 +1,5 @@
+import { BudgetModule } from './../budget/budget.module';
+import { Budget, BudgetSchema } from './../budget/schemas/budget.schema';
 import {
   Transaction,
   TransactionSchema,
@@ -13,9 +15,11 @@ import { AuthModule } from 'src/auth/auth.module';
 @Module({
   imports: [
     forwardRef(() => AuthModule),
+    forwardRef(() => BudgetModule),
     MongooseModule.forFeature([
       { name: Account.name, schema: AccountSchema },
       { name: Transaction.name, schema: TransactionSchema },
+      { name: Budget.name, schema: BudgetSchema },
     ]),
   ],
   providers: [AccountsService],

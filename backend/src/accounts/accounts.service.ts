@@ -1,3 +1,4 @@
+import { BudgetService } from './../budget/budget.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -19,6 +20,7 @@ export class AccountsService {
     private readonly accountModel: Model<AccountDocument>,
     @InjectModel(Transaction.name)
     private readonly transactionModel: Model<TransactionDocument>,
+    private readonly budgetService: BudgetService,
   ) {}
 
   get defaultAccountData(): Omit<CreateAccountDTO, 'userID'> {
@@ -28,6 +30,10 @@ export class AccountsService {
       currency: 'UAH',
       type: 'default',
     };
+  }
+
+  calcPercentage(number, fromNumber) {
+    return Math.round((number * 100) / fromNumber);
   }
 
   async createAccount(data: CreateAccountDTO): Promise<AccountDocument> {
@@ -89,7 +95,10 @@ export class AccountsService {
     ];
   }
 
-  async getAccountSummary(accountID: string): Promise<AccountSummaryDTO> {
+  async getAccountSummary(
+    accountID: string,
+    userID: string,
+  ): Promise<AccountSummaryDTO> {
     const income = await this.transactionModel.aggregate([
       {
         $match: {
@@ -116,6 +125,25 @@ export class AccountsService {
       },
       ...this.amountSumAggregationStages,
     ]);
+    const byDay = await this.transactionModel.aggregate([
+      {
+        $match: {
+          $expr: {
+            $and: [
+              {
+                $eq: [
+                  { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
+                  moment().format('YYYY-MM-DD'),
+                ],
+              },
+              { $eq: ['$accountID', { $toObjectId: accountID }] },
+              { $lt: ['$amount', 0] },
+            ],
+          },
+        },
+      },
+      ...this.amountSumAggregationStages,
+    ]);
     const byWeek = await this.transactionModel.aggregate([
       {
         $match: {
@@ -125,6 +153,7 @@ export class AccountsService {
                 $eq: [{ $isoWeek: '$date' }, moment().isoWeek()],
               },
               { $eq: ['$accountID', { $toObjectId: accountID }] },
+              { $lt: ['$amount', 0] },
             ],
           },
         },
@@ -143,37 +172,47 @@ export class AccountsService {
                 ],
               },
               { $eq: ['$accountID', { $toObjectId: accountID }] },
+              { $lt: ['$amount', 0] },
             ],
           },
         },
       },
       ...this.amountSumAggregationStages,
     ]);
-    const byYear = await this.transactionModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $and: [
-              {
-                $eq: [
-                  { $dateToString: { format: '%Y', date: '$date' } },
-                  moment().format('YYYY'),
-                ],
-              },
-              { $eq: ['$accountID', { $toObjectId: accountID }] },
-            ],
-          },
-        },
-      },
-      ...this.amountSumAggregationStages,
-    ]);
+    const incomeValue = income.length ? income[0].value : 0;
+    const outcomeValue = outcome.length ? outcome[0].value : 0;
+    const byDayValue = byDay.length ? byDay[0].value : 0;
+    const byWeekValue = byWeek.length ? byWeek[0].value : 0;
+    const byMonthValue = byMonth.length ? byMonth[0].value : 0;
 
+    // difference Btw Budget And Costs
+    const budgetByUser =
+      await this.budgetService.getUserBudgetForCurrentMonthByUserID(userID);
+    const daysInCurrentMonth = moment().daysInMonth();
     return {
-      income: income.length ? income[0].value : 0,
-      outcome: outcome.length ? outcome[0].value : 0,
-      byWeek: byWeek.length ? byWeek[0].value : 0,
-      byMonth: byMonth.length ? byMonth[0].value : 0,
-      byYear: byYear.length ? byYear[0].value : 0,
+      income: incomeValue,
+      outcome: outcomeValue,
+      byDay: {
+        amount: byDayValue,
+        percentage: `${this.calcPercentage(
+          budgetByUser.perDay + byDayValue,
+          budgetByUser.perDay,
+        )}%`,
+      },
+      byWeek: {
+        amount: byWeekValue,
+        percentage: `${this.calcPercentage(
+          budgetByUser.perDay * 7 + byDayValue,
+          budgetByUser.perDay * 7,
+        )}%`,
+      },
+      byMonth: {
+        amount: byMonthValue,
+        percentage: `${this.calcPercentage(
+          budgetByUser.perDay * daysInCurrentMonth + byDayValue,
+          budgetByUser.perDay * daysInCurrentMonth,
+        )}%`,
+      },
     };
   }
 
