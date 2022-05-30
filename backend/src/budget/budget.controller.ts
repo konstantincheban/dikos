@@ -5,7 +5,6 @@ import {
   UseGuards,
   UseInterceptors,
   Post,
-  Put,
   Param,
   Body,
   Req,
