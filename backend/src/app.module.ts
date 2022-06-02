@@ -9,6 +9,7 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
 import { MetroModule } from './metro/metro.module';
 import { BudgetModule } from './budget/budget.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { BudgetModule } from './budget/budget.module';
     TransactionsModule,
     MetroModule,
     BudgetModule,
+    StatisticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
