@@ -4,7 +4,7 @@ import './Card.scss';
 import { ICardProps } from './Card.types';
 
 function Card(props: React.PropsWithChildren<ICardProps>) {
-  const { className, children, onClick } = props;
+  const { className, children, onClick, titleRenderer } = props;
   return (
     <div
       onClick={onClick}
@@ -13,6 +13,7 @@ function Card(props: React.PropsWithChildren<ICardProps>) {
         'CardContainer',
       )}
     >
+      {titleRenderer ? <div className="CardTitle">{titleRenderer()}</div> : ''}
       {children}
     </div>
   );
