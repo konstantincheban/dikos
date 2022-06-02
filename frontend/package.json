@@ -11,6 +11,7 @@
   "author": "konstantincheban",
   "license": "ISC",
   "dependencies": {
+    "@types/recharts": "^1.8.23",
     "axios": "^0.27.2",
     "formik": "^2.2.9",
     "moment": "^2.29.3",
@@ -19,6 +20,7 @@
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
     "react-toastify": "^9.0.1",
+    "recharts": "^2.1.10",
     "rxjs": "^7.5.5",
     "yup": "^0.32.11"
   },

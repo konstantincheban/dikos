@@ -1,0 +1,14 @@
+@import '@styles/shared.scss';
+
+.StatisticsDataControllerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  height: 40px;
+
+  .DateController,
+  .DateDetailsController {
+    width: 150px;
+  }
+}

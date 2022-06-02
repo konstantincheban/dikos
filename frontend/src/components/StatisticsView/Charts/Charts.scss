@@ -1,0 +1,34 @@
+@import '@styles/shared.scss';
+
+.CustomTooltipContainer {
+  background-color: $secondaryBackgroundColor;
+  border-radius: $borderRadius;
+  color: $textColor;
+  padding: 20px;
+  min-width: 100px;
+  min-height: 50px;
+
+  .CustomTooltipKeyValue {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 5px;
+      background-color: currentColor;
+      margin-right: 5px;
+    }
+
+    .CustomTooltipKey {
+      color: $secondaryTextColor;
+      @include truncate;
+    }
+    .CustomTooltipValue {
+      color: $textColor;
+      @include truncate;
+    }
+  }
+}
