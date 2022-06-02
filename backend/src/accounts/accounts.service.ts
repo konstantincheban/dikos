@@ -1,11 +1,11 @@
-import { BudgetService } from './../budget/budget.service';
+import { BudgetService } from '@budget/budget.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   Transaction,
   TransactionDocument,
-} from 'src/transactions/schemas/transactions.schema';
+} from '@transactions/schemas/transactions.schema';
 import { AccountSummaryDTO } from './dto/account-summary-dto';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';

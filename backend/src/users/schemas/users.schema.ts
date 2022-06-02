@@ -1,4 +1,4 @@
-import { Budget } from './../../budget/schemas/budget.schema';
+import { Budget } from '@budget/schemas/budget.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';

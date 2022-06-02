@@ -1,9 +1,9 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { TransactionsModule } from 'src/transactions/transactions.module';
+import { TransactionsModule } from '@transactions/transactions.module';
 import { MetroController } from './metro.controller';
 import { MetroService } from './metro.service';
-import { AccountsModule } from 'src/accounts/accounts.module';
-import { AuthModule } from 'src/auth/auth.module';
+import { AccountsModule } from '@accounts/accounts.module';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
   imports: [

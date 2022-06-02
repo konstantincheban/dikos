@@ -1,8 +1,8 @@
-import { BudgetModule } from './../budget/budget.module';
-import { AccountsModule } from './../accounts/accounts.module';
+import { BudgetModule } from '@budget/budget.module';
+import { AccountsModule } from '@accounts/accounts.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '@auth/auth.module';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User, UserSchema } from './schemas/users.schema';

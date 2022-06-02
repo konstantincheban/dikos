@@ -1,7 +1,7 @@
-import { User } from './../../users/schemas/users.schema';
+import { User } from '@users/schemas/users.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Account } from 'src/accounts/schemas/accounts.schema';
+import { Account } from '@accounts/schemas/accounts.schema';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';
 

@@ -7,8 +7,8 @@ import { Model } from 'mongoose';
 import {
   TransactionDocument,
   Transaction,
-} from 'src/transactions/schemas/transactions.schema';
-import { BudgetService } from 'src/budget/budget.service';
+} from '@transactions/schemas/transactions.schema';
+import { BudgetService } from '@budget/budget.service';
 import * as moment from 'moment';
 import { BudgetDTO } from './dto/budget-dto';
 

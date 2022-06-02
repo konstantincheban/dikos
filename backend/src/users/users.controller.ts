@@ -9,8 +9,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import MongooseClassSerializerInterceptor from 'src/utils/mongooseClassSerializer.interceptor';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
 import { User } from './schemas/users.schema';
 
 @Controller('users')

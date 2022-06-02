@@ -18,7 +18,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json --verbose"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -74,6 +74,16 @@
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^@accounts/(.*)$": "<rootDir>/accounts/$1",
+      "^@auth/(.*)$": "<rootDir>/auth/$1",
+      "^@budget/(.*)$": "<rootDir>/budget/$1",
+      "^@metro/(.*)$": "<rootDir>/metro/$1",
+      "^@statistics/(.*)$": "<rootDir>/statistics/$1",
+      "^@transactions/(.*)$": "<rootDir>/transactions/$1",
+      "^@users/(.*)$": "<rootDir>/users/$1",
+      "^@utils/(.*)$": "<rootDir>/utils/$1"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
