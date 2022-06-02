@@ -443,7 +443,7 @@ function TransactionsView() {
     <div className="TransactionsViewContainer">
       {loading && <Loader />}
       <div className="TransactionsViewTopSection">
-        <div className="TransactionViewTitle">Transactions</div>
+        <div className="ViewTitle">Transactions</div>
         <div className="TransactionViewImportBlock">
           <div className="TransactionViewImportInfo">
             <span>ImportTransactions</span>

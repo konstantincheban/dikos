@@ -54,7 +54,7 @@ function UserMenu() {
   const dateSummaryConfigDefault: IDateSummaryWidgetConfig[] = [
     {
       ref: 'byDay',
-      name: 'Day',
+      name: 'Daily Outcome',
       amount: 0,
       percentage: '0%',
       currency: 'UAH',
@@ -62,7 +62,7 @@ function UserMenu() {
     },
     {
       ref: 'byWeek',
-      name: 'Week',
+      name: 'Weekly Outcome',
       amount: 0,
       percentage: '0%',
       currency: 'UAH',
@@ -70,7 +70,7 @@ function UserMenu() {
     },
     {
       ref: 'byMonth',
-      name: 'Month',
+      name: 'Monthly Outcome',
       amount: 0,
       percentage: '0%',
       currency: 'UAH',
@@ -302,7 +302,7 @@ function UserMenu() {
           <Icon icon={icon} />
         </div>
         <div className="Info">
-          <span className="InfoTitle">This {name}</span>
+          <span className="InfoTitle">{name}</span>
           <span className="InfoAmount">
             {amount} {currency}
           </span>
