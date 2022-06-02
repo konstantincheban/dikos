@@ -19,12 +19,12 @@ export class MetroController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
   @Post('import')
-  uploadFile(
+  async uploadFile(
     @Body() body: MetroTransactionsFileDTO,
     @UploadedFile() file: Express.Multer.File,
     @Req() req,
   ) {
-    return this.metroService.importTransactions(
+    return await this.metroService.importTransactions(
       req.user.id,
       body.accountID,
       body.aggregationType,
