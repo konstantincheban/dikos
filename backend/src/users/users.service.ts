@@ -16,7 +16,7 @@ export class UsersService {
   ) {}
 
   computeUserData(user: UserDocument): UserDataDTO {
-    const { id, username, email } = user;
+    const { username, email } = user;
     return {
       username,
       email,

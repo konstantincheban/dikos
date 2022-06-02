@@ -56,14 +56,14 @@ export class MetroService {
       amount: 0,
       currency: relatedAccount.currency,
       category: '',
-      date: this.randomDate(new Date(2021, 0, 1), new Date()),
+      date: this.randomDate(new Date(2022, 0, 1), new Date()),
       paymaster: 'Metro',
     };
     // aggregation strategy - productsAsTransactions
     if (aggregationType === 'productsAsTransactions') {
       return metroData.map((metroProduct) => ({
         ...transactionSkeleton,
-        date: this.randomDate(new Date(2021, 0, 1), new Date()),
+        date: this.randomDate(new Date(2022, 0, 1), new Date()),
         name: `${metroProduct['Описание']}`,
         description: `Code of product - ${metroProduct['Код продукта']}`,
         amount: -metroProduct['Общая сумма с НДС'],

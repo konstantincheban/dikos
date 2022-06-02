@@ -18,6 +18,7 @@ function Select(
     value: defaultValue,
     form,
     field,
+    onChange,
   } = props;
   const [value, setValue] = useState(field?.value ?? '');
   const [options, setOptions] = useState<React.ReactElement[]>();
@@ -32,6 +33,8 @@ function Select(
       form.setFieldValue(field.name, value);
       setTimeout(() => form.setFieldTouched(field.name, true, true));
     }
+    onChange && onChange(value);
+
     setCollapsed(true);
     inputRef?.current?.focus();
   };

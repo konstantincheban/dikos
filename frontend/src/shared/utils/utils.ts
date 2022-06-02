@@ -43,6 +43,15 @@ export const setGlobalCSSVariable = (variableName: string, value: string) => {
 export const formatDate = (ICOString: string) =>
   moment(ICOString).format('lll');
 
+export const dateFormatter = (date: string) => {
+  // month formate
+  if (date.split('-').length === 3) return moment(date).format('MMM DD');
+  // year formate
+  if (date.split('-').length === 2) return moment(date).format('MMM');
+
+  return date;
+};
+
 export const textToID = (string: string) => {
   return string.replaceAll(' ', '_').toUpperCase();
 };

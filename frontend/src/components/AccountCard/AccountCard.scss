@@ -1,6 +1,7 @@
 @import '@styles/shared.scss';
 
-.AccountCard {
+.AccountCard.CardContainer {
+  width: 200px;
   position: relative;
   display: grid;
   grid-template-columns: auto 30px;

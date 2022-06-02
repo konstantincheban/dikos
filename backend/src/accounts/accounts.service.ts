@@ -6,7 +6,6 @@ import {
   Transaction,
   TransactionDocument,
 } from 'src/transactions/schemas/transactions.schema';
-import { buildFilterExpressions, buildSortByOrderBy } from 'src/utils/utils';
 import { AccountSummaryDTO } from './dto/account-summary-dto';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';
@@ -33,7 +32,8 @@ export class AccountsService {
   }
 
   calcPercentage(number, fromNumber) {
-    return Math.round((number * 100) / fromNumber);
+    const percentage = Math.round((number * 100) / fromNumber);
+    return isNaN(percentage) || !isFinite(percentage) ? 0 : percentage;
   }
 
   async createAccount(data: CreateAccountDTO): Promise<AccountDocument> {
@@ -99,117 +99,122 @@ export class AccountsService {
     accountID: string,
     userID: string,
   ): Promise<AccountSummaryDTO> {
-    const income = await this.transactionModel.aggregate([
+    const data = await this.transactionModel.aggregate([
       {
         $match: {
           $expr: {
-            $and: [
-              { $gt: ['$amount', 0] },
-              { $eq: ['$accountID', { $toObjectId: accountID }] },
-            ],
+            $and: [{ $eq: ['$accountID', { $toObjectId: accountID }] }],
           },
         },
       },
-      ...this.amountSumAggregationStages,
-    ]);
-    const outcome = await this.transactionModel.aggregate([
       {
-        $match: {
-          $expr: {
-            $and: [
-              { $lt: ['$amount', 0] },
-              { $eq: ['$accountID', { $toObjectId: accountID }] },
-            ],
-          },
-        },
-      },
-      ...this.amountSumAggregationStages,
-    ]);
-    const byDay = await this.transactionModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $and: [
-              {
-                $eq: [
-                  { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
-                  moment().format('YYYY-MM-DD'),
-                ],
+        $group: {
+          _id: '$accountID',
+          income: {
+            $sum: {
+              $cond: {
+                if: { $gt: ['$amount', 0] },
+                then: '$amount',
+                else: 0,
               },
-              { $eq: ['$accountID', { $toObjectId: accountID }] },
-              { $lt: ['$amount', 0] },
-            ],
+            },
           },
-        },
-      },
-      ...this.amountSumAggregationStages,
-    ]);
-    const byWeek = await this.transactionModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $and: [
-              {
-                $eq: [{ $isoWeek: '$date' }, moment().isoWeek()],
+          outcome: {
+            $sum: {
+              $cond: {
+                if: { $lt: ['$amount', 0] },
+                then: '$amount',
+                else: 0,
               },
-              { $eq: ['$accountID', { $toObjectId: accountID }] },
-              { $lt: ['$amount', 0] },
-            ],
+            },
           },
-        },
-      },
-      ...this.amountSumAggregationStages,
-    ]);
-    const byMonth = await this.transactionModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $and: [
-              {
-                $eq: [
-                  { $dateToString: { format: '%Y-%m', date: '$date' } },
-                  moment().format('YYYY-MM'),
-                ],
+          byDay: {
+            $sum: {
+              $cond: {
+                if: {
+                  $and: [
+                    {
+                      $eq: [
+                        {
+                          $dateToString: { format: '%Y-%m-%d', date: '$date' },
+                        },
+                        moment().format('YYYY-MM-DD'),
+                      ],
+                    },
+                    { $lt: ['$amount', 0] },
+                  ],
+                },
+                then: '$amount',
+                else: 0,
               },
-              { $eq: ['$accountID', { $toObjectId: accountID }] },
-              { $lt: ['$amount', 0] },
-            ],
+            },
+          },
+          byWeek: {
+            $sum: {
+              $cond: {
+                if: {
+                  $and: [
+                    {
+                      $eq: [{ $isoWeek: '$date' }, moment().isoWeek()],
+                    },
+                    { $lt: ['$amount', 0] },
+                  ],
+                },
+                then: '$amount',
+                else: 0,
+              },
+            },
+          },
+          byMonth: {
+            $sum: {
+              $cond: {
+                if: {
+                  $and: [
+                    {
+                      $eq: [
+                        { $dateToString: { format: '%Y-%m', date: '$date' } },
+                        moment().format('YYYY-MM'),
+                      ],
+                    },
+                    { $lt: ['$amount', 0] },
+                  ],
+                },
+                then: '$amount',
+                else: 0,
+              },
+            },
           },
         },
       },
-      ...this.amountSumAggregationStages,
     ]);
-    const incomeValue = income.length ? income[0].value : 0;
-    const outcomeValue = outcome.length ? outcome[0].value : 0;
-    const byDayValue = byDay.length ? byDay[0].value : 0;
-    const byWeekValue = byWeek.length ? byWeek[0].value : 0;
-    const byMonthValue = byMonth.length ? byMonth[0].value : 0;
 
-    // difference Btw Budget And Costs
+    const { income, outcome, byDay, byWeek, byMonth } = data[0];
+
     const budgetByUser =
       await this.budgetService.getUserBudgetForCurrentMonthByUserID(userID);
     const daysInCurrentMonth = moment().daysInMonth();
     return {
-      income: incomeValue,
-      outcome: outcomeValue,
+      income,
+      outcome,
       byDay: {
-        amount: byDayValue,
+        amount: byDay,
+        // difference Btw Budget And Costs
         percentage: `${this.calcPercentage(
-          budgetByUser.perDay + byDayValue,
+          budgetByUser.perDay + byDay,
           budgetByUser.perDay,
         )}%`,
       },
       byWeek: {
-        amount: byWeekValue,
+        amount: byWeek,
         percentage: `${this.calcPercentage(
-          budgetByUser.perDay * 7 + byDayValue,
+          budgetByUser.perDay * 7 + byWeek,
           budgetByUser.perDay * 7,
         )}%`,
       },
       byMonth: {
-        amount: byMonthValue,
+        amount: byMonth,
         percentage: `${this.calcPercentage(
-          budgetByUser.perDay * daysInCurrentMonth + byDayValue,
+          budgetByUser.perDay * daysInCurrentMonth + byMonth,
           budgetByUser.perDay * daysInCurrentMonth,
         )}%`,
       },

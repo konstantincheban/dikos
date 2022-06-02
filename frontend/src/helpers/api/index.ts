@@ -7,6 +7,7 @@ export * from './accountsApi';
 export * from './transactionsApi';
 export * from './importApi';
 export * from './userApi';
+export * from './statisticsApi';
 export * from './utils';
 
 const BASE_API_URL = '/api/v1';

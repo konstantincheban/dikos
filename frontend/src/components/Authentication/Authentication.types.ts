@@ -1,8 +1,3 @@
-export interface ISwitcherProps {
-  value: string;
-  onChange: (value: string) => void;
-}
-
 export interface ILoginProps<T> {
   submitAction: (values: T) => void;
 }

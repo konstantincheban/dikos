@@ -1,6 +1,6 @@
-import { capitalize, classMap } from '@utils';
+import { capitalize } from '@utils';
 import { Formik, Form, Field } from 'formik';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   AuthStateEnum,
@@ -8,7 +8,6 @@ import {
   ILoginProps,
   IRegistrationData,
   IRegistrationProps,
-  ISwitcherProps,
 } from './Authentication.types';
 import './Authentication.scss';
 import Input from '@base/Input';
@@ -19,6 +18,7 @@ import { useAuthRepository } from '@repos';
 import FieldErrorMessage from '@base/FieldErrorMessage/FieldErrorMessage';
 import { useStore } from '@store';
 import { useObservableState } from 'observable-hooks';
+import Switcher from '@base/Switcher';
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email('Invalid email').required('Required'),
@@ -146,42 +146,6 @@ const Registration = (props: IRegistrationProps<IRegistrationData>) => {
   );
 };
 
-const Switcher = (props: ISwitcherProps) => {
-  const { value, onChange } = props;
-  const [activeOption, setActiveOption] = useState(value);
-
-  useEffect(() => {
-    if (value !== activeOption) onChange(activeOption);
-  }, [activeOption, value]);
-
-  const handleOptionSelect = (e: React.MouseEvent) => {
-    const selectedValue = e.currentTarget.getAttribute('data-value') ?? value;
-    setActiveOption(selectedValue);
-  };
-
-  return (
-    <div className="Switcher">
-      <div
-        className={classMap({ active: activeOption === 'login' }, 'Option')}
-        data-value="login"
-        onClick={(e) => handleOptionSelect(e)}
-      >
-        <span>Login</span>
-      </div>
-      <div
-        className={classMap(
-          { active: activeOption === 'registration' },
-          'Option',
-        )}
-        data-value="registration"
-        onClick={(e) => handleOptionSelect(e)}
-      >
-        <span>Registration</span>
-      </div>
-    </div>
-  );
-};
-
 function Authentication() {
   const { authState$ } = useStore();
   const authState = useObservableState(authState$);
@@ -230,6 +194,10 @@ function Authentication() {
             <div className="Title">{capitalize(currentAuthMode)}</div>
             <Switcher
               value={currentAuthMode}
+              options={[
+                { value: 'login', label: 'Login' },
+                { value: 'registration', label: 'Registration' },
+              ]}
               onChange={handleAuthModeSwitcher}
             />
             {renderAuthBlock(currentAuthMode)}

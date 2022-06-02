@@ -7,6 +7,7 @@ import { AuthState } from '@observables';
 import TransactionsView from '@components/TransactionsView/TransactionsView';
 import Layout from '@components/Layout/Layout';
 import PageNotFound from '@components/PageNotFound/PageNotFound';
+import StatisticsView from '@components/StatisticsView/StatisticsView';
 
 export const getRouterConfig = (
   authState: IState<AuthState>,
@@ -47,6 +48,10 @@ export const getRouterConfig = (
           {
             path: '/transactions',
             element: <TransactionsView />,
+          },
+          {
+            path: '/statistics',
+            element: <StatisticsView />,
           },
         ],
       },

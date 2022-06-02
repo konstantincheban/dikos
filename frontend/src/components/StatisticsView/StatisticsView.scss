@@ -1,0 +1,35 @@
+@import '@styles/shared.scss';
+
+.StatisticsViewContainer {
+  height: 100%;
+  padding-bottom: 50px;
+
+  .StatisticsChartsContainer {
+    height: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .TopSectionTitle {
+    font-weight: 700;
+    font-size: $mediumFontSize;
+  }
+
+  .PieCharts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    padding-bottom: 50px;
+
+    .ChartCardContainer {
+      flex: 1 1 300px;
+      max-width: 500px;
+
+      .ChartCardTitle {
+        padding-bottom: 10px;
+      }
+    }
+  }
+}

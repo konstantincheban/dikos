@@ -1,0 +1,31 @@
+@import '@styles/shared.scss';
+
+.SwitcherContainer {
+  display: flex;
+  border-radius: $borderRadius;
+  background-color: $secondaryBackgroundColor;
+
+  & .SwitcherOption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    width: 100%;
+    height: 40px;
+    @include transition;
+    &:first-of-type {
+      border-top-left-radius: $borderRadius;
+      border-bottom-left-radius: $borderRadius;
+    }
+    &:last-of-type {
+      border-top-right-radius: $borderRadius;
+      border-bottom-right-radius: $borderRadius;
+    }
+    &:hover {
+      cursor: pointer;
+    }
+    &.active {
+      background-color: $purpleAccentColor;
+    }
+  }
+}
