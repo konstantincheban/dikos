@@ -37,6 +37,11 @@ export class BudgetService {
     return budgets.find((item) => item.date === currentDate);
   }
 
+  // date - '2022-01'
+  getBudgetPerDayForMonth(budgets, date: string) {
+    return budgets.find((budget) => budget.date === date)?.perDay ?? 0;
+  }
+
   async createUserBudget(data: BudgetPerMonthDTO, userID: string) {
     return await new this.budgetModel({
       userID,
@@ -85,11 +90,36 @@ export class BudgetService {
     }
   }
 
+  async addBudgetPerMonth(budgetID: string) {
+    try {
+      const updateBudgets = await this.budgetModel.findById(budgetID);
+      updateBudgets.budgetsPerMonth.push(this.defaultUserBudget);
+      const updated = await this.budgetModel.findByIdAndUpdate(
+        budgetID,
+        {
+          ...updateBudgets,
+        },
+        { new: true },
+      );
+      return this.getBudgetPerMonthByCurrentDate(updated.budgetsPerMonth);
+    } catch (err) {
+      throw new BadRequestException('Something went wrong. Please try again');
+    }
+  }
+
   async getUserBudgetByCurrentMonth(
     budgetID: string,
   ): Promise<BudgetPerMonthDTO> {
     const budgetEntry = await this.budgetModel.findById(budgetID);
-    return this.getBudgetPerMonthByCurrentDate(budgetEntry.budgetsPerMonth);
+    let budgetForCurrentMonth = await this.getBudgetPerMonthByCurrentDate(
+      budgetEntry.budgetsPerMonth,
+    );
+    // generate budgetPerMonth for new month
+    if (!budgetForCurrentMonth) {
+      budgetForCurrentMonth = await this.addBudgetPerMonth(budgetID);
+    }
+
+    return await budgetForCurrentMonth;
   }
 
   async getUserBudgetForCurrentMonthByUserID(
@@ -97,5 +127,10 @@ export class BudgetService {
   ): Promise<BudgetPerMonthDTO> {
     const budgetEntry = await this.budgetModel.findOne({ userID });
     return this.getBudgetPerMonthByCurrentDate(budgetEntry.budgetsPerMonth);
+  }
+
+  async getUserBudgetsByUserID(userID: string): Promise<BudgetPerMonthDTO[]> {
+    const budgetEntry = await this.budgetModel.findOne({ userID });
+    return budgetEntry.budgetsPerMonth;
   }
 }
