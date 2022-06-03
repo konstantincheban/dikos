@@ -16,10 +16,10 @@ jobs:
       - name: Build UI
         working-directory: ./frontend
         run: |
-          npm i
-          npm build
-       - name: Build API
+          npm ci
+          npm run build
+      - name: Build API
         working-directory: ./backend
         run: |
-          npm i
-          npm build
+          npm ci
+          npm run build
