@@ -10,6 +10,7 @@ on:
 jobs:
   build_deploy_ui:
     runs-on: ubuntu-latest
+    environment: production_ui
     steps:
       # Check-out your repository.
       - name: Checkout
@@ -53,6 +54,7 @@ jobs:
 
   build_deploy_api:
     runs-on: ubuntu-latest
+    environment: production_api
     steps:
       # Check-out your repository.
       - name: Checkout
