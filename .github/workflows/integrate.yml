@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: 16.13
       - run: cd frontend
-      - run: npm ci
+      - run: npm i
       - run: npm run build
   backend_build:
     runs-on: ubuntu-latest
@@ -24,5 +24,5 @@ jobs:
         with:
           node-version: 16.13
       - run: cd backend
-      - run: npm ci
+      - run: npm i
       - run: npm run build
