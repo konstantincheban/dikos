@@ -1,0 +1,25 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches: [ master ]
+
+
+jobs:
+  test_pull_request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16.13
+      - name: Build UI
+        working-directory: ./frontend
+        run: |
+          npm i
+          npm build
+       - name: Build API
+        working-directory: ./backend
+        run: |
+          npm i
+          npm build
