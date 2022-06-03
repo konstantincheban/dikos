@@ -6,23 +6,20 @@ on:
 
 
 jobs:
-  ui_build:
+  test_pull_request:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 16.13
-      - run: cd frontend
-      - run: npm i
-      - run: npm run build
-  backend_build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 16.13
-      - run: cd backend
-      - run: npm i
-      - run: npm run build
+      - name: Build UI
+        working-directory: ./frontend
+        run: |
+          npm i
+          npm build
+       - name: Build API
+        working-directory: ./backend
+        run: |
+          npm i
+          npm build
