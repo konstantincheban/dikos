@@ -1,4 +1,4 @@
-import { ISelectOptionControlProps } from '@base/FormBuilder';
+import { SelectOptionControlProps } from '@base/FormBuilder';
 import {
   CreateTransactionRequest,
   EditTransactionRequest,
@@ -10,7 +10,7 @@ export type TransactionFormData =
 
 export interface ITransactionFormProps {
   type: 'create' | 'edit';
-  availableAccounts?: ISelectOptionControlProps[];
+  availableAccounts?: SelectOptionControlProps[];
   data: TransactionFormData;
   onSubmitForm: (values: TransactionFormData) => void;
   validateForm: (valid: boolean) => void;
