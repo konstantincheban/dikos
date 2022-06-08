@@ -1,11 +1,11 @@
 import Card from '@base/Card';
 import { useStatisticsRepository } from '@repos';
-import { TopShopsData } from '@shared/interfaces';
+import { TopShopsStatisticsData } from '@shared/interfaces';
 import { useEffect, useState } from 'react';
 import PieChart from '../Charts/PieChart';
 
 function Shop() {
-  const [chartData, setChartData] = useState<TopShopsData[]>();
+  const [chartData, setChartData] = useState<TopShopsStatisticsData[]>();
 
   const { getTopShopsStatisticsData } = useStatisticsRepository();
 
@@ -27,7 +27,11 @@ function Shop() {
       titleRenderer={titleRenderer}
     >
       <div className="ShopContentContainer">
-        {chartData ? <PieChart<TopShopsData> chartData={chartData} /> : ''}
+        {chartData ? (
+          <PieChart<TopShopsStatisticsData> chartData={chartData} />
+        ) : (
+          ''
+        )}
       </div>
     </Card>
   );

@@ -25,5 +25,6 @@ export type EditTransactionRequest = Omit<
 export type ImportTransactions = {
   accountID: string;
   aggregationType: 'productsAsTransactions' | 'checkAsTransaction';
+  date: string;
   file: File;
 };

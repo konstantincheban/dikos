@@ -163,6 +163,7 @@ function TransactionsView() {
     const formData = new FormData();
     formData.append('accountID', values.accountID);
     formData.append('aggregationType', values.aggregationType);
+    formData.append('date', values.date);
     formData.append('file', values.file);
 
     toast.promise(

@@ -1,4 +1,4 @@
-import { IncomeOutcomeData } from '@shared/interfaces';
+import { IncomeOutcomeStatisticsData } from '@shared/interfaces';
 import { dateFormatter } from '@shared/utils';
 import {
   LineChart,
@@ -34,7 +34,9 @@ const CustomTooltip = (props: any) => {
   return null;
 };
 
-const IncomeOutcomeLineChart = (props: IChartProps<IncomeOutcomeData>) => {
+const IncomeOutcomeLineChart = (
+  props: IChartProps<IncomeOutcomeStatisticsData>,
+) => {
   const { chartData } = props;
   return (
     <ResponsiveContainer width="100%" height={300}>

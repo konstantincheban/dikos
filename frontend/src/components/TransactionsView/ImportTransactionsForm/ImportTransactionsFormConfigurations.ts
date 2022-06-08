@@ -64,6 +64,12 @@ export const controls: ControlProps[] = [
     ],
   },
   {
+    controlType: 'datepicker',
+    name: 'date',
+    description: 'Select the date of purchase',
+    label: 'Date',
+  },
+  {
     controlType: 'file',
     dragDropMode: true,
     type: 'file',
@@ -79,5 +85,6 @@ export const controls: ControlProps[] = [
 export const defaultData: ImportTransactionsFormData = {
   accountID: '',
   aggregationType: 'productsAsTransactions',
+  date: new Date().toISOString(),
   file: new File([new Blob()], 'text.txt'),
 };

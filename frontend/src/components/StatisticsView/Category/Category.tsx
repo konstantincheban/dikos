@@ -1,11 +1,11 @@
 import Card from '@base/Card';
 import { useStatisticsRepository } from '@repos';
-import { TopCategoriesData } from '@shared/interfaces';
+import { TopCategoriesStatisticsData } from '@shared/interfaces';
 import { useEffect, useState } from 'react';
 import PieChart from '../Charts/PieChart';
 
 function Category() {
-  const [chartData, setChartData] = useState<TopCategoriesData[]>();
+  const [chartData, setChartData] = useState<TopCategoriesStatisticsData[]>();
   const { getTopCategoriesStatisticsData } = useStatisticsRepository();
 
   useEffect(() => {
@@ -26,7 +26,11 @@ function Category() {
       titleRenderer={titleRenderer}
     >
       <div className="CategoryContentContainer">
-        {chartData ? <PieChart<TopCategoriesData> chartData={chartData} /> : ''}
+        {chartData ? (
+          <PieChart<TopCategoriesStatisticsData> chartData={chartData} />
+        ) : (
+          ''
+        )}
       </div>
     </Card>
   );
