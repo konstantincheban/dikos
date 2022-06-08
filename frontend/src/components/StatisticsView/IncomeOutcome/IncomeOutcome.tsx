@@ -1,6 +1,6 @@
 import Switcher from '@base/Switcher';
 import { useStatisticsRepository } from '@repos';
-import { IncomeOutcomeData } from '@shared/interfaces';
+import { IncomeOutcomeStatisticsData } from '@shared/interfaces';
 import { useEffect, useState } from 'react';
 import IncomeOutcomeBarChart from '../Charts/IncomeOutcomeBarChart';
 import IncomeOutcomeLineChart from '../Charts/IncomeOutcomeLineChart';
@@ -21,7 +21,7 @@ const VIEW_MODE_OPTIONS = [
 ];
 
 function IncomeOutcome() {
-  const [chartData, setChartData] = useState<IncomeOutcomeData[]>();
+  const [chartData, setChartData] = useState<IncomeOutcomeStatisticsData[]>();
   const { getIncomeOutcomeStatisticsData } = useStatisticsRepository();
   const [dataConfig, setDataConfig] =
     useState<StatisticsDataControllerConfig>();

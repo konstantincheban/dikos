@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { BudgetData } from '@shared/interfaces';
+import { BudgetStatisticsData } from '@shared/interfaces';
 import { dateFormatter } from '@shared/utils';
 import { useState } from 'react';
 import {
@@ -84,7 +84,7 @@ const CustomTooltip = (props: any) => {
   return null;
 };
 
-const BudgetBarChart = (props: IChartProps<BudgetData>) => {
+const BudgetBarChart = (props: IChartProps<BudgetStatisticsData>) => {
   const { chartData } = props;
   const [focusBar, setFocusBar] = useState('');
 
