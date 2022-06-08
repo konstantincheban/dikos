@@ -25,26 +25,33 @@ type CommonProperties = {
 };
 
 type PossibleControls =
-  | IInputControlProps
-  | IInputFileControlProps
-  | ISelectControlProps;
+  | InputControlProps
+  | InputFileControlProps
+  | SelectControlProps
+  | DatePickerControlProps;
 
-export type IInputControlProps = IInputProps & {
+export type InputControlProps = IInputProps & {
   controlType: 'input';
 };
 
-export type IInputFileControlProps = FileUploaderProps & {
+export type InputFileControlProps = FileUploaderProps & {
   controlType: 'file';
 };
 
-export type ISelectControlProps = Omit<
+export type SelectControlProps = Omit<
   ISelectProps,
   'className' | 'onChange'
 > & {
   controlType: 'select';
-  options: ISelectOptionControlProps[];
+  options: SelectOptionControlProps[];
 };
-export type ISelectOptionControlProps = Pick<IOptionProps, 'value' | 'label'>;
+export type SelectOptionControlProps = Pick<IOptionProps, 'value' | 'label'>;
+
+export type DatePickerControlProps = {
+  controlType: 'datepicker';
+  placeholder?: string;
+  initialDate?: Date;
+};
 
 // Reference types
 export type FormBuilderRef = {

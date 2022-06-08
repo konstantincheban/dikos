@@ -1,0 +1,67 @@
+@import '@styles/shared.scss';
+
+.DatePickerContainer {
+  & .calendarContainerClassName {
+    border: none;
+    background-color: $secondaryBackgroundColor;
+    @include boxShadow;
+
+    & .react-datepicker__navigation {
+      padding-top: 10px;
+      color: $textColor;
+
+      & .react-datepicker__navigation-icon::before {
+        border-color: $textColor;
+      }
+    }
+
+    & .react-datepicker__time-container {
+      border: none;
+      @include boxShadow;
+
+      & .react-datepicker__header--time {
+        background: $backgroundColor;
+      }
+
+      & .react-datepicker__time {
+        background-color: $secondaryBackgroundColor;
+
+        & .react-datepicker__time-list {
+          & .react-datepicker__time-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: $textColor;
+            @include transition(background-color);
+
+            &:hover {
+              background-color: $lightPurpleColor;
+            }
+          }
+        }
+      }
+    }
+
+    & .react-datepicker__header {
+      border: none;
+      @include gradient;
+
+      & * {
+        color: $textColor;
+      }
+    }
+
+    & .calendarDayClassName {
+      color: $textColor;
+      @include transition(background-color);
+
+      &.react-datepicker__day--selected {
+        background-color: $blueAccentColor;
+      }
+
+      &:hover {
+        background-color: $lightPurpleColor;
+      }
+    }
+  }
+}

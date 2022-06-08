@@ -1,10 +1,10 @@
 import { ImportTransactions } from '@interfaces';
-import { ISelectOptionControlProps } from '@base/FormBuilder';
+import { SelectOptionControlProps } from '@base/FormBuilder';
 
 export type ImportTransactionsFormData = ImportTransactions;
 
 export interface IImportTransactionsFormProps {
-  availableAccounts?: ISelectOptionControlProps[];
+  availableAccounts?: SelectOptionControlProps[];
   onSubmitForm: (values: ImportTransactionsFormData) => void;
   validateForm: (valid: boolean) => void;
 }

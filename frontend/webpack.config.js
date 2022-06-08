@@ -53,9 +53,8 @@ module.exports = (env, argv) => {
   config.mode = argv.mode;
   if (argv.mode === 'development') {
     config.devtool = 'inline-source-map';
-    config.plugins.push(new webpack.HotModuleReplacementPlugin());
     config.devServer = {
-      static: path.join(__dirname, './public'),
+      static: path.join(__dirname, './src'),
       historyApiFallback: true,
       port: 3000,
       proxy: {

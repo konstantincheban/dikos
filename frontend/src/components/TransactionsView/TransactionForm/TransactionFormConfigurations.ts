@@ -81,7 +81,7 @@ export const controls: ControlProps[] = [
     label: 'Category',
   },
   {
-    controlType: 'input',
+    controlType: 'datepicker',
     name: 'date',
     label: 'Date',
   },
