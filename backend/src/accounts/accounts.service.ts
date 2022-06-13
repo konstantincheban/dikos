@@ -188,7 +188,13 @@ export class AccountsService {
       },
     ]);
 
-    const { income, outcome, byDay, byWeek, byMonth } = data[0];
+    const { income, outcome, byDay, byWeek, byMonth } = data[0] ?? {
+      income: 0,
+      outcome: 0,
+      byDay: 0,
+      byWeek: 0,
+      byMonth: 0,
+    };
 
     const budgetByUser =
       await this.budgetService.getUserBudgetForCurrentMonthByUserID(userID);
