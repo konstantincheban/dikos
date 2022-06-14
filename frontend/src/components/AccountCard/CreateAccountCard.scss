@@ -11,6 +11,7 @@
   background-color: rgba($secondaryBackgroundColor, 0.3);
   backdrop-filter: blur(4px);
   border: 3px dashed $disabledColor;
+  @include transition(color);
 
   &:hover {
     color: $textColor;

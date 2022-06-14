@@ -16,7 +16,7 @@
 
   & .IconContainer {
     color: $secondaryTextColor;
-    @include transition;
+    @include transition(color);
     &:hover,
     &:focus {
       cursor: pointer;

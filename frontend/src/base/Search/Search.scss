@@ -20,7 +20,7 @@
     outline: none;
     height: 100%;
     color: $textColor;
-    @include transition;
+    @include transition(width);
 
     &::placeholder {
       color: $secondaryTextColor;
