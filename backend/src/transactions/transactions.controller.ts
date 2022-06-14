@@ -17,8 +17,8 @@ import {
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
 import { EditTransactionDTO } from './dto/edit-transaction.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import MongooseClassSerializerInterceptor from 'src/utils/mongooseClassSerializer.interceptor';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
 
 @Controller('transactions')
 @UseInterceptors(MongooseClassSerializerInterceptor(Transaction))

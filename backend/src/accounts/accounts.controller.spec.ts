@@ -1,4 +1,4 @@
-describe('StatisticsService', () => {
+describe('AccountsController', () => {
   it('should be defined', () => {
     expect('').toEqual('');
   });

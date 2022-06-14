@@ -1,11 +1,11 @@
-import { AccountDocument } from './../accounts/schemas/accounts.schema';
+import { AccountDocument } from '@accounts/schemas/accounts.schema';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { AccountsService } from 'src/accounts/accounts.service';
-import { TransactionsService } from 'src/transactions/transactions.service';
+import { AccountsService } from '@accounts/accounts.service';
+import { TransactionsService } from '@transactions/transactions.service';
 import { ImportedStatusDTO } from './dto/metro-import-status.dto';
 import * as XLSX from 'xlsx';
 import { MetroProductDTO } from './dto/metro-product.dto';
-import { CreateTransactionDTO } from 'src/transactions/dto/create-transaction.dto';
+import { CreateTransactionDTO } from '@transactions/dto/create-transaction.dto';
 
 interface AggregationConfig {
   userID: string;

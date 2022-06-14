@@ -1,8 +1,8 @@
-import { BudgetService } from './../budget/budget.service';
+import { BudgetService } from '@budget/budget.service';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { AccountsService } from 'src/accounts/accounts.service';
+import { AccountsService } from '@accounts/accounts.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserDataDTO } from './dto/userData.dto';
 import { User, UserDocument } from './schemas/users.schema';

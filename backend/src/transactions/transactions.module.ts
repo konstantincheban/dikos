@@ -3,8 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Transaction, TransactionSchema } from './schemas/transactions.schema';
 import { TransactionsService } from './transactions.service';
 import { TransactionsController } from './transactions.controller';
-import { AuthModule } from 'src/auth/auth.module';
-import { AccountsModule } from 'src/accounts/accounts.module';
+import { AuthModule } from '@auth/auth.module';
+import { AccountsModule } from '@accounts/accounts.module';
 
 @Module({
   imports: [

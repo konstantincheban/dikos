@@ -1,9 +1,19 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
+  "rootDir": "../",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@accounts/(.*)$": "<rootDir>/src/accounts/$1",
+    "^@auth/(.*)$": "<rootDir>/src/auth/$1",
+    "^@budget/(.*)$": "<rootDir>/src/budget/$1",
+    "^@metro/(.*)$": "<rootDir>/src/metro/$1",
+    "^@statistics/(.*)$": "<rootDir>/src/statistics/$1",
+    "^@transactions/(.*)$": "<rootDir>/src/transactions/$1",
+    "^@users/(.*)$": "<rootDir>/src/users/$1",
+    "^@utils/(.*)$": "<rootDir>/src/utils/$1"
   }
 }

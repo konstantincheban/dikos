@@ -1,8 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { AccountsService } from 'src/accounts/accounts.service';
-import { buildFilterExpressions, buildSortByOrderBy } from 'src/utils/utils';
+import { AccountsService } from '@accounts/accounts.service';
+import { buildFilterExpressions, buildSortByOrderBy } from '@utils/utils';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
 import { EditTransactionDTO } from './dto/edit-transaction.dto';
 import {

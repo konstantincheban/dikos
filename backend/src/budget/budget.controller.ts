@@ -9,8 +9,8 @@ import {
   Body,
   Req,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import MongooseClassSerializerInterceptor from 'src/utils/mongooseClassSerializer.interceptor';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
 import { BudgetService } from './budget.service';
 import { Budget } from './schemas/budget.schema';
 import { EditBudgetDTO } from './dto/edit-budget-dto';

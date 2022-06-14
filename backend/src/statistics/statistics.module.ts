@@ -1,13 +1,13 @@
 import {
   Transaction,
   TransactionSchema,
-} from './../transactions/schemas/transactions.schema';
-import { BudgetModule } from './../budget/budget.module';
+} from '@transactions/schemas/transactions.schema';
+import { BudgetModule } from '@budget/budget.module';
 import { StatisticsController } from './statistics.controller';
 import { StatisticsService } from './statistics.service';
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
   imports: [
