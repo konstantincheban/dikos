@@ -1,17 +1,16 @@
+const HtmlWebPackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
+const CompressionPlugin = require('compression-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-// const Dotenv = require('dotenv-webpack');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-module.exports = {
-  entry: path.resolve(__dirname, 'src', 'index.tsx'),
+let config = {
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
     publicPath: '/',
+    filename: 'bundle.js',
   },
-  mode: 'development',
   module: {
     rules: [
       {
@@ -40,31 +39,63 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
     plugins: [new TsconfigPathsPlugin()],
+
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, './src/index.html'),
+    new HtmlWebPackPlugin({
+      template: './public/index.html',
+      favicon: './public/favicon.ico',
     }),
-    // new Dotenv({
-    //   path: `./.${process.env.NODE_ENV}.env`, // load this now instead of the ones in '.env'
-    //   safe: true, // load '.env.example' to verify the '.env' variables are all set. Can also be a string to a different file.
-    //   allowEmptyValues: true, // allow empty variables (e.g. `FOO=`) (treat it as empty string, rather than missing)
-    //   systemvars: false, // load all the predefined 'process.env' variables which will trump anything local per dotenv specs.
-    //   silent: true, // hide any errors
-    //   defaults: false, // load '.env.defaults' as the default values if empty.
-    // }),
-    new CleanWebpackPlugin(),
   ],
-  devtool: 'source-map',
-  devServer: {
-    static: path.join(__dirname, './src'),
-    historyApiFallback: true,
-    port: 3000,
-    proxy: {
-      '/api/v1/*': `http://localhost:${process.env.PORT ?? 5000}/`,
-    },
-    hot: 'only',
-    compress: true,
-    open: true,
-  },
+};
+
+module.exports = (env, argv) => {
+  config.mode = argv.mode;
+  if (argv.mode === 'development') {
+    config.devtool = 'inline-source-map';
+    config.devServer = {
+      static: path.join(__dirname, './src'),
+      historyApiFallback: true,
+      port: 3000,
+      proxy: {
+        '/api/v1/*': `http://localhost:5000/`,
+      },
+      hot: 'only',
+      compress: true,
+      open: true,
+    };
+  }
+
+  if (argv.mode === 'production') {
+    config.entry = ['./src'];
+    config.devtool = 'source-map';
+    config.output.filename = '[name].[chunkhash].bundle.js';
+    config.output.chunkFilename = '[name].[chunkhash].bundle.js';
+    config.optimization = {
+      moduleIds: 'deterministic',
+      runtimeChunk: {
+        name: 'manifest',
+      },
+    };
+    config.plugins.push(
+      new BundleAnalyzerPlugin({
+        analyzerMode: 'static',
+      }),
+      new CompressionPlugin({
+        test: /(\.ts|\.tsx)(\?.*)?$/i,
+        filename: "[path][query]",
+        algorithm: "gzip",
+        deleteOriginalAssets: false,
+      }),
+    );
+    config.performance = {
+      hints: 'warning',
+      // Calculates sizes of gziped bundles.
+      assetFilter: function (assetFilename) {
+        return assetFilename.endsWith('.js.gz');
+      },
+    };
+  }
+
+  return config;
 };

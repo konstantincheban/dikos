@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { IncomeOutcomeData } from '@shared/interfaces';
+import { IncomeOutcomeStatisticsData } from '@shared/interfaces';
 import { dateFormatter } from '@shared/utils';
 import { useState } from 'react';
 import {
@@ -84,7 +84,9 @@ const CustomTooltip = (props: any) => {
   return null;
 };
 
-const IncomeOutcomeBarChart = (props: IChartProps<IncomeOutcomeData>) => {
+const IncomeOutcomeBarChart = (
+  props: IChartProps<IncomeOutcomeStatisticsData>,
+) => {
   const { chartData } = props;
   const [focusBar, setFocusBar] = useState('');
 

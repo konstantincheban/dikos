@@ -1,24 +1,9 @@
-FROM node:16.13 AS development
-
-# Create an application directory
-RUN mkdir -p /frontend
-
-# The /app directory should act as the main application directory
-WORKDIR /frontend
-
-# Copy the app package and package-lock.json file
-COPY frontend/package*.json ./
-
-# Install node packages
+FROM node:16-alpine
+WORKDIR /app
+COPY package*.json ./
 RUN npm install
-
-# Copy or project directory (locally) in the current directory of our docker image (/app)
-COPY frontend/ .
-
+COPY . .
 # Build the app
-RUN npm run build
-
+RUN npm run build:prod
 EXPOSE 3000
-
-# Start the app
-CMD [ "npm", "start" ]
+CMD [ "node", "server.ts" ]

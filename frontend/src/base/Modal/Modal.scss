@@ -106,7 +106,7 @@
     border: none;
     font-size: 40px;
     color: $secondaryTextColor;
-    @include transition;
+    @include transition(color);
 
     &:hover,
     &:focus {

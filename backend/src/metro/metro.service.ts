@@ -11,6 +11,7 @@ interface AggregationConfig {
   userID: string;
   relatedAccount: AccountDocument;
   aggregationType: string;
+  date: string;
 }
 
 @Injectable()
@@ -47,7 +48,7 @@ export class MetroService {
   }
 
   aggregateData(metroData: MetroProductDTO[], config: AggregationConfig) {
-    const { userID, relatedAccount, aggregationType } = config;
+    const { userID, relatedAccount, aggregationType, date } = config;
     const transactionSkeleton = {
       userID,
       accountID: relatedAccount._id,
@@ -56,14 +57,14 @@ export class MetroService {
       amount: 0,
       currency: relatedAccount.currency,
       category: '',
-      date: this.randomDate(new Date(2022, 0, 1), new Date()),
+      date: date,
       paymaster: 'Metro',
     };
     // aggregation strategy - productsAsTransactions
     if (aggregationType === 'productsAsTransactions') {
       return metroData.map((metroProduct) => ({
         ...transactionSkeleton,
-        date: this.randomDate(new Date(2022, 0, 1), new Date()),
+        date: date,
         name: `${metroProduct['Описание']}`,
         description: `Code of product - ${metroProduct['Код продукта']}`,
         amount: -metroProduct['Общая сумма с НДС'],
@@ -99,6 +100,7 @@ export class MetroService {
     userID: string,
     accountId: string,
     aggregationType: string,
+    date: string,
     file: Express.Multer.File,
   ): Promise<ImportedStatusDTO> {
     const relatedAccount = await this.accountsService.getAccountById(accountId);
@@ -113,6 +115,7 @@ export class MetroService {
       userID,
       relatedAccount,
       aggregationType,
+      date,
     });
     const statuses = await this.migrateImportedTransactions(dikosTransactions);
     return {

@@ -1,32 +1,37 @@
-FROM node:16.13 AS development
-
-WORKDIR /usr/src/app
-
+# Base image
+FROM node:16-alpine As development
+# Create app directory
+WORKDIR /app
+# Copy application dependency manifests to the container image.
+# A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
+# Copying this first prevents re-running npm install on every code change.
 COPY package*.json ./
-
+# Install app dependencies
 RUN npm install glob rimraf
-
-RUN npm install --only=development
-
+RUN npm install
+# Bundle app source
 COPY . .
-
+# Creates a "dist" folder with the production build
 RUN npm run build
 
-FROM node:16.13 as production
-
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-
-WORKDIR /usr/src/app
-
+# Base image for production
+FROM node:16-alpine As production
+# Set NODE_ENV environment variable
+ENV NODE_ENV production
+# Create app directory
+WORKDIR /app
+# Copy application dependency manifests to the container image.
+# A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
+# Copying this first prevents re-running npm install on every code change.
 COPY package*.json ./
-
-RUN npm install --only=production
-
+# Install production dependencies.
+# If you have a package-lock.json, speedier builds with 'npm ci', otherwise use 'npm install --only=production'
+RUN npm ci --only=production
+# Bundle app source
 COPY . .
-
-COPY --from=development /usr/src/app/dist ./dist
-
+# Copy the bundled code
+COPY --from=development /app/dist ./dist
+# Start the server using the production build
 EXPOSE ${PORT}
+CMD [ "node", "dist/main.js" ]
 
-CMD ["node", "dist/main"]

@@ -28,6 +28,7 @@ export class MetroController {
       req.user.id,
       body.accountID,
       body.aggregationType,
+      body.date,
       file,
     );
   }

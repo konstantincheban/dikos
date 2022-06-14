@@ -4,8 +4,8 @@ import Input from '@base/Input';
 import {
   ControlProps,
   IFormBuilderProps,
-  ISelectControlProps,
-  ISelectOptionControlProps,
+  SelectControlProps,
+  SelectOptionControlProps,
 } from './FormBuilder.types';
 import './FormBuilder.scss';
 import { Select, Option } from '@base/Select';
@@ -14,6 +14,7 @@ import { createRef, forwardRef, useImperativeHandle } from 'react';
 import { InfoIcon } from '@base/Icon/IconSet';
 import Icon from '@base/Icon';
 import Tooltip from '@base/Tooltip';
+import DatePicker from '@base/DatePicker';
 
 function FormBuilder<FormData>(
   props: IFormBuilderProps<FormData>,
@@ -41,10 +42,10 @@ function FormBuilder<FormData>(
     options,
     controlType,
     ...control
-  }: ISelectControlProps) => {
+  }: SelectControlProps) => {
     return (
       <Field as="select" component={Select} {...control}>
-        {options.map((option: ISelectOptionControlProps, key: number) => (
+        {options.map((option: SelectOptionControlProps, key: number) => (
           <Option key={`${option.label}_${key}`} {...option}></Option>
         ))}
       </Field>
@@ -54,10 +55,19 @@ function FormBuilder<FormData>(
     return <Field as="file" component={FileUploader} {...control} />;
   };
 
+  const renderDatePickerControl = ({
+    controlType,
+    ...control
+  }: ControlProps) => {
+    return <Field as="datepicker" component={DatePicker} {...control} />;
+  };
+
   const renderControlByType = (control: ControlProps) => {
     if (control.controlType === 'input') return renderInputControl(control);
     if (control.controlType === 'select') return renderSelectControl(control);
     if (control.controlType === 'file') return renderFileControl(control);
+    if (control.controlType === 'datepicker')
+      return renderDatePickerControl(control);
   };
 
   const renderSection = (control: ControlProps, key: number, errors: any) => {

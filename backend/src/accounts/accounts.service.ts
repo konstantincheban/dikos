@@ -11,6 +11,7 @@ import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';
 import { Account, AccountDocument } from './schemas/accounts.schema';
 import * as moment from 'moment';
+import { ROUND_VALUE } from 'src/utils/constants';
 
 @Injectable()
 export class AccountsService {
@@ -87,7 +88,7 @@ export class AccountsService {
                   in: { $add: ['$$value', '$$this'] },
                 },
               },
-              1,
+              ROUND_VALUE,
             ],
           },
         },
@@ -186,9 +187,35 @@ export class AccountsService {
           },
         },
       },
+      {
+        $project: {
+          _id: 0,
+          income: {
+            $round: ['$income', ROUND_VALUE],
+          },
+          outcome: {
+            $round: ['$outcome', ROUND_VALUE],
+          },
+          byDay: {
+            $round: ['$byDay', ROUND_VALUE],
+          },
+          byWeek: {
+            $round: ['$byWeek', ROUND_VALUE],
+          },
+          byMonth: {
+            $round: ['$byMonth', ROUND_VALUE],
+          },
+        },
+      },
     ]);
 
-    const { income, outcome, byDay, byWeek, byMonth } = data[0];
+    const { income, outcome, byDay, byWeek, byMonth } = data[0] ?? {
+      income: 0,
+      outcome: 0,
+      byDay: 0,
+      byWeek: 0,
+      byMonth: 0,
+    };
 
     const budgetByUser =
       await this.budgetService.getUserBudgetForCurrentMonthByUserID(userID);

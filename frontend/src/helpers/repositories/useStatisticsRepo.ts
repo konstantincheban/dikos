@@ -1,9 +1,15 @@
-import { TopCategoriesData, TopShopsData } from '@interfaces';
+import {
+  TopCategoriesStatisticsData,
+  TopShopsStatisticsData,
+} from '@interfaces';
 import { setErrorToState } from './utils';
 import { useStatisticsObservable } from '../observables';
 import { useStatisticsApi } from '@api';
 import { AxiosResponse } from 'axios';
-import { BudgetData, IncomeOutcomeData } from '@shared/interfaces';
+import {
+  BudgetStatisticsData,
+  IncomeOutcomeStatisticsData,
+} from '@shared/interfaces';
 
 export const useStatisticsRepository = () => {
   const statisticsApi = useStatisticsApi();
@@ -13,7 +19,7 @@ export const useStatisticsRepository = () => {
     statisticsObservable.setLoadingState(true);
     return await statisticsApi
       .getIncomeOutcomeStatisticsData(parameters)
-      .then(({ data }: AxiosResponse<IncomeOutcomeData[]>) => {
+      .then(({ data }: AxiosResponse<IncomeOutcomeStatisticsData[]>) => {
         statisticsObservable.setLoadingState(false);
         return data;
       })
@@ -24,7 +30,7 @@ export const useStatisticsRepository = () => {
     statisticsObservable.setLoadingState(true);
     return await statisticsApi
       .getBudgetStatisticsData(parameters)
-      .then(({ data }: AxiosResponse<BudgetData[]>) => {
+      .then(({ data }: AxiosResponse<BudgetStatisticsData[]>) => {
         statisticsObservable.setLoadingState(false);
         return data;
       })
@@ -35,7 +41,7 @@ export const useStatisticsRepository = () => {
     statisticsObservable.setLoadingState(true);
     return await statisticsApi
       .getTopCategoriesStatisticsData()
-      .then(({ data }: AxiosResponse<TopCategoriesData[]>) => {
+      .then(({ data }: AxiosResponse<TopCategoriesStatisticsData[]>) => {
         statisticsObservable.setLoadingState(false);
         return data;
       })
@@ -46,7 +52,7 @@ export const useStatisticsRepository = () => {
     statisticsObservable.setLoadingState(true);
     return await statisticsApi
       .getTopShopsStatisticsData()
-      .then(({ data }: AxiosResponse<TopShopsData[]>) => {
+      .then(({ data }: AxiosResponse<TopShopsStatisticsData[]>) => {
         statisticsObservable.setLoadingState(false);
         return data;
       })

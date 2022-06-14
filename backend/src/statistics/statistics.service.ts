@@ -1,3 +1,4 @@
+import { ROUND_VALUE } from './../utils/constants';
 import { TopShopDTO } from './dto/top-shops-dto';
 import { TopCategoriesDTO } from './dto/top-categories-dto';
 import { IncomeOutcomeDTO } from './dto/income-outcome-dto';
@@ -83,9 +84,11 @@ export class StatisticsService {
         $project: {
           _id: 0,
           name: '$_id',
-          income: 1,
+          income: {
+            $round: ['$income', ROUND_VALUE],
+          },
           outcome: {
-            $abs: '$outcome',
+            $round: [{ $abs: '$outcome' }, ROUND_VALUE],
           },
         },
       },
@@ -137,9 +140,11 @@ export class StatisticsService {
         $project: {
           _id: 0,
           name: '$_id',
-          income: 1,
+          income: {
+            $round: ['$income', ROUND_VALUE],
+          },
           outcome: {
-            $abs: '$outcome',
+            $round: [{ $abs: '$outcome' }, ROUND_VALUE],
           },
         },
       },
@@ -182,7 +187,7 @@ export class StatisticsService {
           _id: 0,
           name: '$_id',
           outcome: {
-            $abs: '$outcome',
+            $round: [{ $abs: '$outcome' }, ROUND_VALUE],
           },
         },
       },
@@ -248,7 +253,7 @@ export class StatisticsService {
           _id: 0,
           name: '$_id',
           outcome: {
-            $abs: '$outcome',
+            $round: [{ $abs: '$outcome' }, ROUND_VALUE],
           },
         },
       },
