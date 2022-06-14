@@ -1,4 +1,4 @@
-import { ROUND_VALUE } from './../utils/constants';
+import { ROUND_VALUE } from '@utils/constants';
 import { TopShopDTO } from './dto/top-shops-dto';
 import { TopCategoriesDTO } from './dto/top-categories-dto';
 import { IncomeOutcomeDTO } from './dto/income-outcome-dto';
