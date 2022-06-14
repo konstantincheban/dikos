@@ -30,7 +30,10 @@ const IN_ONE_MONTH_OPTIONS = moment.months().map((monthName) => ({
 
 function StatisticsDataController(props: IStatisticsDataControllerProps) {
   const defaultByDateOption = BY_DATE_OPTIONS[0].value;
-  const defaultByDateDetailOption = IN_ONE_MONTH_OPTIONS[0].value;
+  // use current month by default
+  const defaultByDateDetailOption =
+    IN_ONE_MONTH_OPTIONS.find((month) => month.value === moment().format('MM'))
+      ?.value ?? IN_ONE_MONTH_OPTIONS[0].value;
 
   const [byDateOption, setByDateOption] = useState(defaultByDateOption);
   const [byDateDetailOption, setByDateDetailOption] = useState(

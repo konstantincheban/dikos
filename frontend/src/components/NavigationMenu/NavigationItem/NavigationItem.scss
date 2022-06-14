@@ -12,7 +12,7 @@ $padding: calc(($columnSize - $defaultIconContainerSize) / 2);
   color: $textColor;
   background-color: $secondaryBackgroundColor;
   width: calc($defaultIconContainerSize + $padding);
-  @include transition;
+  @include transitionMultiple(background-color, color, width);
 
   &.active::before {
     content: '';

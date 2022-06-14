@@ -1,12 +1,15 @@
 @import '@styles/shared.scss';
 
 .UserMenuContainer {
-  padding: 40px;
+  padding: 40px 40px 20px 40px;
   display: grid;
-  grid-template-rows: 40px 250px auto 50px;
+  grid-template-rows: 40px 250px auto 80px;
   overflow: hidden;
   position: relative;
-  @include transition;
+  // based on the top/bottom paddings
+  height: calc(100vh - 60px);
+  @include transition(width);
+  @include boxShadow;
 
   // collapsed right shadow
   &:after {
@@ -104,7 +107,6 @@
     .AccountCard,
     .CreationCart {
       position: absolute;
-      @include transition;
 
       &:hover {
         cursor: pointer;

@@ -7,7 +7,7 @@ $activeBackgroundColor: lighten(
 .OptionContainer {
   padding: 10px 25px;
   flex: 1;
-  @include transition;
+  @include transition(background-color);
 
   &.active {
     background: $activeBackgroundColor;

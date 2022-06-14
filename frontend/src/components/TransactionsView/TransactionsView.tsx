@@ -54,7 +54,7 @@ function TransactionsView() {
   } = useObservableState(transactionsState$);
   const { accounts } = useObservableState(accountsState$);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
-  const [undoEntries, setUndoEntries] = useState<string[]>([]);
+  const [removingEntries, setRemovingEntries] = useState<string[]>([]);
 
   const [filters, setFilters] = useState<ITagItem[]>([]);
   const [filterValue, setFilterValue] = useState('');
@@ -274,18 +274,21 @@ function TransactionsView() {
   };
 
   const handleDeleteTransactionAction = (transactionId: string) => {
-    const updatedEntries = [...undoEntries, transactionId];
-    setUndoEntries(updatedEntries);
+    let updatedEntries = [...removingEntries, transactionId];
+    setRemovingEntries(updatedEntries);
     toast(
       <Undo
-        onUndo={() =>
-          setUndoEntries(undoEntries.filter((item) => item !== transactionId))
-        }
+        onUndo={() => {
+          updatedEntries = updatedEntries.filter(
+            (item) => item !== transactionId,
+          );
+          setRemovingEntries(updatedEntries);
+        }}
       />,
       {
         // hook will be called when the component unmount
         onClose: () => {
-          if (undoEntries.find((item) => item === transactionId))
+          if (updatedEntries.find((item) => item === transactionId))
             handleDeleteTransaction(transactionId);
         },
         hideProgressBar: false,
@@ -331,7 +334,7 @@ function TransactionsView() {
         key={`${name}_${amount}_${key}`}
         className={classMap(
           {
-            removing: !!undoEntries.find((item) => item === _id),
+            removing: !!removingEntries.find((item) => item === _id),
           },
           'TransactionItem',
         )}

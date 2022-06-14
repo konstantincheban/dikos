@@ -13,7 +13,7 @@
     border: none;
     border-radius: $borderRadius;
     outline: transparent;
-    @include transition;
+    @include transitionMultiple(background-color, color);
 
     &[disabled] {
       background-color: darken($color: $blueAccentColor, $amount: 30);

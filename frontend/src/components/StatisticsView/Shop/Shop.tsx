@@ -3,6 +3,7 @@ import { useStatisticsRepository } from '@repos';
 import { TopShopsStatisticsData } from '@shared/interfaces';
 import { useEffect, useState } from 'react';
 import PieChart from '../Charts/PieChart';
+import '../Charts/Charts.scss';
 
 function Shop() {
   const [chartData, setChartData] = useState<TopShopsStatisticsData[]>();
@@ -27,10 +28,10 @@ function Shop() {
       titleRenderer={titleRenderer}
     >
       <div className="ShopContentContainer">
-        {chartData ? (
+        {chartData?.length ? (
           <PieChart<TopShopsStatisticsData> chartData={chartData} />
         ) : (
-          ''
+          <div className="ChartNoData">No data</div>
         )}
       </div>
     </Card>
