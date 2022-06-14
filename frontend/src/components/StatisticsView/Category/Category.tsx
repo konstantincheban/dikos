@@ -3,6 +3,7 @@ import { useStatisticsRepository } from '@repos';
 import { TopCategoriesStatisticsData } from '@shared/interfaces';
 import { useEffect, useState } from 'react';
 import PieChart from '../Charts/PieChart';
+import '../Charts/Charts.scss';
 
 function Category() {
   const [chartData, setChartData] = useState<TopCategoriesStatisticsData[]>();
@@ -26,10 +27,10 @@ function Category() {
       titleRenderer={titleRenderer}
     >
       <div className="CategoryContentContainer">
-        {chartData ? (
+        {chartData?.length ? (
           <PieChart<TopCategoriesStatisticsData> chartData={chartData} />
         ) : (
-          ''
+          <div className="ChartNoData">No data</div>
         )}
       </div>
     </Card>
