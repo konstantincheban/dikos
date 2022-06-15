@@ -1,6 +1,4 @@
-import { textToID } from '@shared/utils';
-import { toast } from 'react-toastify';
-import { createSubject, IState } from './utils';
+import { createSubject, useObservableBaseActions } from './utils';
 import { BudgetData } from '@shared/interfaces';
 
 export interface UserState {
@@ -13,41 +11,19 @@ const initialState = {
     plannedCosts: 0,
     perDay: 0,
   },
-  loading: false,
-  error: '',
 };
 
-const userSubject$ = createSubject<IState<UserState>>(initialState);
+const userSubject$ = createSubject<UserState>(initialState);
 
 export const useUsersObservable = () => {
+  const actions = useObservableBaseActions<UserState, UserState>(userSubject$);
+
   const updateBudgetData = (data: BudgetData) => {
-    setNextState({ budgetData: data, error: '' });
-  };
-
-  const setError = (message: string) => {
-    toast.error(message, {
-      toastId: textToID(message),
-    });
-    setNextState({ error: message, loading: false });
-  };
-
-  const setLoadingState = (state: boolean) => {
-    setNextState({ loading: state });
-  };
-
-  const setNextState = (payload: Partial<IState<UserState>>) => {
-    const state = userSubject$.getValue();
-    userSubject$.next({ ...state, ...payload });
-  };
-
-  const getObservable = () => {
-    return userSubject$;
+    actions.setNextState({ budgetData: data, error: '' });
   };
 
   return {
-    setError,
+    ...actions,
     updateBudgetData,
-    setLoadingState,
-    getObservable,
   };
 };

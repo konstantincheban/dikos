@@ -1,7 +1,5 @@
 import { UserData } from '@interfaces';
-import { textToID } from '@utils';
-import { toast } from 'react-toastify';
-import { createSubject, IState } from './utils';
+import { createSubject, IState, useObservableBaseActions } from './utils';
 
 export interface AuthState {
   username: string;
@@ -10,56 +8,34 @@ export interface AuthState {
   budgetID: string;
 }
 
+type Payload = Omit<AuthState, 'budgetID'>;
+
 const initialState = {
   username: '',
   email: '',
   budgetID: '',
   token: localStorage.getItem('token') ?? '',
-  loading: false,
-  error: '',
 };
 
-const authSubject$ = createSubject<IState<AuthState>>(initialState);
+const authSubject$ = createSubject<AuthState>(initialState);
 
 export const useAuthObservable = () => {
+  const actions = useObservableBaseActions<AuthState, Payload>(authSubject$);
+
   const updateUserData = (userData: UserData) => {
-    setNextState({ ...userData, error: '' });
+    actions.setNextState({ ...userData, error: '' });
   };
 
   const updateToken = (token: string) => {
     if (token) localStorage.setItem('token', token);
     else localStorage.removeItem('token');
 
-    setNextState({ token });
-  };
-
-  const setError = (message: string) => {
-    toast.error(message, {
-      toastId: textToID(message),
-    });
-    setNextState({ error: message });
-  };
-
-  const setLoadingState = (state: boolean) => {
-    setNextState({ loading: state });
-  };
-
-  const setNextState = (
-    payload: Partial<IState<Omit<AuthState, 'budgetID'>>>,
-  ) => {
-    const state = authSubject$.getValue();
-    authSubject$.next({ ...state, ...payload });
-  };
-
-  const getObservable = () => {
-    return authSubject$;
+    actions.setNextState({ token });
   };
 
   return {
+    ...actions,
     updateUserData,
     updateToken,
-    setError,
-    setLoadingState,
-    getObservable,
   };
 };
