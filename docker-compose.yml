@@ -1,55 +1,55 @@
-# version: '3.8'
+version: '3.8'
 
-# services:
-#     dev_api:
-#         container_name: nestjs_api_dev
-#         image: nestjs-api-dev:1.0.0
-#         build:
-#             context: .
-#             target: development
-#             dockerfile: ./backend/Dockerfile
-#         command: npm run start:debug
-#         ports:
-#             - ${PORT}:${PORT}
-#             - 9229:9229
-#         networks:
-#             - nesjs-network
-#         volumes:
-#             - .:/usr/src/app
-#             - /usr/src/app/node_modules
-#         restart: unless-stopped
-#     prod_api:
-#         container_name: nestjs_api_prod
-#         image: nestjs-api-prod:1.0.0
-#         build:
-#             context: .
-#             target: production
-#             dockerfile: ./backend/Dockerfile
-#         command: npm run start:prod
-#         ports:
-#             - ${PORT}:${PORT}
-#             - 9229:9229
-#         networks:
-#             - nesjs-network
-#         volumes:
-#             - .:/usr/src/app
-#             - /usr/src/app/node_modules
-#         restart: unless-stopped
-#     frontend:
-#         container_name: react_front_app
-#         image: react_front_app:1.0.0
-#         build:
-#             context: .
-#             target: development
-#             dockerfile: ./frontent/Dockerfile
-#         command: npm run start
-#         ports:
-#             - 3000:3000
-#             - 9229:9229
-#         volumes:
-#             - .:/usr/src/frontend
-#             - /usr/src/frontend/node_modules
-#         restart: unless-stopped
-
-# networks:
-#     nesjs-network:
+services:
+  dev_api:
+    container_name: dikos_api_dev
+    image: dikos-api-dev:1.0.0
+    env_file:
+      - ./backend/.dev.env
+    build:
+      context: ./backend
+      target: development
+      dockerfile: Dockerfile
+    command: npm run start:debug
+    ports:
+      - 5000:5000
+      - 9229:9229
+    restart: unless-stopped
+  prod_api:
+    container_name: nestjs_api_prod
+    image: nestjs-api-prod:1.0.0
+    env_file:
+      - ./backend/.prod.env
+    build:
+      context: ./backend
+      target: production
+      dockerfile: Dockerfile
+    command: npm run start:prod
+    ports:
+      - 5000:5000
+      - 9229:9229
+    restart: unless-stopped
+  dev_ui:
+    container_name: dikos_ui_dev
+    image: dikos_ui_dev:1.0.0
+    environment:
+      - API_URL=http://dev_api:5000/
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    command: npm run start
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+  prod_ui:
+    container_name: dikos_ui_prod
+    image: dikos_ui_prod:1.0.0
+    environment:
+      - API_URL=http://prod_api:5000/
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    command: npm run start
+    ports:
+      - 3000:3000
+    restart: unless-stopped

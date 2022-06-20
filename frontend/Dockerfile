@@ -1,7 +1,7 @@
-FROM node:16-alpine
-WORKDIR /app
+FROM node:16.13
+WORKDIR /frontend
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 # Build the app
 RUN npm run build:prod
