@@ -1,77 +1,76 @@
 import { toast } from 'react-toastify';
-import { AccountSummaryData } from './../../shared/interfaces/Accounts';
-import { AxiosResponse } from 'axios';
-import { setErrorToState } from './utils';
-import { useAccountsObservable } from '../observables';
-import { useAccountsApi } from '@api';
 import {
+  AccountSummaryData,
   CreateAccountRequest,
   EditAccountRequest,
   IAccount,
-} from '@shared/interfaces';
+} from '@interfaces';
+import { AxiosResponse } from 'axios';
+import { setErrorToState, repoWrapper } from './utils';
+import { useAccountsObservable } from '@observables';
+import { useAccountsApi } from '@api';
 
 export const useAccountsRepository = () => {
   const accountsApi = useAccountsApi();
   const accountsObservable = useAccountsObservable();
 
-  const createAccount = async (data: CreateAccountRequest) => {
-    accountsObservable.setLoadingState(true);
-    await accountsApi
-      .createAccount<CreateAccountRequest>(data)
-      .then(() => {
-        toast.success(`Account ${data.name} was created successfully`);
-        getAccounts();
-      })
-      .catch((err) => setErrorToState(err, accountsObservable));
-
-    accountsObservable.setLoadingState(false);
+  const createAccount = (data: CreateAccountRequest) => {
+    return repoWrapper(accountsObservable, () =>
+      accountsApi
+        .createAccount<CreateAccountRequest>(data)
+        .then(() => {
+          toast.success(`Account ${data.name} was created successfully`);
+          accountsObservable.setUpToDateState(false);
+        })
+        .catch((err) => setErrorToState(err, accountsObservable)),
+    );
   };
 
-  const editAccount = async (data: EditAccountRequest, accountId: string) => {
-    accountsObservable.setLoadingState(true);
-    await accountsApi
-      .editAccount<EditAccountRequest>(data, accountId)
-      .then(() => {
-        toast.success(`Account ${data.name} was edited successfully`);
-        getAccounts();
-      })
-      .catch((err) => setErrorToState(err, accountsObservable));
-    accountsObservable.setLoadingState(false);
+  const editAccount = (data: EditAccountRequest, accountId: string) => {
+    return repoWrapper(accountsObservable, () =>
+      accountsApi
+        .editAccount<EditAccountRequest>(data, accountId)
+        .then(() => {
+          toast.success(`Account ${data.name} was edited successfully`);
+          accountsObservable.setUpToDateState(false);
+        })
+        .catch((err) => setErrorToState(err, accountsObservable)),
+    );
   };
 
-  const deleteAccount = async (accountId: string) => {
-    accountsObservable.setLoadingState(true);
-    await accountsApi
-      .deleteAccount(accountId)
-      .then(() => {
-        toast.success(`Account was deleted successfully`);
-        getAccounts();
-      })
-      .catch((err) => setErrorToState(err, accountsObservable));
-    accountsObservable.setLoadingState(false);
+  const deleteAccount = (accountId: string) => {
+    return repoWrapper(accountsObservable, () =>
+      accountsApi
+        .deleteAccount(accountId)
+        .then(() => {
+          toast.success(`Account was deleted successfully`);
+          accountsObservable.setUpToDateState(false);
+        })
+        .catch((err) => setErrorToState(err, accountsObservable)),
+    );
   };
 
-  const getAccounts = async () => {
-    accountsObservable.setLoadingState(true);
-    await accountsApi
-      .getAccounts()
-      .then(({ data }: AxiosResponse<IAccount[]>) => {
-        accountsObservable.updateAccountData(data);
-      })
-      .catch((err) => setErrorToState(err, accountsObservable));
-
-    accountsObservable.setLoadingState(false);
+  const getAccounts = () => {
+    return repoWrapper(accountsObservable, () =>
+      accountsApi
+        .getAccounts()
+        .then(({ data }: AxiosResponse<IAccount[]>) => {
+          accountsObservable.updateAccountData(data);
+          accountsObservable.setUpToDateState(true);
+        })
+        .catch((err) => setErrorToState(err, accountsObservable)),
+    );
   };
 
-  const getAccountSummary = async (accountId: string) => {
-    accountsObservable.setLoadingState(true);
-    return await accountsApi
-      .getAccountSummary(accountId)
-      .then(({ data }: AxiosResponse<AccountSummaryData>) => {
-        accountsObservable.setLoadingState(false);
-        return data;
-      })
-      .catch((err) => setErrorToState(err, accountsObservable));
+  const getAccountSummary = (accountId: string) => {
+    return repoWrapper(accountsObservable, () =>
+      accountsApi
+        .getAccountSummary(accountId)
+        .then(({ data }: AxiosResponse<AccountSummaryData>) => {
+          return data;
+        })
+        .catch((err) => setErrorToState(err, accountsObservable)),
+    );
   };
 
   const getAccountsObservable = () => accountsObservable.getObservable();

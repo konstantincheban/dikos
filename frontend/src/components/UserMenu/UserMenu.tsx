@@ -30,6 +30,7 @@ import {
   AccountSummaryData,
   CreateAccountRequest,
   CreateTransactionRequest,
+  IAccount,
 } from '@shared/interfaces';
 import { AccountFormData } from '@components/AccountsView/AccountForm/AccountForm.types';
 import AccountForm from '@components/AccountsView/AccountForm/AccountForm';
@@ -79,9 +80,9 @@ function UserMenu() {
   ];
 
   const { authState$, accountsState$, transactionsState$ } = useStore();
-  const { accounts, error: accountsErrors } =
+  const { accounts, isUpToDate, error: accountsErrors } =
     useObservableState(accountsState$);
-  const { createAccount, getAccountSummary } = useAccountsRepository();
+  const { createAccount, getAccounts, getAccountSummary } = useAccountsRepository();
   const { error: transactionErrors } = useObservableState(transactionsState$);
   const { createTransaction } = useTransactionsRepository();
   const { username } = useObservableState(authState$);
@@ -100,7 +101,13 @@ function UserMenu() {
   const accountModalRef = createRef<any>();
 
   useEffect(() => {
-    setAccounts([
+    if (!isUpToDate) getAccounts();
+  }, [isUpToDate])
+
+  useEffect(() => {
+   if (accounts.length) {
+    let currentAcc = currentAccount;
+    let accountsList = [
       ...accounts.slice(0, 3),
       {
         _id: '12345',
@@ -112,21 +119,35 @@ function UserMenu() {
         created_at: new Date(),
         updated_at: new Date(),
       },
-    ]);
-    if (accounts?.length) {
-      getAccountSummary(accounts[0]._id).then(
-        (data) => data && setSummaryDataToConfig(data),
-      );
+    ];
+    // set initial current account
+    if (!currentAcc) {
+      currentAcc = accountsList[0];
+      setCurrentAccount(currentAcc);
     }
+    // persist current account
+    const currentAccountIndex = accountsList.findIndex(item => item._id === currentAcc?._id);
+    if (currentAccountIndex) {
+      accountsList = immutableMove(accountsList, currentAccountIndex, 0);
+    }
+    setAccounts(accountsList);
+    if (accountsList?.length) {
+      setSummaryData(accountsList[0]);
+    }
+   }
   }, [accounts]);
 
   useEffect(() => {
+    setSummaryData(currentAccount);
+  }, [currentAccount]);
+
+  const setSummaryData = (currentAccount: IAccount) => {
     if (currentAccount && currentAccount.type !== 'create') {
       getAccountSummary(currentAccount._id).then(
         (data) => data && setSummaryDataToConfig(data),
       );
     }
-  }, [currentAccount]);
+  }
 
   const setSummaryDataToConfig = (data: AccountSummaryData) => {
     const updatedSummaryConfig = summaryConfig.map((configItem) => ({
