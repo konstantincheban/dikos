@@ -1,5 +1,6 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
@@ -39,7 +40,6 @@ let config = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
     plugins: [new TsconfigPathsPlugin()],
-
   },
   plugins: [
     new HtmlWebPackPlugin({
@@ -58,7 +58,7 @@ module.exports = (env, argv) => {
       historyApiFallback: true,
       port: 3000,
       proxy: {
-        '/api/v1/*': `http://localhost:5000/`,
+        '/api/v1/*': process.env.API_URL || 'http://localhost:5000/',
       },
       hot: 'only',
       compress: true,
@@ -83,8 +83,8 @@ module.exports = (env, argv) => {
       }),
       new CompressionPlugin({
         test: /(\.ts|\.tsx)(\?.*)?$/i,
-        filename: "[path][query]",
-        algorithm: "gzip",
+        filename: '[path][query]',
+        algorithm: 'gzip',
         deleteOriginalAssets: false,
       }),
     );

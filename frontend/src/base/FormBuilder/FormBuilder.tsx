@@ -15,6 +15,7 @@ import { InfoIcon } from '@base/Icon/IconSet';
 import Icon from '@base/Icon';
 import Tooltip from '@base/Tooltip';
 import DatePicker from '@base/DatePicker';
+import Switcher from '@base/Switcher';
 
 function FormBuilder<FormData>(
   props: IFormBuilderProps<FormData>,
@@ -51,6 +52,9 @@ function FormBuilder<FormData>(
       </Field>
     );
   };
+  const renderSwitcherControl = ({ controlType, ...control }: ControlProps) => {
+    return <Field as="switcher" component={Switcher} {...control} />;
+  };
   const renderFileControl = ({ controlType, ...control }: ControlProps) => {
     return <Field as="file" component={FileUploader} {...control} />;
   };
@@ -65,6 +69,7 @@ function FormBuilder<FormData>(
   const renderControlByType = (control: ControlProps) => {
     if (control.controlType === 'input') return renderInputControl(control);
     if (control.controlType === 'select') return renderSelectControl(control);
+    if (control.controlType === 'switcher') return renderSwitcherControl(control);
     if (control.controlType === 'file') return renderFileControl(control);
     if (control.controlType === 'datepicker')
       return renderDatePickerControl(control);

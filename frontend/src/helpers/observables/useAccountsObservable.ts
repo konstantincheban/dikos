@@ -1,52 +1,37 @@
 import { IAccount } from '@interfaces';
-import { textToID } from '@shared/utils';
-import { toast } from 'react-toastify';
-import { createSubject, IState } from './utils';
+import { useObservableBaseActions, createSubject } from './utils';
 
 export interface AccountsState {
   accounts: IAccount[];
+  isUpToDate: boolean;
 }
 
 const initialState = {
   accounts: [],
-  loading: false,
-  error: '',
+  isUpToDate: false
 };
 
-const accountsSubject$ = createSubject<IState<AccountsState>>(initialState);
+const accountsSubject$ = createSubject<AccountsState>(initialState);
 
 export const useAccountsObservable = () => {
+  const actions = useObservableBaseActions<AccountsState, AccountsState>(
+    accountsSubject$,
+  );
+
   const updateAccountData = (accountsData: IAccount[]) => {
-    setNextState({
+    actions.setNextState({
       accounts: [...accountsData],
       error: '',
     });
   };
 
-  const setError = (message: string) => {
-    toast.error(message, {
-      toastId: textToID(message),
-    });
-    setNextState({ error: message });
-  };
-
-  const setLoadingState = (state: boolean) => {
-    setNextState({ loading: state });
-  };
-
-  const setNextState = (payload: Partial<IState<AccountsState>>) => {
-    const state = accountsSubject$.getValue();
-    accountsSubject$.next({ ...state, ...payload });
-  };
-
-  const getObservable = () => {
-    return accountsSubject$;
+  const setUpToDateState = (state: boolean) => {
+    actions.setNextState({ isUpToDate: state });
   };
 
   return {
+    ...actions,
     updateAccountData,
-    setError,
-    setLoadingState,
-    getObservable,
+    setUpToDateState
   };
 };

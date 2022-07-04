@@ -1,6 +1,4 @@
-import { textToID } from '@shared/utils';
-import { toast } from 'react-toastify';
-import { createSubject, IState } from './utils';
+import { createSubject, useObservableBaseActions } from './utils';
 
 export type TransactionsState = {
   isUpToDate: boolean;
@@ -8,42 +6,22 @@ export type TransactionsState = {
 
 const initialState = {
   isUpToDate: false,
-  loading: false,
-  error: '',
 };
 
-const transactionsSubject$ =
-  createSubject<IState<TransactionsState>>(initialState);
+const transactionsSubject$ = createSubject<TransactionsState>(initialState);
 
 export const useTransactionsObservable = () => {
+  const actions = useObservableBaseActions<
+    TransactionsState,
+    TransactionsState
+  >(transactionsSubject$);
+
   const setUpToDateState = (state: boolean) => {
-    setNextState({ isUpToDate: state });
-  };
-
-  const setError = (message: string) => {
-    toast.error(message, {
-      toastId: textToID(message),
-    });
-    setNextState({ error: message, loading: false });
-  };
-
-  const setLoadingState = (state: boolean) => {
-    setNextState({ loading: state });
-  };
-
-  const setNextState = (payload: Partial<IState<TransactionsState>>) => {
-    const state = transactionsSubject$.getValue();
-    transactionsSubject$.next({ ...state, ...payload });
-  };
-
-  const getObservable = () => {
-    return transactionsSubject$;
+    actions.setNextState({ isUpToDate: state });
   };
 
   return {
-    setError,
-    setLoadingState,
+    ...actions,
     setUpToDateState,
-    getObservable,
   };
 };
