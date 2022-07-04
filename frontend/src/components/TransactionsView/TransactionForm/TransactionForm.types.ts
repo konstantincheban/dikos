@@ -8,6 +8,10 @@ export type TransactionFormData =
   | CreateTransactionRequest
   | EditTransactionRequest;
 
+export type TransactionRawFormData<T> = T & {
+  transactionType: 'income' | 'outcome';
+}
+
 export interface ITransactionFormProps {
   type: 'create' | 'edit';
   availableAccounts?: SelectOptionControlProps[];

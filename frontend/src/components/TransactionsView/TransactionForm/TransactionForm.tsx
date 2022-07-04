@@ -11,12 +11,10 @@ import {
 import { createRef, forwardRef, useImperativeHandle } from 'react';
 import {
   controls,
-  defaultData,
   editFields,
   TransactionCreateSchema,
   TransactionEditSchema,
 } from './TransactionFormConfigurations';
-import { EditTransactionRequest } from '@shared/interfaces';
 
 const TransactionForm = forwardRef(function TransactionForm(
   props: ITransactionFormProps,
@@ -32,14 +30,17 @@ const TransactionForm = forwardRef(function TransactionForm(
 
   const getFormProps = (): [TransactionFormData, ControlProps[], unknown] => {
     if (type === 'edit') {
-      const editFormControls = controls.filter((control) =>
-        editFields.includes(control.name),
-      );
-      const defaultFormData: any = {};
-      editFields.forEach((fieldName) => {
-        defaultFormData[fieldName as keyof EditTransactionRequest] =
-          defaultData[fieldName as keyof EditTransactionRequest];
-      });
+      // process controls
+      const editFormControls = controls.reduce((acc, control) => {
+        if (editFields.includes(control.name)) acc.push(control);
+        if (control.name === 'transactionType' && control.controlType === 'switcher') {
+          control.value = data.amount < 0 ? 'outcome' : 'income';
+          data.amount = Math.abs(data.amount);
+        }
+
+        return acc;
+      }, [] as ControlProps[]);
+
       return [data, editFormControls, TransactionEditSchema];
     }
     const processedControls = controls.map((control) => {

@@ -23,7 +23,7 @@ import { useObservableState } from 'observable-hooks';
 import CreateAccountCard from '@components/AccountCard/CreateAccountCard';
 import { useModalAPI } from 'src/helpers/modalAPI/modalAPI';
 import TransactionForm from '@components/TransactionsView/TransactionForm/TransactionForm';
-import { ITransactionFormProps } from '@components/TransactionsView/TransactionForm/TransactionForm.types';
+import { ITransactionFormProps, TransactionRawFormData } from '@components/TransactionsView/TransactionForm/TransactionForm.types';
 import { useAccountsRepository, useTransactionsRepository } from '@repos';
 import { defaultData } from '@components/TransactionsView/TransactionForm/TransactionFormConfigurations';
 import {
@@ -174,8 +174,11 @@ function UserMenu() {
     // console.log('HANDLE SEARCH', value);
   };
 
-  const handleCreateTransaction = (values: CreateTransactionRequest) => {
-    createTransaction(values).then(() => {
+  const handleCreateTransaction = (values: TransactionRawFormData<CreateTransactionRequest>) => {
+    const { transactionType, ...data } = values;
+    if (transactionType === 'outcome') data.amount = -data.amount;
+
+    createTransaction(data).then(() => {
       if (!transactionErrors) modalRef.current?.close();
     });
   };
@@ -219,7 +222,7 @@ function UserMenu() {
           availableAccounts={accountOptions}
           data={defaultFormData}
           onSubmitForm={(values) =>
-            handleCreateTransaction(values as CreateTransactionRequest)
+            handleCreateTransaction(values as TransactionRawFormData<CreateTransactionRequest>)
           }
           validateForm={(validState: boolean) =>
             handleValidateModalForm(validState, 'createTransaction')

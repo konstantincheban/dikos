@@ -47,11 +47,22 @@ export const controls: ControlProps[] = [
     label: 'Description',
   },
   {
+    controlType: 'switcher',
+    name: 'transactionType',
+    label: 'Transaction Type',
+    value: 'income',
+    options: [
+      { value: 'income', label: 'Income' },
+      { value: 'outcome', label: 'Outcome' }
+    ]
+  },
+  {
     controlType: 'input',
     type: 'number',
     name: 'amount',
     label: 'Amount',
     required: true,
+    min: 0
   },
   {
     controlType: 'select',
@@ -96,6 +107,7 @@ export const controls: ControlProps[] = [
 export const editFields = [
   'name',
   'description',
+  'transactionType',
   'amount',
   'category',
   'date',
@@ -105,6 +117,7 @@ export const defaultData = {
   accountID: '',
   name: '',
   description: '',
+  transactionType: 'income',
   amount: 0,
   currency: 'UAH',
   category: '',

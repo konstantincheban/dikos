@@ -19,6 +19,7 @@ import {
   UNDO_DELAY,
 } from '@shared/constants';
 import {
+  EditTransactionRequest,
   IModalFormRef,
   ImportTransactions,
   ITransaction,
@@ -33,7 +34,7 @@ import { useModalAPI } from 'src/helpers/modalAPI/modalAPI';
 import ImportTransactionsForm from './ImportTransactionsForm/ImportTransactionsForm';
 import { IImportTransactionsFormProps } from './ImportTransactionsForm/ImportTransactionsForm.types';
 import TransactionForm from './TransactionForm/TransactionForm';
-import { TransactionFormData } from './TransactionForm/TransactionForm.types';
+import { TransactionRawFormData } from './TransactionForm/TransactionForm.types';
 import { columnsConfig, filterConfig } from './TransactionsViewConfig';
 import { useLocation } from 'react-router-dom';
 import { usePrevious } from '@hooks';
@@ -179,10 +180,13 @@ function TransactionsView() {
   };
 
   const handleEditTransaction = (
-    values: TransactionFormData,
+    values: TransactionRawFormData<EditTransactionRequest>,
     transactionId: string,
   ) => {
-    editTransaction(values, transactionId).then(() => {
+    const { transactionType, ...data } = values;
+    if (transactionType === 'outcome') data.amount = -data.amount;
+
+    editTransaction(data, transactionId).then(() => {
       if (!transactionErrors) modalRef.current?.close();
     });
   };
@@ -255,7 +259,7 @@ function TransactionsView() {
           type="edit"
           data={transactionData}
           onSubmitForm={(values) =>
-            handleEditTransaction(values, transactionId)
+            handleEditTransaction(values as TransactionRawFormData<EditTransactionRequest>, transactionId)
           }
           validateForm={(validState) =>
             handleValidateTransactionForm(validState, 'editTransaction')
