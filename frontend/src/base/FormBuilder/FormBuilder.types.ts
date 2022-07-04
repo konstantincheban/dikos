@@ -1,6 +1,7 @@
 import { FileUploaderProps } from '@base/FileUploader/FileUploader.types';
 import { IInputProps } from '@base/Input';
 import { IOptionProps, ISelectProps } from '@base/Select';
+import { ISwitcherProps } from '@base/Switcher';
 
 export interface IFormBuilderProps<FormData> {
   initialData: FormData;
@@ -28,6 +29,7 @@ type PossibleControls =
   | InputControlProps
   | InputFileControlProps
   | SelectControlProps
+  | SwitcherControlProps
   | DatePickerControlProps;
 
 export type InputControlProps = IInputProps & {
@@ -51,6 +53,10 @@ export type DatePickerControlProps = {
   controlType: 'datepicker';
   placeholder?: string;
   initialDate?: Date;
+};
+
+export type SwitcherControlProps = Omit<ISwitcherProps, 'onChange'> & {
+  controlType: 'switcher';
 };
 
 // Reference types

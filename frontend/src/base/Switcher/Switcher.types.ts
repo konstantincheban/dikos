@@ -1,7 +1,7 @@
 export interface ISwitcherProps {
-  value: string;
   options: ISwitcherOption[];
-  onChange: (value: string) => void;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 export interface ISwitcherOption {
