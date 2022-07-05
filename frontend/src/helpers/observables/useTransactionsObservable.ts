@@ -17,7 +17,7 @@ export const useTransactionsObservable = () => {
   >(transactionsSubject$);
 
   const setUpToDateState = (state: boolean) => {
-    actions.setNextState({ isUpToDate: state });
+    actions.setNextState({ isUpToDate: state, error: '' });
   };
 
   return {
