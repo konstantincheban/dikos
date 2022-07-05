@@ -26,8 +26,8 @@ export const buildFilterExpressions = (filter: string) => {
 
 export const buildSortByOrderBy = (orderBy: string) => {
   const [field, criteria] = orderBy.split(' ');
-  if (field && criteria) return { [field]: criteria, created_at: 'desc' };
-  return '';
+  if (field && criteria) return { [field]: criteria };
+  return { created_at: 'desc' };
 };
 
 export const immutableObjectFiltering = <T>(

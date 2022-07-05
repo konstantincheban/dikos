@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 const EditShape = {
   name: Yup.string()
     .min(3, 'Transaction name too short')
-    .max(20, 'Transaction name too large'),
+    .max(40, 'Transaction name too large'),
   description: Yup.string().max(100, 'Description is too long'),
   amount: Yup.number().required('Required'),
   category: Yup.string().max(30, 'Category name is too long'),

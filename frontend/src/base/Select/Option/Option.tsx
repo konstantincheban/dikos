@@ -9,7 +9,8 @@ function Option(props: IOptionProps) {
   const handleKeyDownEvent = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case 'Enter':
-      case 'Space':
+      case ' ':
+        e.preventDefault();
         onSelect && onSelect(value);
     }
   };

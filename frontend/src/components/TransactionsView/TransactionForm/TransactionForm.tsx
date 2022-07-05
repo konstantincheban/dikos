@@ -29,26 +29,27 @@ const TransactionForm = forwardRef(function TransactionForm(
   }));
 
   const getFormProps = (): [TransactionFormData, ControlProps[], unknown] => {
+    const clonedData = structuredClone(data);
     if (type === 'edit') {
       // process controls
       const editFormControls = controls.reduce((acc, control) => {
         if (editFields.includes(control.name)) acc.push(control);
         if (control.name === 'transactionType' && control.controlType === 'switcher') {
-          control.value = data.amount < 0 ? 'outcome' : 'income';
-          data.amount = Math.abs(data.amount);
+          control.value = clonedData.amount < 0 ? 'outcome' : 'income';
+          clonedData.amount = Math.abs(clonedData.amount);
         }
 
         return acc;
       }, [] as ControlProps[]);
 
-      return [data, editFormControls, TransactionEditSchema];
+      return [clonedData, editFormControls, TransactionEditSchema];
     }
     const processedControls = controls.map((control) => {
       if (control.name === 'accountID' && control.controlType === 'select')
         control.options = availableAccounts ?? [];
       return control;
     });
-    return [data, processedControls, TransactionCreateSchema];
+    return [clonedData, processedControls, TransactionCreateSchema];
   };
 
   const [initialData, formControls, validationSchema] = getFormProps();

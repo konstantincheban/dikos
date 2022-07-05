@@ -62,7 +62,7 @@ const Login = (props: ILoginProps<ILoginData>) => {
           <Form className="FormContainer">
             <div className="Section">
               <label htmlFor="email">Email:</label>
-              <Field as={Input} name="email" placeholder="Enter your email" />
+              <Field as={Input} name="email" placeholder="Enter your email" autoComplete="name email" />
               <FieldErrorMessage name="email" />
             </div>
             <div className="Section">
@@ -72,6 +72,7 @@ const Login = (props: ILoginProps<ILoginData>) => {
                 name="password"
                 type="password"
                 placeholder="Enter your password"
+                autoComplete="password"
               />
               <FieldErrorMessage name="password" />
             </div>
@@ -112,6 +113,7 @@ const Registration = (props: IRegistrationProps<IRegistrationData>) => {
                 className="Section"
                 name="username"
                 placeholder="Enter your username"
+                autoComplete="username"
               />
               <FieldErrorMessage name="username" />
             </div>
@@ -122,6 +124,7 @@ const Registration = (props: IRegistrationProps<IRegistrationData>) => {
                 className="Section"
                 name="email"
                 placeholder="Enter your email"
+                autoComplete="name email"
               />
               <FieldErrorMessage name="email" />
             </div>
@@ -133,6 +136,7 @@ const Registration = (props: IRegistrationProps<IRegistrationData>) => {
                 name="password"
                 type="password"
                 placeholder="Enter your password"
+                autoComplete="password"
               />
               <FieldErrorMessage name="password" />
             </div>

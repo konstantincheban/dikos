@@ -71,7 +71,8 @@ function Select(
   const handleKeyDownEvent = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case 'Enter':
-      case 'Space':
+      case ' ':
+        e.preventDefault();
         setCollapsed(!collapsed);
     }
   };
