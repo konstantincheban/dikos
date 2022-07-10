@@ -1,3 +1,4 @@
+import { StatisticsService } from '@statistics/statistics.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -9,12 +10,14 @@ import {
   Transaction,
   TransactionDocument,
 } from './schemas/transactions.schema';
+import { ProposedCategoryDTO } from './dto/proposed-category.dto';
 
 @Injectable()
 export class TransactionsService {
   constructor(
     @InjectModel(Transaction.name)
     private readonly transactionModel: Model<TransactionDocument>,
+    private readonly statisticsService: StatisticsService,
     private readonly accountsService: AccountsService,
   ) {}
 
@@ -55,6 +58,11 @@ export class TransactionsService {
     } catch (err) {
       throw new BadRequestException('Something went wrong. Please try again');
     }
+  }
+
+  async getTransactionProposedCategories(userID: string, top: number): Promise<ProposedCategoryDTO[]> {
+    const topCategories = await this.statisticsService.getTopCategoriesStatisticsData(userID, top);
+    return topCategories.map(category => ({ label: category.name, value: category.name }));
   }
 
   async getFilteredTransactions(

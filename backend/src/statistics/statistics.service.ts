@@ -279,6 +279,7 @@ export class StatisticsService {
 
   async getTopCategoriesStatisticsData(
     userID: string,
+    top: number
   ): Promise<TopCategoriesDTO[]> {
     return await this.transactionModel.aggregate([
       {
@@ -303,10 +304,12 @@ export class StatisticsService {
           count: 1,
         },
       },
-    ]);
+    ])
+    .sort({ count: 'desc'})
+    .limit(top);
   }
 
-  async getTopShopsStatisticsData(userID: string): Promise<TopShopDTO[]> {
+  async getTopShopsStatisticsData(userID: string, top: number): Promise<TopShopDTO[]> {
     return await this.transactionModel.aggregate([
       {
         $match: {
@@ -330,6 +333,8 @@ export class StatisticsService {
           count: 1,
         },
       },
-    ]);
+    ])
+    .sort({ count: 'desc'})
+    .limit(top);
   }
 }
