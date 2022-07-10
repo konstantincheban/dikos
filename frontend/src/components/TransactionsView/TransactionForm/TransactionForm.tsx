@@ -20,7 +20,7 @@ const TransactionForm = forwardRef(function TransactionForm(
   props: ITransactionFormProps,
   ref,
 ) {
-  const { data, type, validateForm, availableAccounts, onSubmitForm } = props;
+  const { data, type, validateForm, availableAccounts, proposedCategories, onSubmitForm } = props;
 
   const formBuilderRef = createRef<FormBuilderRef>();
 
@@ -38,6 +38,15 @@ const TransactionForm = forwardRef(function TransactionForm(
           control.value = clonedData.amount < 0 ? 'outcome' : 'income';
           clonedData.amount = Math.abs(clonedData.amount);
         }
+        if (control.name === 'category' && control.controlType === 'tagEditor') {
+          control.categories[0] = {
+            ...control.categories[0],
+            attributes: proposedCategories ?? [],
+          };
+          control.tags = [{
+            key: data.category
+          }];
+        }
 
         return acc;
       }, [] as ControlProps[]);
@@ -45,8 +54,15 @@ const TransactionForm = forwardRef(function TransactionForm(
       return [clonedData, editFormControls, TransactionEditSchema];
     }
     const processedControls = controls.map((control) => {
-      if (control.name === 'accountID' && control.controlType === 'select')
+      if (control.name === 'accountID' && control.controlType === 'select') {
         control.options = availableAccounts ?? [];
+      }
+      if (control.name === 'category' && control.controlType === 'tagEditor') {
+        control.categories[0] = {
+          ...control.categories[0],
+          attributes: proposedCategories ?? []
+        };
+      }
       return control;
     });
     return [clonedData, processedControls, TransactionCreateSchema];

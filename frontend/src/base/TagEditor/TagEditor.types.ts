@@ -1,12 +1,26 @@
+export type TagItemType = ITagItem | ISingleTagItem;
+
 export interface ITagEditorProps {
   categories: ICategoryItem[];
+  singleTagMode: false;
+  maxTagsCount?: number;
+  placeholder?: string;
   tags?: ITagItem[];
-  onChange: (tags: ITagItem[]) => void;
+  onChange: (tags: TagItemType[]) => void;
+}
+
+export interface ITagEditorSingleModeProps {
+  categories: ICategoryItem[];
+  singleTagMode: true;
+  maxTagsCount?: number;
+  placeholder?: string;
+  tags?: ISingleTagItem[];
+  onChange: (tags: TagItemType[]) => void;
 }
 
 export interface ITagItemProps {
   keyProp: string;
-  valueProp: string;
+  valueProp?: string;
   onRemove: (value: string) => void;
 }
 
@@ -24,3 +38,9 @@ export interface ITagItem {
   key: string;
   value: string;
 }
+
+export interface ISingleTagItem {
+  key: string;
+  value?: string;
+}
+

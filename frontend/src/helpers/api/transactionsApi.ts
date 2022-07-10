@@ -1,4 +1,5 @@
 import { axiosAuthInstance } from '@api';
+import { COUNT_OF_PROPOSED_CATEGORIES } from '@shared/constants';
 
 export const useTransactionsApi = () => {
   const createTransaction = <RequestType>(data: RequestType) => {
@@ -20,10 +21,16 @@ export const useTransactionsApi = () => {
     return axiosAuthInstance.get(`/transactions${queryParams}`);
   };
 
+  const getProposedCategories = () => {
+    return axiosAuthInstance.get(`/transactions/proposedCategories?top=${COUNT_OF_PROPOSED_CATEGORIES}`);
+  };
+
+
   return {
     createTransaction,
     editTransaction,
     deleteTransaction,
     getTransactions,
+    getProposedCategories
   };
 };

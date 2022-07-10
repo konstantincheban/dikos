@@ -87,9 +87,14 @@ export const controls: ControlProps[] = [
     ],
   },
   {
-    controlType: 'input',
+    controlType: 'tagEditor',
     name: 'category',
     label: 'Category',
+    placeholder: 'Select your transaction category',
+    categories: [{
+      label: 'Categories',
+      attributes: []
+    }]
   },
   {
     controlType: 'datepicker',

@@ -1,4 +1,4 @@
-import { ICategoryItem } from '@base/TagEditor/TagEditor.types';
+import { ICategoryItem } from '@base/TagEditor';
 
 export const filterConfig: ICategoryItem[] = [
   {

@@ -83,7 +83,7 @@ function UserMenu() {
   const { accounts, isUpToDate, error: accountsErrors } =
     useObservableState(accountsState$);
   const { createAccount, getAccounts, getAccountSummary } = useAccountsRepository();
-  const { error: transactionErrors } = useObservableState(transactionsState$);
+  const { error: transactionErrors, proposedCategories } = useObservableState(transactionsState$);
   const { createTransaction } = useTransactionsRepository();
   const { username } = useObservableState(authState$);
 
@@ -220,6 +220,7 @@ function UserMenu() {
           ref={transactionModalRef}
           type="create"
           availableAccounts={accountOptions}
+          proposedCategories={proposedCategories}
           data={defaultFormData}
           onSubmitForm={(values) =>
             handleCreateTransaction(values as TransactionRawFormData<CreateTransactionRequest>)

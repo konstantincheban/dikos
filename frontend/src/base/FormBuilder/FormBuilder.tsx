@@ -16,6 +16,7 @@ import Icon from '@base/Icon';
 import Tooltip from '@base/Tooltip';
 import DatePicker from '@base/DatePicker';
 import Switcher from '@base/Switcher';
+import TagEditor from '@base/TagEditor';
 
 function FormBuilder<FormData>(
   props: IFormBuilderProps<FormData>,
@@ -52,13 +53,15 @@ function FormBuilder<FormData>(
       </Field>
     );
   };
+  const renderTagEditorControl = ({ controlType, ...control }: ControlProps) => {
+    return <Field as="tagEditor" component={TagEditor} {...control} singleTagMode />;
+  };
   const renderSwitcherControl = ({ controlType, ...control }: ControlProps) => {
     return <Field as="switcher" component={Switcher} {...control} />;
   };
   const renderFileControl = ({ controlType, ...control }: ControlProps) => {
     return <Field as="file" component={FileUploader} {...control} />;
   };
-
   const renderDatePickerControl = ({
     controlType,
     ...control
@@ -69,6 +72,7 @@ function FormBuilder<FormData>(
   const renderControlByType = (control: ControlProps) => {
     if (control.controlType === 'input') return renderInputControl(control);
     if (control.controlType === 'select') return renderSelectControl(control);
+    if (control.controlType === 'tagEditor') return renderTagEditorControl(control);
     if (control.controlType === 'switcher') return renderSwitcherControl(control);
     if (control.controlType === 'file') return renderFileControl(control);
     if (control.controlType === 'datepicker')

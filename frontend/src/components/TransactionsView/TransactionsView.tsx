@@ -8,8 +8,7 @@ import {
   ShoppingCategoryIcon,
 } from '@base/Icon/IconSet';
 import Loader from '@base/Loader';
-import TagEditor from '@base/TagEditor';
-import { ITagItem } from '@base/TagEditor/TagEditor.types';
+import TagEditor, { ITagItem } from '@base/TagEditor';
 import Tooltip from '@base/Tooltip';
 import Undo from '@base/Undo';
 import { useTransactionsRepository } from '@repos';
@@ -51,6 +50,7 @@ function TransactionsView() {
   const {
     loading,
     isUpToDate,
+    proposedCategories,
     error: transactionErrors,
   } = useObservableState(transactionsState$);
   const { accounts } = useObservableState(accountsState$);
@@ -258,6 +258,7 @@ function TransactionsView() {
           ref={transactionModalRef}
           type="edit"
           data={transactionData}
+          proposedCategories={proposedCategories}
           onSubmitForm={(values) =>
             handleEditTransaction(values as TransactionRawFormData<EditTransactionRequest>, transactionId)
           }
@@ -440,7 +441,8 @@ function TransactionsView() {
           <TagEditor
             categories={filterConfig}
             tags={filters}
-            onChange={handleChangeFilterTags}
+            singleTagMode={false}
+            onChange={(tags) => handleChangeFilterTags(tags as ITagItem[])}
           ></TagEditor>
         </div>
       </div>
