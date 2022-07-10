@@ -145,6 +145,17 @@ function TagEditor(props: (ITagEditorProps | ITagEditorSingleModeProps) & Partia
 
   // -------  STRATEGY SPECIFIC --------- //
 
+  const handleBlur = (e: React.FocusEvent) => {
+    const currentTarget = e.currentTarget;
+    // Give browser time to focus the next element
+    requestAnimationFrame(() => {
+      // Check if the new focused element is a child of the original container
+      if (!currentTarget.contains(document.activeElement)) {
+        setCollapsedList(true);
+      }
+    });
+  };
+
   const handleRemoveTag = (value: string) => {
     const updateTags = tagsState.filter((tag) => tag.key !== value);
     setTags(updateTags);
@@ -171,7 +182,10 @@ function TagEditor(props: (ITagEditorProps | ITagEditorSingleModeProps) & Partia
   };
 
   return (
-    <div className="TagEditorContainer">
+    <div
+      className="TagEditorContainer"
+      onBlur={handleBlur}
+    >
       <Input
         ref={inputRef}
         value={computedFilterValue()}
@@ -206,6 +220,7 @@ function TagEditor(props: (ITagEditorProps | ITagEditorSingleModeProps) & Partia
               <Option
                 key={attr.value}
                 {...attr}
+                collapsed={collapsedList}
                 onSelect={handleSelectAttribute}
               />
             ))}
