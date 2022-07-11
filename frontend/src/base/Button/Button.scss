@@ -17,6 +17,7 @@
 
     &[disabled] {
       background-color: darken($color: $blueAccentColor, $amount: 30);
+      color: lighten($color: $textColor, $amount: 30);
       pointer-events: none;
     }
 
@@ -39,7 +40,7 @@
     &:focus {
       @include outline;
     }
-    &:not(.disruptive):focus {
+    &:not(.disruptive):not(.IconButton):focus {
       background-color: $blueAccentColor;
     }
 
@@ -47,8 +48,21 @@
       cursor: pointer;
       @include boxShadow;
     }
-    &:not(.disruptive):hover {
+    &:not(.disruptive):not(.IconButton):hover {
       background-color: $blueAccentColor;
+    }
+
+    &.IconButton {
+      background-color: transparent;
+
+      &.disruptive {
+        color: darken($color: $errorColor, $amount: 15);
+        background-color: transparent;
+        &:hover {
+          color: $errorColor;
+          background-color: transparent;
+        }
+      }
     }
   }
 }
