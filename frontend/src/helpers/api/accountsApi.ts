@@ -6,11 +6,11 @@ export const useAccountsApi = () => {
   };
 
   const editAccount = <RequestType>(data: RequestType, accountId: string) => {
-    return axiosAuthInstance.post(`/accounts/edit/${accountId}`, data);
+    return axiosAuthInstance.put(`/accounts/edit/${accountId}`, data);
   };
 
   const deleteAccount = (accountId: string) => {
-    return axiosAuthInstance.post(`/accounts/delete/${accountId}`);
+    return axiosAuthInstance.delete(`/accounts/delete/${accountId}`);
   };
 
   const getAccounts = () => {

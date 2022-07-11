@@ -28,3 +28,13 @@ export type ImportTransactions = {
   date: string;
   file: File;
 };
+
+export type DeleteTransactionsRequest = {
+  entries: string[]
+}
+
+export type DeleteTransactionsResponse = {
+  id: string;
+  status: 'success' | 'failed';
+  reason?: string;
+}[];

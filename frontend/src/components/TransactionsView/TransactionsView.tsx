@@ -47,6 +47,7 @@ function TransactionsView() {
     getTransactions,
     editTransaction,
     deleteTransaction,
+    deleteTransactions,
     importTransactions,
   } = useTransactionsRepository();
   const { transactionsState$, accountsState$ } = useStore();
@@ -476,14 +477,20 @@ function TransactionsView() {
     setSelectedEntries(selectedList);
   };
 
+  const handleDeleteEntriesAction = () => {
+    deleteTransactions(selectedEntries);
+    setSelectedEntries([]);
+  };
+
   const renderActionManager = () => {
     return showActionManager ? (
       <div className="TransactionsViewActionManager">
-        <div
-          className="CloseActionManager"
-          onClick={() => setShowActionManager(false)}
-        >
-          <Icon icon={<CloseIcon />} />
+        <div className="CloseActionManager">
+          <Button
+            size="small"
+            icon={<CloseIcon />}
+            onClick={() => setShowActionManager(false)}
+          />
         </div>
         <div className="SelectAction">
           <Tooltip
@@ -503,11 +510,14 @@ function TransactionsView() {
             Selected Entries
           </div>
         </div>
-        <div
-          className="DeleteAction"
-          onClick={() => console.log('delete all items')}
-        >
-          <Icon icon={<DeleteIcon />} />
+        <div className="DeleteAction">
+          <Button
+            size="small"
+            disruptive
+            disabled={!selectedEntries.length}
+            icon={<DeleteIcon />}
+            onClick={handleDeleteEntriesAction}
+          />
         </div>
       </div>
     ) : (
