@@ -8,6 +8,8 @@ import {
   UseGuards,
   Req,
   UseInterceptors,
+  Put,
+  Delete
 } from '@nestjs/common';
 
 import {
@@ -19,6 +21,7 @@ import { CreateTransactionDTO } from './dto/create-transaction.dto';
 import { EditTransactionDTO } from './dto/edit-transaction.dto';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
+import { DeleteTransactionsPayloadDTO } from './dto/delete-transactions-payload.dto';
 
 @Controller('transactions')
 @UseInterceptors(MongooseClassSerializerInterceptor(Transaction))
@@ -54,7 +57,7 @@ export class TransactionsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/edit/:id')
+  @Put('/edit/:id')
   async editTransaction(
     @Param('id') transactionID: string,
     @Body() data: EditTransactionDTO,
@@ -63,8 +66,14 @@ export class TransactionsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/delete/:id')
+  @Delete('/delete/:id')
   async deleteTransaction(@Param('id') transactionID: string): Promise<any> {
     return await this.transactionsService.deleteTransaction(transactionID);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/multi_delete')
+  async deleteTransactions(@Body() payload: DeleteTransactionsPayloadDTO): Promise<any> {
+    return await this.transactionsService.deleteTransactions(payload.entries);
   }
 }
