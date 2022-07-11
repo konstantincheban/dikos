@@ -11,6 +11,7 @@ import {
   TransactionDocument,
 } from './schemas/transactions.schema';
 import { ProposedCategoryDTO } from './dto/proposed-category.dto';
+import { DeleteTransactionsStatusDTO } from './dto/delete-transactions-status.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -53,16 +54,43 @@ export class TransactionsService {
 
   async deleteTransaction(transactionID: string) {
     try {
-      await this.transactionModel.findByIdAndRemove(transactionID);
+      this.transactionModel.findByIdAndRemove(transactionID);
       return { message: 'Transaction entry was removed successfully' };
     } catch (err) {
       throw new BadRequestException('Something went wrong. Please try again');
     }
   }
 
+
   async getTransactionProposedCategories(userID: string, top: number): Promise<ProposedCategoryDTO[]> {
     const topCategories = await this.statisticsService.getTopCategoriesStatisticsData(userID, top);
     return topCategories.map(category => ({ label: category.name, value: category.name }));
+  }
+
+  async deleteTransactions(transactionIDs: string[]): Promise<DeleteTransactionsStatusDTO[]> {
+    const statuses = await Promise.allSettled(transactionIDs.map(async (id) => {
+      try {
+        await this.transactionModel.findByIdAndRemove(id).exec();
+        return Promise.resolve(id);
+      } catch (err) {
+        return Promise.reject({ id, desc: err.name });
+      }
+    }));
+
+    return statuses.map(status => {
+      if (status.status === 'rejected') {
+        return {
+          id: status.reason.id,
+          status: 'failed',
+          reason: status.reason.desc
+        }
+      }
+
+      return {
+        id: status.value,
+        status: 'success'
+      }
+    })
   }
 
   async getFilteredTransactions(

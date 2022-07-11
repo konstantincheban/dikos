@@ -3,6 +3,8 @@ import { useAccountsObservable, useTransactionsObservable } from '@observables';
 import { useTransactionsApi, useImportApi } from '@api';
 import {
   CreateTransactionRequest,
+  DeleteTransactionsRequest,
+  DeleteTransactionsResponse,
   EditTransactionRequest,
   ITransaction,
 } from '@interfaces';
@@ -67,6 +69,28 @@ export const useTransactionsRepository = () => {
     );
   };
 
+  const deleteTransactions = (transactionIds: string[]) => {
+    return repoWrapper(transactionsObservable, () =>
+      transactionsApi
+        .deleteTransactions<DeleteTransactionsRequest>({ entries: transactionIds })
+        .then(({ data: statuses }: AxiosResponse<DeleteTransactionsResponse>) => {
+          transactionsObservable.setUpToDateState(false);
+          accountsObservable.setUpToDateState(false);
+          // @TODO: implement details modal and details options in the toaster
+          console.table(statuses);
+          const { countOfSuccessful, countOfFailed } = statuses.reduce((acc, item) => {
+            if (item.status === 'success') acc.countOfSuccessful += 1;
+            if (item.status === 'failed') acc.countOfFailed += 1;
+            return acc;
+          }, { countOfSuccessful: 0, countOfFailed: 0 })
+
+          countOfSuccessful && toast.success(`${countOfSuccessful} transactions were deleted successfully`);
+          countOfFailed && toast.error(`${countOfFailed} transactions have not been deleted`);
+        })
+        .catch((err) => setErrorToState(err, transactionsObservable)),
+    );
+  };
+
   const getTransactions = (queryParams?: string) => {
     return repoWrapper(transactionsObservable, () =>
       transactionsApi
@@ -97,6 +121,7 @@ export const useTransactionsRepository = () => {
     createTransaction,
     editTransaction,
     deleteTransaction,
+    deleteTransactions,
     getTransactions,
     importTransactions,
     getProposedCategories,

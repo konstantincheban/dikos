@@ -136,6 +136,10 @@
           animation-duration: var(--undo-animation-duration);
         }
 
+        &.selected {
+          background-color: rgba($color: $purpleAccentColor, $alpha: 0.2);
+        }
+
         &:hover {
           cursor: pointer;
           background-color: rgba($color: $purpleAccentColor, $alpha: 0.2);
@@ -192,6 +196,43 @@
             }
           }
         }
+      }
+    }
+  }
+
+  .TransactionsViewActionManager {
+    position: fixed;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    height: 50px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    border-radius: $borderRadius;
+    background-color: $backgroundColor;
+    @include boxShadow(30px);
+
+    .CloseActionManager {
+      padding-right: 10px;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .SelectAction {
+      display: flex;
+      align-items: center;
+      font-size: $mediumFontSize;
+      gap: 5px;
+
+      b {
+        padding-right: 5px;
+        font-weight: 700;
       }
     }
   }

@@ -31,6 +31,7 @@ const TooltipContent = forwardRef(function TooltipContent(props, ref) {
     show: (options: ITooltipProps, wrapperRef: RefObject<HTMLDivElement>) =>
       showTooltip(options, wrapperRef),
     hide: () => setActive(false),
+    updateContent: (content: ITooltipProps['content']) => setContent(content),
   }));
 
   const showTooltip = (

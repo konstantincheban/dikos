@@ -8,6 +8,8 @@ import {
   Req,
   UseGuards,
   UseInterceptors,
+  Put,
+  Delete,
 } from '@nestjs/common';
 
 import { Account, AccountDocument } from './schemas/accounts.schema';
@@ -60,7 +62,7 @@ export class AccountsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/edit/:id')
+  @Put('/edit/:id')
   async editAccount(
     @Param('id') accountID: string,
     @Body() data: EditAccountDTO,
@@ -69,7 +71,7 @@ export class AccountsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/delete/:id')
+  @Delete('/delete/:id')
   async deleteAccount(@Param('id') accountID: string): Promise<any> {
     return await this.accountsService.deleteAccount(accountID);
   }
