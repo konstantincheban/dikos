@@ -1,0 +1,19 @@
+@import '@styles/shared.scss';
+
+.CheckboxContainer {
+  position: relative;
+  width: 25px;
+  height: 25px;
+
+  .CheckboxInput {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

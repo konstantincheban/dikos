@@ -8,6 +8,7 @@ import {
   Param,
   Body,
   Req,
+  Put,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
@@ -27,7 +28,7 @@ export class BudgetController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/edit/:id')
+  @Put('/edit/:id')
   async editUserBudget(
     @Body() data: EditBudgetDTO,
     @Param('id') budgetID: string,

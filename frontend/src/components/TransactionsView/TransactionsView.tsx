@@ -1,8 +1,10 @@
 import Button from '@base/Button';
 import Icon from '@base/Icon';
 import {
+  CalculateIcon,
   CaretRightIcon,
   CloseIcon,
+  DeleteIcon,
   EditIcon,
   InfoIcon,
   ShoppingCategoryIcon,
@@ -39,12 +41,14 @@ import { columnsConfig, filterConfig } from './TransactionsViewConfig';
 import { useLocation } from 'react-router-dom';
 import { usePrevious } from '@hooks';
 import './TransactionsView.scss';
+import Checkbox from '@base/Checkbox';
 
 function TransactionsView() {
   const {
     getTransactions,
     editTransaction,
     deleteTransaction,
+    deleteTransactions,
     importTransactions,
   } = useTransactionsRepository();
   const { transactionsState$, accountsState$ } = useStore();
@@ -56,6 +60,9 @@ function TransactionsView() {
   const { accounts } = useObservableState(accountsState$);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [removingEntries, setRemovingEntries] = useState<string[]>([]);
+  const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
+  const [showActionManager, setShowActionManager] = useState(false);
+  const [sumOfTransactions, setSumOfTransactions] = useState(0);
 
   const [filters, setFilters] = useState<ITagItem[]>([]);
   const [filterValue, setFilterValue] = useState('');
@@ -259,7 +266,10 @@ function TransactionsView() {
           type="edit"
           data={transactionData}
           onSubmitForm={(values) =>
-            handleEditTransaction(values as TransactionRawFormData<EditTransactionRequest>, transactionId)
+            handleEditTransaction(
+              values as TransactionRawFormData<EditTransactionRequest>,
+              transactionId,
+            )
           }
           validateForm={(validState) =>
             handleValidateTransactionForm(validState, 'editTransaction')
@@ -338,10 +348,12 @@ function TransactionsView() {
         key={`${name}_${amount}_${key}`}
         className={classMap(
           {
-            removing: !!removingEntries.find((item) => item === _id),
+            removing: !!removingEntries.includes(_id),
+            selected: !!selectedEntries.includes(_id),
           },
           'TransactionItem',
         )}
+        onClick={() => handleToggleSelectEntry(_id)}
       >
         <div className="Block">
           <div
@@ -447,6 +459,103 @@ function TransactionsView() {
     );
   };
 
+  const handleToggleSelectEntry = (entryId: string) => {
+    const entryIndex = selectedEntries.indexOf(entryId);
+    if (entryIndex === -1) {
+      selectedEntries.push(entryId);
+    } else {
+      selectedEntries.splice(entryIndex, 1);
+    }
+
+    setSelectedEntries([...selectedEntries]);
+    setShowActionManager(true);
+
+    // reset sum of transactions on select item
+    setSumOfTransactions(0);
+  };
+
+  const handleSelectAction = (checkState: boolean) => {
+    let selectedList: string[] = [];
+    if (checkState)
+      selectedList = transactions.map((transaction) => transaction._id);
+
+    setSelectedEntries(selectedList);
+  };
+
+  const handleDeleteEntriesAction = () => {
+    deleteTransactions(selectedEntries);
+    setSelectedEntries([]);
+  };
+
+  const handleCalculateEntriesAction = () => {
+    const sum = transactions.reduce((acc, item) => {
+      if (selectedEntries.includes(item._id)) acc += item.amount;
+      return acc;
+    }, 0);
+    setSumOfTransactions(Math.floor(sum));
+
+    toast.info(`Sum of selected transactions equals ${Math.floor(sum)} UAH`);
+  };
+
+  const renderActionManager = () => {
+    return showActionManager ? (
+      <div className="TransactionsViewActionManager">
+        <div className="CloseActionManager">
+          <Button
+            size="small"
+            icon={<CloseIcon />}
+            onClick={() => setShowActionManager(false)}
+          />
+        </div>
+        <div className="SelectAction">
+          <Tooltip
+            content={
+              selectedEntries.length
+                ? 'Click to unselect all entries in the list'
+                : 'Click to select all entries in the list'
+            }
+          >
+            <Checkbox
+              checked={false}
+              onChange={(value) => handleSelectAction(value)}
+            />
+          </Tooltip>
+          <div className="SelectActionDesc">
+            <b>{selectedEntries.length}</b>
+            Selected Entries
+          </div>
+        </div>
+        <div className="CalculationAction">
+          <Tooltip
+            content={
+              sumOfTransactions
+                ? `Sum of selected transactions equals ${sumOfTransactions} UAH`
+                : `Click to calculate sum of transactions`
+            }
+          >
+            <Button
+              size="small"
+              disabled={!selectedEntries.length}
+              icon={<CalculateIcon />}
+              onClick={handleCalculateEntriesAction}
+            />
+          </Tooltip>
+        </div>
+        <div className="DeleteAction">
+          <Button
+            size="small"
+            disruptive
+            disabled={!selectedEntries.length}
+            icon={<DeleteIcon />}
+            onClick={handleDeleteEntriesAction}
+          />
+        </div>
+      </div>
+    ) : (
+      ''
+    );
+  };
+
   return (
     <div className="TransactionsViewContainer">
       {loading && <Loader />}
@@ -466,6 +575,7 @@ function TransactionsView() {
       </div>
       {renderFilterSection()}
       {renderTransactionList()}
+      {renderActionManager()}
     </div>
   );
 }
