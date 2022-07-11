@@ -299,6 +299,29 @@ const StatisticsIcon = (): React.ReactElement => {
   );
 };
 
+const CheckedCell = (): React.ReactElement => {
+  return (
+    <path
+      d="M7.42075 8.57271L7.4208 8.57266L13.724 2.26789L14.3753 2.91915L6.9256 10.3688L4.37351 7.81675L5.02469 7.16557L6.43027 8.57253L6.43045 8.57271C6.70411 8.84637 7.14709 8.84637 7.42075 8.57271ZM3.12 12.9336H11.2768C11.6633 12.9336 11.9768 12.6201 11.9768 12.2336V8.55295C11.9776 8.55054 11.9786 8.54755 11.98 8.54416C11.9813 8.54101 11.9826 8.53834 11.9837 8.53621L12.8968 7.62306V13.8552H1.5V2.45835H10.3097L9.39884 3.3692C9.39627 3.3705 9.39329 3.37187 9.39005 3.37322C9.38663 3.37464 9.38338 3.37582 9.38052 3.37675H3.12C2.73346 3.37675 2.42 3.69021 2.42 4.07675V12.2336C2.42 12.6201 2.73346 12.9336 3.12 12.9336Z"
+      fill="currentColor"
+      stroke="currentColor"
+    />
+  );
+};
+
+const UncheckedCell = (): React.ReactElement => {
+  return (
+    <rect
+      x="2"
+      y="3"
+      width="10"
+      height="10"
+      stroke="currentColor"
+      strokeWidth="2"
+    />
+  );
+};
+
 export {
   LogoutIcon,
   LogoIcon,
@@ -324,4 +347,6 @@ export {
   FilterIcon,
   CaretRightIcon,
   StatisticsIcon,
+  CheckedCell,
+  UncheckedCell,
 };
