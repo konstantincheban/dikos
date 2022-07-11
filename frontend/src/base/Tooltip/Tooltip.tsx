@@ -1,4 +1,4 @@
-import { createRef, PropsWithChildren } from 'react';
+import { createRef, PropsWithChildren, useEffect } from 'react';
 import { ITooltipProps } from './Tooltip.types';
 import './Tooltip.scss';
 import { useTooltip } from './TooltipProvider';
@@ -9,6 +9,11 @@ const Tooltip = (props: PropsWithChildren<ITooltipProps>) => {
   let timeout: ReturnType<typeof setTimeout>;
   const tooltipWrapperRef = createRef<HTMLDivElement>();
   const { tooltipRef } = useTooltip();
+
+  // hide tooltip before unmount
+  useEffect(() => {
+    return () => tooltipRef.current?.hide();
+  });
 
   const showTip = () => {
     timeout = setTimeout(() => {
