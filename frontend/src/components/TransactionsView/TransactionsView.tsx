@@ -3,6 +3,7 @@ import Icon from '@base/Icon';
 import {
   CaretRightIcon,
   CloseIcon,
+  DeleteIcon,
   EditIcon,
   InfoIcon,
   ShoppingCategoryIcon,
@@ -39,6 +40,7 @@ import { columnsConfig, filterConfig } from './TransactionsViewConfig';
 import { useLocation } from 'react-router-dom';
 import { usePrevious } from '@hooks';
 import './TransactionsView.scss';
+import Checkbox from '@base/Checkbox';
 
 function TransactionsView() {
   const {
@@ -56,6 +58,8 @@ function TransactionsView() {
   const { accounts } = useObservableState(accountsState$);
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [removingEntries, setRemovingEntries] = useState<string[]>([]);
+  const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
+  const [showActionManager, setShowActionManager] = useState(false);
 
   const [filters, setFilters] = useState<ITagItem[]>([]);
   const [filterValue, setFilterValue] = useState('');
@@ -259,7 +263,10 @@ function TransactionsView() {
           type="edit"
           data={transactionData}
           onSubmitForm={(values) =>
-            handleEditTransaction(values as TransactionRawFormData<EditTransactionRequest>, transactionId)
+            handleEditTransaction(
+              values as TransactionRawFormData<EditTransactionRequest>,
+              transactionId,
+            )
           }
           validateForm={(validState) =>
             handleValidateTransactionForm(validState, 'editTransaction')
@@ -338,10 +345,12 @@ function TransactionsView() {
         key={`${name}_${amount}_${key}`}
         className={classMap(
           {
-            removing: !!removingEntries.find((item) => item === _id),
+            removing: !!removingEntries.includes(_id),
+            selected: !!selectedEntries.includes(_id),
           },
           'TransactionItem',
         )}
+        onClick={() => handleToggleSelectEntry(_id)}
       >
         <div className="Block">
           <div
@@ -447,6 +456,65 @@ function TransactionsView() {
     );
   };
 
+  const handleToggleSelectEntry = (entryId: string) => {
+    const entryIndex = selectedEntries.indexOf(entryId);
+    if (entryIndex === -1) {
+      selectedEntries.push(entryId);
+    } else {
+      selectedEntries.splice(entryIndex, 1);
+    }
+
+    setSelectedEntries([...selectedEntries]);
+    setShowActionManager(true);
+  };
+
+  const handleSelectAction = (checkState: boolean) => {
+    let selectedList: string[] = [];
+    if (checkState)
+      selectedList = transactions.map((transaction) => transaction._id);
+
+    setSelectedEntries(selectedList);
+  };
+
+  const renderActionManager = () => {
+    return showActionManager ? (
+      <div className="TransactionsViewActionManager">
+        <div
+          className="CloseActionManager"
+          onClick={() => setShowActionManager(false)}
+        >
+          <Icon icon={<CloseIcon />} />
+        </div>
+        <div className="SelectAction">
+          <Tooltip
+            content={
+              selectedEntries.length
+                ? 'Click to unselect all entries in the list'
+                : 'Click to select all entries in the list'
+            }
+          >
+            <Checkbox
+              checked={false}
+              onChange={(value) => handleSelectAction(value)}
+            />
+          </Tooltip>
+          <div className="SelectActionDesc">
+            <b>{selectedEntries.length}</b>
+            Selected Entries
+          </div>
+        </div>
+        <div
+          className="DeleteAction"
+          onClick={() => console.log('delete all items')}
+        >
+          <Icon icon={<DeleteIcon />} />
+        </div>
+      </div>
+    ) : (
+      ''
+    );
+  };
+
   return (
     <div className="TransactionsViewContainer">
       {loading && <Loader />}
@@ -466,6 +534,7 @@ function TransactionsView() {
       </div>
       {renderFilterSection()}
       {renderTransactionList()}
+      {renderActionManager()}
     </div>
   );
 }
