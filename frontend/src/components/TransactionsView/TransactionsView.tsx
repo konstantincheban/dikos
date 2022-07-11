@@ -1,6 +1,7 @@
 import Button from '@base/Button';
 import Icon from '@base/Icon';
 import {
+  CalculateIcon,
   CaretRightIcon,
   CloseIcon,
   DeleteIcon,
@@ -61,6 +62,7 @@ function TransactionsView() {
   const [removingEntries, setRemovingEntries] = useState<string[]>([]);
   const [selectedEntries, setSelectedEntries] = useState<string[]>([]);
   const [showActionManager, setShowActionManager] = useState(false);
+  const [sumOfTransactions, setSumOfTransactions] = useState(0);
 
   const [filters, setFilters] = useState<ITagItem[]>([]);
   const [filterValue, setFilterValue] = useState('');
@@ -467,6 +469,9 @@ function TransactionsView() {
 
     setSelectedEntries([...selectedEntries]);
     setShowActionManager(true);
+
+    // reset sum of transactions on select item
+    setSumOfTransactions(0);
   };
 
   const handleSelectAction = (checkState: boolean) => {
@@ -480,6 +485,16 @@ function TransactionsView() {
   const handleDeleteEntriesAction = () => {
     deleteTransactions(selectedEntries);
     setSelectedEntries([]);
+  };
+
+  const handleCalculateEntriesAction = () => {
+    const sum = transactions.reduce((acc, item) => {
+      if (selectedEntries.includes(item._id)) acc += item.amount;
+      return acc;
+    }, 0);
+    setSumOfTransactions(Math.floor(sum));
+
+    toast.info(`Sum of selected transactions equals ${Math.floor(sum)} UAH`);
   };
 
   const renderActionManager = () => {
@@ -509,6 +524,22 @@ function TransactionsView() {
             <b>{selectedEntries.length}</b>
             Selected Entries
           </div>
+        </div>
+        <div className="CalculationAction">
+          <Tooltip
+            content={
+              sumOfTransactions
+                ? `Sum of selected transactions equals ${sumOfTransactions} UAH`
+                : `Click to calculate sum of transactions`
+            }
+          >
+            <Button
+              size="small"
+              disabled={!selectedEntries.length}
+              icon={<CalculateIcon />}
+              onClick={handleCalculateEntriesAction}
+            />
+          </Tooltip>
         </div>
         <div className="DeleteAction">
           <Button

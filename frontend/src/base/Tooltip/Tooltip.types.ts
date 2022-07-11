@@ -13,4 +13,5 @@ export type Sizes = 'small' | 'medium' | 'large';
 export interface ITooltipProvider {
   show: (options: ITooltipProps, wrapperRef: RefObject<HTMLDivElement>) => void;
   hide: () => void;
+  updateContent: (content: ITooltipProps['content']) => void;
 }

@@ -72,3 +72,22 @@ export const buildQueryParamsString = (params: KeyValueType) => {
       return `${acc}${index ? '&' : '?'}${key}=${value}`;
     }, '');
 };
+
+export const debounce = (fn: Function, ms = 300) => {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return function (this: any, ...args: any[]) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn.apply(this, args), ms);
+  };
+};
+
+// export const memoize = (fn: Function) => {
+//   const cache = new Map();
+//   return (...args: any[]) => {
+//     const stringifiedArgs = JSON.stringify(args);
+//     const result = cache.has(stringifiedArgs) ? cache.get(stringifiedArgs) : fn(...args);
+//     cache.set(stringifiedArgs, result);
+
+//     return result;
+//   }
+// };

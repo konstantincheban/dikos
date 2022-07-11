@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { FieldProps } from 'formik';
 import Icon from '@base/Icon';
-import { CheckedCell, UncheckedCell } from '@base/Icon/IconSet';
+import { CheckedCellIcon, UncheckedCellIcon } from '@base/Icon/IconSet';
 import { usePrevious } from '@hooks';
 
 const Checkbox = forwardRef(function Checkbox(
@@ -54,7 +54,7 @@ const Checkbox = forwardRef(function Checkbox(
       <Icon
         className="Checkbox"
         size="100%"
-        icon={checkState ? <CheckedCell /> : <UncheckedCell />}
+        icon={checkState ? <CheckedCellIcon /> : <UncheckedCellIcon />}
       />
     </div>
   );
