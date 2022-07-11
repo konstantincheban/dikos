@@ -33,14 +33,26 @@ export class TransactionsController {
   async getAllTransactionsByUserId(
     @Query('filter') filter: string,
     @Query('orderby') orderBy: string,
-    @Query('top') top: number,
+    @Query('top') top: string,
     @Req() req,
   ) {
     return await this.transactionsService.getFilteredTransactions(
       filter ?? '',
       orderBy ?? '',
-      top ?? 0,
+      Number(top) ?? 0,
       req.user.id,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/proposedCategories')
+  async getProposedCategories(
+    @Query('top') top: string,
+    @Req() req,
+  ) {
+    return await this.transactionsService.getTransactionProposedCategories(
+      req.user.id,
+      Number(top) ?? 0,
     );
   }
 

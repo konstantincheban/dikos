@@ -1,7 +1,8 @@
 import {
   ICategoryItem,
   ITagEditorProps,
-  ITagItem,
+  ITagEditorSingleModeProps,
+  TagItemType,
   ITagItemProps,
 } from './TagEditor.types';
 import './TagEditor.scss';
@@ -11,16 +12,29 @@ import { Option } from '@base/Select';
 import { classMap } from '@shared/utils';
 import { CloseIcon } from '@base/Icon/IconSet';
 import Icon from '@base/Icon';
+import { FieldProps } from 'formik';
 
 const CategoryTitle = (props: { label: string }) => {
   return <div className="CategoryTitle">{props.label}</div>;
 };
 
 const TagItem = (props: ITagItemProps) => {
-  return (
-    <div className="TagItem">
+  const keyValueRenderer = () => {
+    return <>
       <span className="TagKey">{props.keyProp}</span>
       <span className="TagValue">{props.valueProp}</span>
+    </>
+  }
+
+  const singleTagRenderer = () => {
+    return <>
+      <span className="TagKey">{props.keyProp}</span>
+    </>
+  }
+
+  return (
+    <div className="TagItem">
+      {props.valueProp ? keyValueRenderer() : singleTagRenderer()}
       <button
         className="RemoveTag"
         onClick={() => props.onRemove(props.keyProp)}
@@ -31,19 +45,27 @@ const TagItem = (props: ITagItemProps) => {
   );
 };
 
-function TagEditor(props: ITagEditorProps) {
-  const { categories: categoriesProps, tags: tagsProps, onChange } = props;
+function TagEditor(props: (ITagEditorProps | ITagEditorSingleModeProps) & Partial<FieldProps>) {
+  const {
+    categories: categoriesProps,
+    tags: tagsProps,
+    singleTagMode,
+    maxTagsCount,
+    field,
+    form,
+    placeholder,
+    onChange
+  } = props;
   const [collapsedList, setCollapsedList] = useState(true);
   const [categoriesList, setCategoriesList] = useState<ICategoryItem[]>();
   const [currentTagKey, setCurrentTagKey] = useState('');
   const [currentTagValue, setCurrentTagValue] = useState('');
-  const [tagsState, setTagsState] = useState<ITagItem[]>([]);
+  const [tagsState, setTagsState] = useState<TagItemType[]>([]);
 
   const inputRef = createRef<HTMLInputElement>();
 
   useEffect(() => {
     if (categoriesProps) setCategoriesList(categoriesProps);
-    // if (tagsProps) setTags(tagsProps);
   }, [categoriesProps]);
 
   useEffect(() => {
@@ -51,8 +73,23 @@ function TagEditor(props: ITagEditorProps) {
   }, [tagsProps]);
 
   useEffect(() => {
-    onChange(tagsState);
+    if (onChange) onChange(tagsState);
+    if (form && field && tagsState) setToFieldValue(getControlValue(tagsState));
   }, [tagsState]);
+
+  // ---------- Control Functionality ----------- //
+
+  const setToFieldValue = (value: string | null | undefined) => {
+    if (form && field && value) {
+      form.setFieldValue(field.name, value);
+    }
+  };
+
+  const getControlValue = (tagsState: TagItemType[]) => tagsState.map(tag => tag.key).join(' ');
+
+  // ---------- Control Functionality ----------- //
+
+  const isDisabledActions = () => tagsState.length >= (maxTagsCount ?? 1);
 
   const toggleCategoriesList = () => {
     setCollapsedList(!collapsedList);
@@ -66,8 +103,12 @@ function TagEditor(props: ITagEditorProps) {
 
   const handleChangeValue = (evt: ChangeEvent<HTMLInputElement>) => {
     const { value } = evt.target;
-    setCurrentTagValue(parseAttributeValue(value));
+    // use key instead of values in the single tag mode
+    if (singleTagMode) setCurrentTagKey(value);
+    else setCurrentTagValue(parseAttributeValue(value));
   };
+
+  // -------  STRATEGY SPECIFIC --------- //
 
   const parseAttributeValue = (value: string) => {
     if (value.includes(':')) return value.split(':')[1];
@@ -75,22 +116,44 @@ function TagEditor(props: ITagEditorProps) {
   };
 
   const computedFilterValue = () => {
-    if (currentTagKey) return `${currentTagKey}:${currentTagValue}`;
+    if (currentTagKey && !singleTagMode) return `${currentTagKey}:${currentTagValue}`;
+    if (currentTagKey && singleTagMode) return `${currentTagKey}`;
     return '';
   };
 
   const handleCreateTag = (e: React.KeyboardEvent) => {
     const { key } = e;
-    if (key === 'Enter' && currentTagKey && currentTagValue) {
-      const updateTags = [
-        ...tagsState,
-        { key: currentTagKey, value: currentTagValue },
-      ];
-      setTags(updateTags);
-      setCurrentTagKey('');
-      setCurrentTagValue('');
+    if (isDisabledActions()) return null;
+    if (key === 'Enter') {
+      if (currentTagKey && currentTagValue && !singleTagMode) {
+        const updateTags = [
+          ...tagsState,
+          { key: currentTagKey, value: currentTagValue },
+        ];
+        setTags(updateTags);
+        setCurrentTagKey('');
+        setCurrentTagValue('');
+      } else if (singleTagMode && currentTagKey) {
+        setTags([{ key: currentTagKey }]);
+        setCurrentTagKey('');
+      }
+
+      setCollapsedList(true);
     }
     if (key === 'ArrowDown') setCollapsedList(false);
+  };
+
+  // -------  STRATEGY SPECIFIC --------- //
+
+  const handleBlur = (e: React.FocusEvent) => {
+    const currentTarget = e.currentTarget;
+    // Give browser time to focus the next element
+    requestAnimationFrame(() => {
+      // Check if the new focused element is a child of the original container
+      if (!currentTarget.contains(document.activeElement)) {
+        setCollapsedList(true);
+      }
+    });
   };
 
   const handleRemoveTag = (value: string) => {
@@ -98,12 +161,12 @@ function TagEditor(props: ITagEditorProps) {
     setTags(updateTags);
   };
 
-  const setTags = (tags: ITagItem[]) => {
+  const setTags = (tags: TagItemType[]) => {
     setTagsState(tags);
     filterAttributeList(tags);
   };
 
-  const filterAttributeList = (tags: ITagItem[]) => {
+  const filterAttributeList = (tags: TagItemType[]) => {
     const filteredAttributes = categoriesProps.reduce((acc, category) => {
       const attributes = category.attributes.filter(
         (category) => !tags.some((tag) => tag.key === category.value),
@@ -119,11 +182,15 @@ function TagEditor(props: ITagEditorProps) {
   };
 
   return (
-    <div className="TagEditorContainer">
+    <div
+      className="TagEditorContainer"
+      onBlur={handleBlur}
+    >
       <Input
         ref={inputRef}
         value={computedFilterValue()}
-        placeholder="Filter by attributes ..."
+        placeholder={placeholder ?? "Filter by attributes ..."}
+        disabled={isDisabledActions()}
         onClick={toggleCategoriesList}
         onChange={handleChangeValue}
         onKeyDown={handleCreateTag}
@@ -153,6 +220,7 @@ function TagEditor(props: ITagEditorProps) {
               <Option
                 key={attr.value}
                 {...attr}
+                collapsed={collapsedList}
                 onSelect={handleSelectAttribute}
               />
             ))}

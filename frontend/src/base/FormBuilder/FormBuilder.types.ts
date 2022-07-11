@@ -2,6 +2,7 @@ import { FileUploaderProps } from '@base/FileUploader/FileUploader.types';
 import { IInputProps } from '@base/Input';
 import { IOptionProps, ISelectProps } from '@base/Select';
 import { ISwitcherProps } from '@base/Switcher';
+import { ITagEditorSingleModeProps } from '@base/TagEditor/TagEditor.types';
 
 export interface IFormBuilderProps<FormData> {
   initialData: FormData;
@@ -29,6 +30,7 @@ type PossibleControls =
   | InputControlProps
   | InputFileControlProps
   | SelectControlProps
+  | TagEditorControlProps
   | SwitcherControlProps
   | DatePickerControlProps;
 
@@ -48,6 +50,13 @@ export type SelectControlProps = Omit<
   options: SelectOptionControlProps[];
 };
 export type SelectOptionControlProps = Pick<IOptionProps, 'value' | 'label'>;
+
+export type TagEditorControlProps = Omit<
+  ITagEditorSingleModeProps,
+  'singleTagMode' | 'onChange'
+> & {
+  controlType: 'tagEditor';
+};
 
 export type DatePickerControlProps = {
   controlType: 'datepicker';

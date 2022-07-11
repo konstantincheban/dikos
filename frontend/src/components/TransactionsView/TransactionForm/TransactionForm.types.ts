@@ -15,6 +15,7 @@ export type TransactionRawFormData<T> = T & {
 export interface ITransactionFormProps {
   type: 'create' | 'edit';
   availableAccounts?: SelectOptionControlProps[];
+  proposedCategories?: SelectOptionControlProps[];
   data: TransactionFormData;
   onSubmitForm: (values: TransactionFormData) => void;
   validateForm: (valid: boolean) => void;

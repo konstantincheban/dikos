@@ -3,6 +3,7 @@ import UserMenu from '@components/UserMenu/UserMenu';
 import {
   useAccountsRepository,
   useAuthRepository,
+  useTransactionsRepository,
   useUserRepository,
 } from '@repos';
 import { UNDO_DELAY } from '@shared/constants';
@@ -16,12 +17,14 @@ function Layout() {
   const accountsRepo = useAccountsRepository();
   const authRepo = useAuthRepository();
   const userRepo = useUserRepository();
+  const transactionsRepo = useTransactionsRepository();
 
   useEffect(() => {
     authRepo
       .getUserData()
       .then((data) => data && userRepo.getBudgetData(data.budgetID));
     accountsRepo.getAccounts();
+    transactionsRepo.getProposedCategories();
     setGlobalCSSVariable('--undo-animation-duration', `${UNDO_DELAY + 3000}ms`);
   }, []);
 

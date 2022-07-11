@@ -19,5 +19,6 @@ import { AuthModule } from '@auth/auth.module';
   ],
   providers: [StatisticsService],
   controllers: [StatisticsController],
+  exports: [StatisticsService]
 })
 export class StatisticsModule {}

@@ -10,6 +10,7 @@ import {
 } from '@interfaces';
 import { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
+import { AttributeItem } from '@base/TagEditor';
 
 export const useTransactionsRepository = () => {
   const transactionsApi = useTransactionsApi();
@@ -102,6 +103,17 @@ export const useTransactionsRepository = () => {
     );
   };
 
+  const getProposedCategories = () => {
+    repoWrapper(transactionsObservable, () =>
+      transactionsApi
+        .getProposedCategories()
+        .then(({ data }: AxiosResponse<AttributeItem[]>) => {
+          transactionsObservable.setProposedCategories(data);
+        })
+        .catch((err) => setErrorToState(err, transactionsObservable)),
+    );
+  };
+
   const getTransactionsObservable = () =>
     transactionsObservable.getObservable();
 
@@ -112,6 +124,7 @@ export const useTransactionsRepository = () => {
     deleteTransactions,
     getTransactions,
     importTransactions,
+    getProposedCategories,
     getTransactionsObservable,
   };
 };
