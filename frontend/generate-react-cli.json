@@ -29,5 +29,6 @@
       "withLazy": false
     }
   },
-  "testLibrary": "None"
+  "testLibrary": "None",
+  "usesStyledComponents": false
 }
