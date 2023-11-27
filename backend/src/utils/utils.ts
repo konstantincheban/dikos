@@ -1,3 +1,5 @@
+import { SortOrder } from "mongoose";
+
 export const buildFilterExpressions = (filter: string) => {
   const getValueBySeparator = (item: string, separator: 'eq' | 'contains') => {
     let [key, value] = item.split(separator);
@@ -26,8 +28,8 @@ export const buildFilterExpressions = (filter: string) => {
 
 export const buildSortByOrderBy = (orderBy: string) => {
   const [field, criteria] = orderBy.split(' ');
-  if (field && criteria) return { [field]: criteria };
-  return { created_at: 'desc' };
+  if (field && criteria) return { [field]: criteria as SortOrder };
+  return { created_at: 'desc' as SortOrder };
 };
 
 export const immutableObjectFiltering = <T>(

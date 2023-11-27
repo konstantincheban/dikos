@@ -1,8 +1,9 @@
 import { ControlProps } from '@base/FormBuilder';
 import * as Yup from 'yup';
 import { ImportTransactionsFormData } from './ImportTransactionsForm.types';
+import { SUPPORTED_IMPORT_FILE_EXTS } from '@shared/constants';
 
-const FILE_SIZE_LIMIT = 100; // in KB
+const FILE_SIZE_LIMIT = 500; // in KB
 
 const getExtension = (fileName: string | undefined) => {
   return fileName?.split('.')?.pop() ?? '';
@@ -15,9 +16,9 @@ const ImportShape = {
     .required('Required'),
   file: Yup.mixed()
     .test({
-      message: 'Please provide a supported file type - fileName.xls',
+      message: `Please provide a supported file type - ${SUPPORTED_IMPORT_FILE_EXTS.map(ext => `fileName.${ext}`).join(', ')}`,
       test: (file, context) => {
-        const isValid = ['xls'].includes(getExtension(file?.name));
+        const isValid = SUPPORTED_IMPORT_FILE_EXTS.includes(getExtension(file?.name));
         if (!isValid) context?.createError();
         return isValid;
       },
@@ -74,11 +75,11 @@ export const controls: ControlProps[] = [
     dragDropMode: true,
     type: 'file',
     required: true,
-    accept: '.xls',
+    accept: SUPPORTED_IMPORT_FILE_EXTS.join(','),
     name: 'file',
-    label: 'Transaction File',
+    label: 'File with transactions',
     description:
-      'Select your exported receipt in .xls format from Metro account',
+      'Select your exported receipt in .xls format from Metro account or your csv file from Monobank',
   },
 ];
 

@@ -38,3 +38,5 @@ export type DeleteTransactionsResponse = {
   status: 'success' | 'failed';
   reason?: string;
 }[];
+
+export type SupportedImportAPITypes = 'metro' | 'mono';
