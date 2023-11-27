@@ -22,4 +22,9 @@ export const navigationMenuConfig: INavigationItemConfig[] = [
     path: '/statistics',
     icon: <StatisticsIcon />,
   },
+  {
+    label: 'Analytics',
+    path: '/analytics',
+    icon: <StatisticsIcon />,
+  },
 ];
