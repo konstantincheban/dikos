@@ -1,5 +1,5 @@
 export interface IDatePickerProps {
-  initialDate?: Date;
+  value?: Date;
   showTime?: boolean;
   disabled?: boolean;
   placeholder?: string;

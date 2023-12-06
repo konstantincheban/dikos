@@ -52,29 +52,31 @@ const TooltipContent = forwardRef(function TooltipContent(props, ref) {
     };
     const contentRect =
       tooltipContentRef.current?.getBoundingClientRect() as DOMRect;
-    if (
-      direction === 'top' &&
-      wrapperRect.top - contentRect.height - DEFAULT_MARGIN < 0
-    ) {
-      return false;
-    }
-    if (
-      direction === 'bottom' &&
-      wrapperRect.bottom + contentRect.height + DEFAULT_MARGIN > viewport.height
-    ) {
-      return false;
-    }
-    if (
-      direction === 'left' &&
-      wrapperRect.left - contentRect.width - DEFAULT_MARGIN < 0
-    ) {
-      return false;
-    }
-    if (
-      direction === 'right' &&
-      wrapperRect.right + contentRect.width + DEFAULT_MARGIN > viewport.width
-    ) {
-      return false;
+    if (wrapperRect) {
+      if (
+        direction === 'top' &&
+        wrapperRect.top - contentRect.height - DEFAULT_MARGIN < 0
+      ) {
+        return false;
+      }
+      if (
+        direction === 'bottom' &&
+        wrapperRect.bottom + contentRect.height + DEFAULT_MARGIN > viewport.height
+      ) {
+        return false;
+      }
+      if (
+        direction === 'left' &&
+        wrapperRect.left - contentRect.width - DEFAULT_MARGIN < 0
+      ) {
+        return false;
+      }
+      if (
+        direction === 'right' &&
+        wrapperRect.right + contentRect.width + DEFAULT_MARGIN > viewport.width
+      ) {
+        return false;
+      }
     }
     return true;
   };

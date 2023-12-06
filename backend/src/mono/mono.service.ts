@@ -33,11 +33,9 @@ export class MonoService {
 
   excelSerialDateToDate(serialDate) {
     // Excel base date is December 30, 1899
-    const excelBaseDate = new Date(1899, 11, 30);
-    // 24 hours, 60 minutes, 60 seconds, 1000 milliseconds
-    const dayMilliseconds = 24 * 60 * 60 * 1000;
+    const date = XLSX.SSF.parse_date_code(serialDate);
 
-    return new Date(excelBaseDate.getTime() + serialDate * dayMilliseconds);
+    return new Date(date.y, date.d - 1, date.m, date.H, date.M, date.S);
   }
 
   parseDate(excelDate: string | number): Date {
