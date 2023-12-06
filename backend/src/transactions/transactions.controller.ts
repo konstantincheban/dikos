@@ -37,10 +37,10 @@ export class TransactionsController {
     @Req() req,
   ) {
     return await this.transactionsService.getFilteredTransactions(
+      req.user.id,
       filter ?? '',
       orderBy ?? '',
-      Number(top) ?? 0,
-      req.user.id,
+      Number(top) ?? 0
     );
   }
 

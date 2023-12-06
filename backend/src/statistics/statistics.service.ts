@@ -12,6 +12,7 @@ import {
 import { BudgetService } from '@budget/budget.service';
 import * as moment from 'moment';
 import { BudgetDTO } from './dto/budget-dto';
+import { ForecastResult } from 'src/analytics/schemas/forecast.schema';
 
 @Injectable()
 export class StatisticsService {
@@ -162,6 +163,57 @@ export class StatisticsService {
         return acc;
       }, data)
       .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async getTransactionsDataForSpecificTimePeriod(
+    userID: string,
+    startTime: string,
+    endTime: string,
+    type: string,
+  ): Promise<ForecastResult[]> {
+    const startTimeDate = new Date(startTime);
+    const endTimeDate = new Date(endTime);
+    return await this.transactionModel.aggregate([
+      {
+        $match: {
+          $expr: {
+            $and: [
+              { $eq: ['$userID', { $toObjectId: userID }] },
+              {
+                $gt: [
+                  '$date',
+                  startTimeDate,
+                ],
+              },
+              {
+                $lt: [
+                  '$date',
+                  endTimeDate,
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
+          amount: type === 'income' ? this.incomeSum : this.outcomeSum
+        },
+      },
+      {
+        $sort: { _id: -1 } // Sorting in descending order
+      },
+      {
+        $project: {
+          _id: 0,
+          dataTime: '$_id',
+          amount: {
+            $round: ['$amount', ROUND_VALUE],
+          },
+        },
+      },
+    ]);
   }
 
   async getBudgetStatisticsDataForYear(userID: string): Promise<BudgetDTO[]> {

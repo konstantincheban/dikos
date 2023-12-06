@@ -11,6 +11,7 @@ import { MetroModule } from './metro/metro.module';
 import { MonoModule } from './mono/mono.module';
 import { BudgetModule } from './budget/budget.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     MonoModule,
     BudgetModule,
     StatisticsModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

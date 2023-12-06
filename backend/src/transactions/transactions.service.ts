@@ -1,7 +1,7 @@
 import { StatisticsService } from '@statistics/statistics.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Query } from 'mongoose';
 import { AccountsService } from '@accounts/accounts.service';
 import { buildFilterExpressions, buildSortByOrderBy } from '@utils/utils';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
@@ -94,10 +94,10 @@ export class TransactionsService {
   }
 
   async getFilteredTransactions(
-    filter: string,
-    orderBy: string,
-    top: number,
     userID: string,
+    filter = '',
+    orderBy = '',
+    top = 0,
   ): Promise<Transaction[]> {
     const buildFilterObject = buildFilterExpressions(filter);
     const sortValue = buildSortByOrderBy(orderBy);
@@ -105,5 +105,18 @@ export class TransactionsService {
       .find({ $and: buildFilterObject, userID })
       .sort(sortValue)
       .limit(top);
+  }
+
+  async getTransactions(
+    userID: string,
+    findOptions?: any,
+    sortOptions?: any,
+    selectOptions?: any
+
+  ): Promise<Partial<Transaction>[]> {
+    return await this.transactionModel
+      .find({ ...findOptions, 'userID': userID })
+      .sort(sortOptions ?? '')
+      .select(selectOptions ?? '')
   }
 }
