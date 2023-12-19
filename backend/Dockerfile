@@ -1,5 +1,5 @@
 # Base image
-FROM node:16-alpine As development
+FROM node:18-alpine As development
 # Create app directory
 WORKDIR /app
 # Copy application dependency manifests to the container image.
@@ -31,7 +31,7 @@ COPY . .
 RUN npm run build
 
 # Base image for production
-FROM node:16-alpine As production
+FROM node:18-alpine As production
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
 # Create app directory
