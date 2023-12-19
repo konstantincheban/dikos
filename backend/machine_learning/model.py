@@ -89,12 +89,6 @@ def make_prediction(reg, X_test):
     return reg.predict(X_test)
 
 
-def get_MRSE(y_test, pred):
-    score = np.sqrt(mean_squared_error(y_test, pred))
-    # print(f'RMSE Score on Test set: {score:0.2f}')
-    return score
-
-
 def print_stats(y_test, pred):
     print('RMSE: ', round(np.sqrt(mean_squared_error(y_true=y_test, y_pred=pred)), 3))
     print('MAE: ', round(mean_absolute_error(y_true=y_test, y_pred=pred), 3))
@@ -252,7 +246,7 @@ def main():
             main_df = resample_and_create_features(main_df, 'W')
 
         # keep outliers for the income data
-        if forecast_type == 'outcome':
+        if forecast_type == 'expenses':
             # remove outliers dynamically
             z_scores = np.abs(stats.zscore(main_df['amount']))
             threshold = 0.7
@@ -266,7 +260,7 @@ def main():
         X = main_df[resample_features]
         y = main_df[TARGET]
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
         reg = make_xgboost_reg(X_train, y_train, X_test, y_test, forecast_type)
 
