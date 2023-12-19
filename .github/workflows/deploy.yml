@@ -5,6 +5,7 @@ name: Deploy UI/API to heroku.
 on:
   push:
     branches: [master]
+  workflow_dispatch:
 
 # Your workflows jobs.
 jobs:
