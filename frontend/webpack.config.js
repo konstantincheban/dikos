@@ -58,7 +58,7 @@ module.exports = (env, argv) => {
       historyApiFallback: true,
       port: 3000,
       proxy: {
-        '/api/v1/*': process.env.API_URL || 'http://localhost:5000/',
+        '/api/v1/*': process.env.API_URL || 'http://localhost:6969/',
       },
       hot: 'only',
       compress: true,

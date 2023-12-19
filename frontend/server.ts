@@ -4,7 +4,7 @@ const favicon = require('express-favicon');
 const path = require('path');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const port = process.env.PORT || 3000;
-const api_url = process.env.API_URL || 'http://localhost:5000/';
+const api_url = process.env.API_URL || 'http://localhost:6969/';
 const app = express();
 app.use(favicon(__dirname + '/dist/favicon.ico'));
 app.use(express.static(__dirname));
