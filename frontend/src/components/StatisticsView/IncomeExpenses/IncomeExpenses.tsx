@@ -1,13 +1,13 @@
 import Switcher from '@base/Switcher';
 import { useStatisticsRepository } from '@repos';
-import { IncomeOutcomeStatisticsData } from '@shared/interfaces';
+import { IncomeExpensesStatisticsData } from '@shared/interfaces';
 import { useEffect, useState } from 'react';
-import IncomeOutcomeBarChart from '../Charts/IncomeOutcomeBarChart';
-import IncomeOutcomeLineChart from '../Charts/IncomeOutcomeLineChart';
+import IncomeExpensesBarChart from '../Charts/IncomeExpensesBarChart';
+import IncomeExpensesLineChart from '../Charts/IncomeExpensesLineChart';
 import StatisticsDataController, {
   StatisticsDataControllerConfig,
 } from '../StatisticsDataController/StatisticsDataController';
-import './IncomeOutcome.scss';
+import './IncomeExpenses.scss';
 
 const VIEW_MODE_OPTIONS = [
   {
@@ -20,9 +20,9 @@ const VIEW_MODE_OPTIONS = [
   },
 ];
 
-function IncomeOutcome() {
-  const [chartData, setChartData] = useState<IncomeOutcomeStatisticsData[]>();
-  const { getIncomeOutcomeStatisticsData } = useStatisticsRepository();
+function IncomeExpenses() {
+  const [chartData, setChartData] = useState<IncomeExpensesStatisticsData[]>();
+  const { getIncomeExpensesStatisticsData } = useStatisticsRepository();
   const [dataConfig, setDataConfig] =
     useState<StatisticsDataControllerConfig>();
 
@@ -31,7 +31,7 @@ function IncomeOutcome() {
   useEffect(() => {
     const params = dataConfig ? Object.values(dataConfig) : [];
     params.length &&
-      getIncomeOutcomeStatisticsData(params).then(
+      getIncomeExpensesStatisticsData(params).then(
         (data) => data && setChartData(data),
       );
   }, [dataConfig]);
@@ -48,16 +48,16 @@ function IncomeOutcome() {
 
   const renderChart = () => {
     if (viewMode === 'barChart' && chartData)
-      return <IncomeOutcomeBarChart chartData={chartData} />;
+      return <IncomeExpensesBarChart chartData={chartData} />;
     if (viewMode === 'lineChart' && chartData)
-      return <IncomeOutcomeLineChart chartData={chartData} />;
+      return <IncomeExpensesLineChart chartData={chartData} />;
   };
 
   return (
-    <div className="IncomeOutcomeContainer">
+    <div className="IncomeExpensesContainer">
       <div className="TopSection">
         <div className="LeftSide">
-          <span className="TopSectionTitle">Income & Outcome</span>
+          <span className="TopSectionTitle">Income & Expenses</span>
           <Switcher
             value={viewMode}
             options={VIEW_MODE_OPTIONS}
@@ -71,4 +71,4 @@ function IncomeOutcome() {
   );
 }
 
-export default IncomeOutcome;
+export default IncomeExpenses;

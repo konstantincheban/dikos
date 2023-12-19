@@ -2,7 +2,7 @@ import {
   TopCategoriesStatisticsData,
   TopShopsStatisticsData,
   BudgetStatisticsData,
-  IncomeOutcomeStatisticsData,
+  IncomeExpensesStatisticsData,
 } from '@interfaces';
 import { setErrorToState, repoWrapper } from './utils';
 import { useStatisticsObservable } from '@observables';
@@ -13,11 +13,11 @@ export const useStatisticsRepository = () => {
   const statisticsApi = useStatisticsApi();
   const statisticsObservable = useStatisticsObservable();
 
-  const getIncomeOutcomeStatisticsData = (parameters?: string[]) => {
+  const getIncomeExpensesStatisticsData = (parameters?: string[]) => {
     return repoWrapper(statisticsObservable, () =>
       statisticsApi
-        .getIncomeOutcomeStatisticsData(parameters)
-        .then(({ data }: AxiosResponse<IncomeOutcomeStatisticsData[]>) => data)
+        .getIncomeExpensesStatisticsData(parameters)
+        .then(({ data }: AxiosResponse<IncomeExpensesStatisticsData[]>) => data)
         .catch((err) => setErrorToState(err, statisticsObservable)),
     );
   };
@@ -52,7 +52,7 @@ export const useStatisticsRepository = () => {
   const getStatisticsObservable = () => statisticsObservable.getObservable();
 
   return {
-    getIncomeOutcomeStatisticsData,
+    getIncomeExpensesStatisticsData,
     getBudgetStatisticsData,
     getTopCategoriesStatisticsData,
     getTopShopsStatisticsData,

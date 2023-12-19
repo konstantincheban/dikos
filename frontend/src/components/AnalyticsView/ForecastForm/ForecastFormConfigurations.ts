@@ -3,13 +3,12 @@ import * as Yup from 'yup';
 import { ForecastFormData } from './ForecastForm.types';
 
 export const SUPPORTED_FORECAST_PERIODS = ['1M', '2M', '3M'] as const;
-
 const ForecastOptionsShape = {
   period: Yup.mixed()
     .oneOf(SUPPORTED_FORECAST_PERIODS as unknown as any[])
     .required('Required'),
   forecastType: Yup.mixed()
-    .oneOf(['income', 'outcome'])
+    .oneOf(['income', 'expenses'])
     .required('Required')
 };
 
@@ -42,7 +41,7 @@ export const controls: ControlProps[] = [
     controlType: 'select',
     name: 'forecastType',
     label: 'Forecast type',
-    value: 'outcome',
+    value: 'expenses',
     description: `Choose forecast type`,
     required: true,
     options: [
@@ -51,8 +50,8 @@ export const controls: ControlProps[] = [
         label: 'Income',
       },
       {
-        value: 'outcome',
-        label: 'Outcome',
+        value: 'expenses',
+        label: 'Expenses',
       },
     ],
   },
@@ -66,6 +65,6 @@ export const controls: ControlProps[] = [
 
 export const defaultData: ForecastFormData = {
   period: '1M',
-  forecastType: 'outcome',
+  forecastType: 'expenses',
   startTime: ''
 };

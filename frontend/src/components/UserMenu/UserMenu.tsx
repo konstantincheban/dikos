@@ -45,8 +45,8 @@ function UserMenu() {
       currency: 'UAH',
     },
     {
-      ref: 'outcome',
-      name: 'Outcome',
+      ref: 'expenses',
+      name: 'Expenses',
       amount: 0,
       currency: 'UAH',
     },
@@ -55,7 +55,7 @@ function UserMenu() {
   const dateSummaryConfigDefault: IDateSummaryWidgetConfig[] = [
     {
       ref: 'byDay',
-      name: 'Daily Outcome',
+      name: 'Daily Expense',
       amount: 0,
       percentage: '0%',
       currency: 'UAH',
@@ -63,7 +63,7 @@ function UserMenu() {
     },
     {
       ref: 'byWeek',
-      name: 'Weekly Outcome',
+      name: 'Weekly Expenses',
       amount: 0,
       percentage: '0%',
       currency: 'UAH',
@@ -71,7 +71,7 @@ function UserMenu() {
     },
     {
       ref: 'byMonth',
-      name: 'Monthly Outcome',
+      name: 'Monthly Expenses',
       amount: 0,
       percentage: '0%',
       currency: 'UAH',
@@ -176,7 +176,7 @@ function UserMenu() {
 
   const handleCreateTransaction = (values: TransactionRawFormData<CreateTransactionRequest>) => {
     const { transactionType, ...data } = values;
-    if (transactionType === 'outcome') data.amount = -data.amount;
+    if (transactionType === 'expenses') data.amount = -data.amount;
 
     createTransaction(data).then(() => {
       if (!transactionErrors) modalRef.current?.close();

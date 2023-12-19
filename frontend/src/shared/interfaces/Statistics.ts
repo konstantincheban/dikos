@@ -1,13 +1,13 @@
-export type IncomeOutcomeStatisticsData = {
+export type IncomeExpensesStatisticsData = {
   name: string;
   income: number;
-  outcome: number;
+  expenses: number;
 };
 
 export type BudgetStatisticsData = {
   name: string;
   budget: number;
-  outcome: number;
+  expenses: number;
 };
 
 export type TopCategoriesStatisticsData = {

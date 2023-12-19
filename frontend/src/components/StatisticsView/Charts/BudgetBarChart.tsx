@@ -17,14 +17,14 @@ import './Charts.scss';
 import { IChartProps } from './Charts.types';
 
 const renderBarShape =
-  (id: 'budget' | 'outcome') =>
+  (id: 'budget' | 'expenses') =>
   ({ height, width, x, y, fillOpacity }: any) => {
     const colors = {
       budget: {
         from: '#e79c44',
         to: '#d75528',
       },
-      outcome: {
+      expenses: {
         from: '#e9354f',
         to: '#a23363',
       },
@@ -123,11 +123,11 @@ const BudgetBarChart = (props: IChartProps<BudgetStatisticsData>) => {
             shape={renderBarShape('budget')}
           />
           <Bar
-            dataKey="outcome"
+            dataKey="expenses"
             fill="#a23363"
             minPointSize={10}
-            fillOpacity={focusBar === 'outcome' || !focusBar ? 1 : 0.3}
-            shape={renderBarShape('outcome')}
+            fillOpacity={focusBar === 'expenses' || !focusBar ? 1 : 0.3}
+            shape={renderBarShape('expenses')}
           />
         </BarChart>
       </ResponsiveContainer>

@@ -104,7 +104,7 @@ function AnalyticsView() {
   const handleOpenForecastModal = () => {
     modalRef.current?.open({
       options: {
-        title: 'Forecast income or outcome',
+        title: 'Forecast income or expenses',
       },
       renderer: (
         <ForecastForm

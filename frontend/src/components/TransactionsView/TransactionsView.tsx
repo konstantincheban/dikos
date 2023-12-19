@@ -199,7 +199,7 @@ function TransactionsView() {
     transactionId: string,
   ) => {
     const { transactionType, ...data } = values;
-    if (transactionType === 'outcome') data.amount = -data.amount;
+    if (transactionType === 'expenses') data.amount = -data.amount;
 
     editTransaction(data, transactionId).then(() => {
       if (!transactionErrors) modalRef.current?.close();
@@ -367,7 +367,7 @@ function TransactionsView() {
         <div className="Block">
           <div
             className={classMap(
-              { income: amount > 0, outcome: amount < 0 },
+              { income: amount > 0, expenses: amount < 0 },
               'TransactionCategory Block',
             )}
           >

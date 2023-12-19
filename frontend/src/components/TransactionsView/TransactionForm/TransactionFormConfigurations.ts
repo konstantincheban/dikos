@@ -53,7 +53,7 @@ export const controls: ControlProps[] = [
     value: 'income',
     options: [
       { value: 'income', label: 'Income' },
-      { value: 'outcome', label: 'Outcome' }
+      { value: 'expenses', label: 'Expenses' }
     ]
   },
   {
