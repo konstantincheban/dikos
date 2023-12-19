@@ -1,4 +1,4 @@
-import { IncomeOutcomeStatisticsData } from '@shared/interfaces';
+import { IncomeExpensesStatisticsData } from '@shared/interfaces';
 import { dateFormatter } from '@shared/utils';
 import {
   LineChart,
@@ -34,8 +34,8 @@ const CustomTooltip = (props: any) => {
   return null;
 };
 
-const IncomeOutcomeLineChart = (
-  props: IChartProps<IncomeOutcomeStatisticsData>,
+const IncomeExpensesLineChart = (
+  props: IChartProps<IncomeExpensesStatisticsData>,
 ) => {
   const { chartData } = props;
   return (
@@ -55,7 +55,7 @@ const IncomeOutcomeLineChart = (
         />
         <Line
           type="monotone"
-          dataKey="outcome"
+          dataKey="expenses"
           stroke="#a23363"
           strokeWidth={3}
           activeDot={{ r: 8 }}
@@ -65,4 +65,4 @@ const IncomeOutcomeLineChart = (
   );
 };
 
-export default IncomeOutcomeLineChart;
+export default IncomeExpensesLineChart;

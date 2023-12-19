@@ -9,7 +9,7 @@ export type TransactionFormData =
   | EditTransactionRequest;
 
 export type TransactionRawFormData<T> = T & {
-  transactionType: 'income' | 'outcome';
+  transactionType: 'income' | 'expenses';
 }
 
 export interface ITransactionFormProps {

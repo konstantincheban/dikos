@@ -36,7 +36,7 @@ export const buildFilterExpressions = (filter: string) => {
     }, []);
 };
 
-export const buildSortByOrderBy = (orderBy: string) => {
+export const buildSortByOrderBy = (orderBy: string): {[x: string]: SortOrder} => {
   const [field, criteria] = orderBy.split(' ');
   if (field && criteria) return { [field]: criteria as SortOrder };
   return { created_at: 'desc' as SortOrder };

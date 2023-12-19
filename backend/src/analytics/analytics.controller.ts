@@ -21,12 +21,12 @@ export class AnalyticsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('forecast/outcome')
-  async forecastOutcome (
+  @Post('forecast/expenses')
+  async forecastExpenses (
     @Body() body: ForecastBodyDTO,
     @Req() req,
   ) {
-    return await this.analyticsService.forecastOutcome(
+    return await this.analyticsService.forecastExpenses(
       req.user.id,
       body.period,
       body.startTime

@@ -17,7 +17,7 @@ interface MLTransaction {
 }
 
 export const PERIODS = ['1M', '2M', '3M'] as const;
-export const FORECAST_TYPES = ['income', 'outcome'] as const;
+export const FORECAST_TYPES = ['income', 'expenses'] as const;
 
 @Injectable()
 export class AnalyticsService {
@@ -37,7 +37,7 @@ export class AnalyticsService {
     period: '1M',
     nTransactions: 0,
     modelVersion: '1.0',
-    forecastType: 'outcome'
+    forecastType: 'expenses'
   };
 
   validateParams(period: Periods) {
@@ -85,7 +85,7 @@ export class AnalyticsService {
     const options: Forecast['options'] = this.defaultOptions;
 
     let amountFilter: {[key: string]: number} = { $gt: 0 };
-    if (forecastType === 'outcome') amountFilter = { $lt: 0 };
+    if (forecastType === 'expenses') amountFilter = { $lt: 0 };
 
     const transactions = await this.transactionsService.getTransactions(userID, { amount: amountFilter, date: { $lt: startTime} }, { date: 'desc' }, 'date amount -_id');
     options.period = period;
@@ -128,9 +128,9 @@ export class AnalyticsService {
     }).save();
   }
 
-  async forecastOutcome(userID: string, period: Periods, startTime: string) {
+  async forecastExpenses(userID: string, period: Periods, startTime: string) {
     this.validateParams(period);
-    const { transactions, options } = await this.buildParams(userID, period, 'outcome', startTime);
+    const { transactions, options } = await this.buildParams(userID, period, 'expenses', startTime);
 
     const result = await this.forecastModel.find({
       userID: userID,
@@ -144,7 +144,7 @@ export class AnalyticsService {
       return result[0];
     }
     const processedTransactions = this.processTransaction(transactions);
-    const results = await this.forecast(processedTransactions as MLTransaction[], options, 'outcome');
+    const results = await this.forecast(processedTransactions as MLTransaction[], options, 'expenses');
 
     this.logger.log('Creating new forecast instance...');
 

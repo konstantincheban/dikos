@@ -14,18 +14,18 @@ export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('/income_outcome/:date_type/:date_detail?')
-  async getIncomeOutcomeStatisticsData(
+  @Get('/income_expenses/:date_type/:date_detail?')
+  async getIncomeExpensesStatisticsData(
     @Req() req,
     @Param('date_type') dateType: string,
     @Param('date_detail') dateDetail?: string,
   ) {
     if (dateType === 'in_one_year') {
-      return await this.statisticsService.getIncomeOutcomeStatisticsDataForYear(
+      return await this.statisticsService.getIncomeExpensesStatisticsDataForYear(
         req.user.id,
       );
     } else if (dateType === 'in_one_month' && dateDetail) {
-      return await this.statisticsService.getIncomeOutcomeStatisticsDataForMonth(
+      return await this.statisticsService.getIncomeExpensesStatisticsDataForMonth(
         req.user.id,
         dateDetail,
       );

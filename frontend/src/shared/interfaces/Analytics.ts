@@ -2,7 +2,7 @@
 import { SUPPORTED_FORECAST_PERIODS } from "@components/AnalyticsView/ForecastForm/ForecastFormConfigurations";
 
 export type ForecastPeriods = typeof SUPPORTED_FORECAST_PERIODS[number];
-export type ForecastType = 'income' | 'outcome';
+export type ForecastType = 'income' | 'expenses';
 export type ForecastOptions = {
   period: ForecastPeriods,
   forecastType: ForecastType,

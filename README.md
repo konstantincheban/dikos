@@ -6,7 +6,7 @@ Make your life easier, trust us with the flow of information about your budget
 
 ### How to setup application using npm?
 
-Required NodeJS version - **16.13**
+Required NodeJS version - **18.17**
 
 **/frontend folder:**
 
