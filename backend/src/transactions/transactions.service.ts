@@ -13,6 +13,18 @@ import {
 import { ProposedCategoryDTO } from './dto/proposed-category.dto';
 import { DeleteTransactionsStatusDTO } from './dto/delete-transactions-status.dto';
 
+interface ICount {
+  count: number
+}
+
+interface IOptions {
+  find?: any,
+  sort?: any,
+  select?: any,
+  top?: number,
+  count?: boolean
+}
+
 @Injectable()
 export class TransactionsService {
   constructor(
@@ -93,30 +105,64 @@ export class TransactionsService {
     })
   }
 
+  // Overload signatures
+  async getFilteredTransactions(userID: string, filter: any | undefined, orderBy: any | undefined, top: number | undefined, count: true): Promise<ICount>;
+  async getFilteredTransactions(userID: string, filter?: any, orderBy?: any, top?: number, count?: boolean): Promise<Transaction[]>;
+
   async getFilteredTransactions(
     userID: string,
-    filter = '',
-    orderBy = '',
-    top = 0,
-  ): Promise<Transaction[]> {
+    filter?: any,
+    orderBy?: any,
+    top?: number,
+    count?: boolean
+  ): Promise<Transaction[] | ICount> {
     const buildFilterObject = buildFilterExpressions(filter);
     const sortValue = buildSortByOrderBy(orderBy);
-    return await this.transactionModel
-      .find({ $and: buildFilterObject, userID })
-      .sort(sortValue)
-      .limit(top);
+    let query = this.transactionModel.find({ $and: buildFilterObject, userID });
+    if (orderBy) {
+      query = query.sort(sortValue);
+    }
+    if (top) {
+      query = query.limit(top);
+    }
+    if (count) {
+      return {
+        count: await query.countDocuments()
+      }
+    }
+    return await query;
   }
+
+  // Overload signatures
+  async getTransactions(userID: string, options: IOptions & { count: true }): Promise<ICount>;
+  async getTransactions(userID: string, options: IOptions): Promise<Partial<Transaction>[]>;
 
   async getTransactions(
     userID: string,
-    findOptions?: any,
-    sortOptions?: any,
-    selectOptions?: any
-
-  ): Promise<Partial<Transaction>[]> {
-    return await this.transactionModel
-      .find({ ...findOptions, 'userID': userID })
-      .sort(sortOptions ?? '')
-      .select(selectOptions ?? '')
+    options: IOptions
+  ): Promise<ICount | Partial<Transaction>[]> {
+    const {
+      find,
+      sort,
+      select,
+      top,
+      count
+    } = options;
+    let query = this.transactionModel.find({ ...(find ?? {}), userID });
+    if (sort) {
+      query = query.sort(sort);
+    }
+    if (select) {
+      query = query.select(select);
+    }
+    if (top) {
+      query = query.limit(top);
+    }
+    if (count) {
+      return {
+        count: await query.countDocuments()
+      }
+    }
+    return await query;
   }
 }

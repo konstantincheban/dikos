@@ -75,7 +75,7 @@ export const controls: ControlProps[] = [
     dragDropMode: true,
     type: 'file',
     required: true,
-    accept: SUPPORTED_IMPORT_FILE_EXTS.join(','),
+    accept: SUPPORTED_IMPORT_FILE_EXTS.map(type => `.${type}`).join(','),
     name: 'file',
     label: 'File with transactions',
     description:

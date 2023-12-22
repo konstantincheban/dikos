@@ -11,14 +11,36 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@accounts/*": ["./src/accounts/*"],
-      "@auth/*": ["./src/auth/*"],
-      "@budget/*": ["./src/budget/*"],
-      "@metro/*": ["./src/metro/*"],
-      "@statistics/*": ["./src/statistics/*"],
-      "@transactions/*": ["./src/transactions/*"],
-      "@users/*": ["./src/users/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@accounts/*": [
+        "./src/accounts/*"
+      ],
+      "@auth/*": [
+        "./src/auth/*"
+      ],
+      "@budget/*": [
+        "./src/budget/*"
+      ],
+      "@metro/*": [
+        "./src/metro/*"
+      ],
+      "@statistics/*": [
+        "./src/statistics/*"
+      ],
+      "@transactions/*": [
+        "./src/transactions/*"
+      ],
+      "@analytics/*": [
+        "./src/analytics/*"
+      ],
+      "@events/*": [
+        "src/events/*"
+      ],
+      "@users/*": [
+        "./src/users/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ]
     },
     "incremental": true,
     "skipLibCheck": true,

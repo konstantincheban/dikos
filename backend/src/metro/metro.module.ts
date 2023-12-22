@@ -4,12 +4,14 @@ import { MetroController } from './metro.controller';
 import { MetroService } from './metro.service';
 import { AccountsModule } from '@accounts/accounts.module';
 import { AuthModule } from '@auth/auth.module';
+import { EventsModule } from '@events/events.module';
 
 @Module({
   imports: [
     forwardRef(() => AuthModule),
     forwardRef(() => TransactionsModule),
     forwardRef(() => AccountsModule),
+    forwardRef(() => EventsModule)
   ],
   providers: [MetroService],
   controllers: [MetroController],

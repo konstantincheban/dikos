@@ -8,6 +8,7 @@ import { Model } from 'mongoose';
 import { spawn } from 'child_process';
 import { Transaction } from '@transactions/schemas/transactions.schema';
 import { StatisticsService } from '@statistics/statistics.service';
+import { EventsGateway } from '@events/events.gateway';
 
 type ForecastType = Forecast['options']['forecastType'];
 
@@ -18,6 +19,7 @@ interface MLTransaction {
 
 export const PERIODS = ['1M', '2M', '3M'] as const;
 export const FORECAST_TYPES = ['income', 'expenses'] as const;
+export const MIN_TRANSACTIONS_AMOUNT = 100;
 
 @Injectable()
 export class AnalyticsService {
@@ -25,7 +27,8 @@ export class AnalyticsService {
     @InjectModel(Forecast.name)
     private readonly forecastModel: Model<ForecastDocument>,
     private readonly transactionsService: TransactionsService,
-    private readonly statisticsService: StatisticsService
+    private readonly statisticsService: StatisticsService,
+    private eventsGateway: EventsGateway
   ) {}
 
   logger = new Logger('AnalyticsService');
@@ -43,6 +46,13 @@ export class AnalyticsService {
   validateParams(period: Periods) {
     if (!PERIODS.includes(period)) {
       throw new BadRequestException(`Wrong period value is used: ${period}. Please use following supported types of period: ${PERIODS.join(' ,')}`);
+    }
+  }
+
+  async validateRequirements(userID: string) {
+    const numberOfTransaction = await this.transactionsService.getTransactions(userID, { count: true });
+    if (numberOfTransaction.count < MIN_TRANSACTIONS_AMOUNT) {
+      throw new BadRequestException(`Number of available transactions: ${numberOfTransaction.count}. Required number of transactions to perform forecasting: ${MIN_TRANSACTIONS_AMOUNT}`);
     }
   }
 
@@ -87,7 +97,11 @@ export class AnalyticsService {
     let amountFilter: {[key: string]: number} = { $gt: 0 };
     if (forecastType === 'expenses') amountFilter = { $lt: 0 };
 
-    const transactions = await this.transactionsService.getTransactions(userID, { amount: amountFilter, date: { $lt: startTime} }, { date: 'desc' }, 'date amount -_id');
+    const transactions = await this.transactionsService.getTransactions(userID, {
+      find: { amount: amountFilter, date: { $lt: startTime} },
+      sort: { date: 'desc' },
+      select: 'date amount -_id'
+    });
     options.period = period;
     options.nTransactions = transactions.length;
     options.startTime = startTime ?? transactions.at(0).date.toISOString();
@@ -100,59 +114,64 @@ export class AnalyticsService {
     return transactions.map((trans) => ({ dateTime: trans.date.toISOString(), amount: trans.amount }));
   }
 
-  async forecastIncome(userID: string, period: Periods, startTime: string) {
-    this.validateParams(period);
-    const { transactions, options } = await this.buildParams(userID, period, 'income', startTime);
+  async forecastHandler(userID: string, period: Periods, startTime: string, forecastType: ForecastType) {
+    try {
+      const { transactions, options } = await this.buildParams(userID, period, forecastType, startTime);
 
-    const result = await this.forecastModel.find({
-      userID: userID,
-      'options.startTime': options.startTime,
-      'options.period': options.period,
-      'options.nTransactions': options.nTransactions,
-      'options.forecastType': options.forecastType
-    }).sort({ created_at: -1 }).limit(1);
-    if (result.length) {
-      this.logger.log('Forecast with the same options was found, return it...');
-      return result[0];
+      const result = await this.forecastModel.find({
+        userID: userID,
+        'options.startTime': options.startTime,
+        'options.period': options.period,
+        'options.nTransactions': options.nTransactions,
+        'options.forecastType': options.forecastType
+      }).sort({ created_at: -1 }).limit(1);
+      if (result.length) {
+        this.logger.log('Forecast with the same options was found, return it...');
+        return result[0];
+      }
+
+      this.eventsGateway.send(
+        'forecast',
+        {
+          status: 'progress',
+          message: 'Forecasting is in progress'
+        }
+      );
+
+      const processedTransactions = this.processTransaction(transactions);
+      const results = await this.forecast(processedTransactions as MLTransaction[], options, forecastType);
+
+      await new this.forecastModel({
+        userID: userID,
+        results: results,
+        options: options
+      }).save();
+      this.eventsGateway.send(
+        'forecast',
+        {
+          status: 'success',
+          message: 'Forecasting finished successfully'
+        }
+      );
+    } catch (err) {
+      this.eventsGateway.send(
+        'forecast',
+        {
+          status: 'failed',
+          message: 'Forecasting failed'
+        }
+      );
     }
-
-    const processedTransactions = this.processTransaction(transactions);
-    const results = await this.forecast(processedTransactions as MLTransaction[], options, 'income');
-
-    this.logger.log('Creating new forecast instance...');
-
-    return await new this.forecastModel({
-      userID: userID,
-      results: results,
-      options: options
-    }).save();
   }
 
-  async forecastExpenses(userID: string, period: Periods, startTime: string) {
+  async forecastIncomeOrExpenses(userID: string, period: Periods, startTime: string, forecastType: ForecastType) {
     this.validateParams(period);
-    const { transactions, options } = await this.buildParams(userID, period, 'expenses', startTime);
+    await this.validateRequirements(userID);
+    this.forecastHandler(userID, period, startTime, forecastType);
 
-    const result = await this.forecastModel.find({
-      userID: userID,
-      'options.startTime': options.startTime,
-      'options.period': options.period,
-      'options.nTransactions': options.nTransactions,
-      'options.forecastType': options.forecastType
-    }).sort({ created_at: -1 }).limit(1);
-    if (result.length) {
-      this.logger.log('Forecast with the same options was found, return it...');
-      return result[0];
+    return {
+      message: 'Creating new forecast instance...'
     }
-    const processedTransactions = this.processTransaction(transactions);
-    const results = await this.forecast(processedTransactions as MLTransaction[], options, 'expenses');
-
-    this.logger.log('Creating new forecast instance...');
-
-    return await new this.forecastModel({
-      userID: userID,
-      results: results,
-      options: options
-    }).save();
   }
 
   async getResults(userID: string) {

@@ -12,6 +12,7 @@ import { MonoModule } from './mono/mono.module';
 import { BudgetModule } from './budget/budget.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     BudgetModule,
     StatisticsModule,
     AnalyticsModule,
+    EventsModule
   ],
   controllers: [AppController],
   providers: [AppService],
