@@ -73,10 +73,10 @@ const FileUploader = forwardRef(function FileUploader(
           <span>Select File</span>
         </Button>
         <input
+          {...props}
+          type="file"
           className="FileUploaderInput"
           ref={inputRef as LegacyRef<HTMLInputElement>}
-          type="file"
-          {...props}
           onChange={handleChangeSelectedFile}
         />
         <span className="FileUploaderInfo">{getFileInfoLabel()}</span>
