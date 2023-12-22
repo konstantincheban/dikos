@@ -1,9 +1,12 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AnalyticsService } from './analytics.service';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { ForecastBodyDTO, ForecastTypes } from './dto/forecast-dto';
+import { Forecast } from './schemas/forecast.schema';
+import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
 
 @Controller('analytics')
+@UseInterceptors(MongooseClassSerializerInterceptor(Forecast))
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
@@ -13,10 +16,11 @@ export class AnalyticsController {
     @Body() body: ForecastBodyDTO,
     @Req() req,
   ) {
-    return await this.analyticsService.forecastIncome(
+    return await this.analyticsService.forecastIncomeOrExpenses(
       req.user.id,
       body.period,
-      body.startTime
+      body.startTime,
+      'income'
     );
   }
 
@@ -26,10 +30,11 @@ export class AnalyticsController {
     @Body() body: ForecastBodyDTO,
     @Req() req,
   ) {
-    return await this.analyticsService.forecastExpenses(
+    return await this.analyticsService.forecastIncomeOrExpenses(
       req.user.id,
       body.period,
-      body.startTime
+      body.startTime,
+      'expenses'
     );
   }
 

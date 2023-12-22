@@ -34,13 +34,15 @@ export class TransactionsController {
     @Query('filter') filter: string,
     @Query('orderby') orderBy: string,
     @Query('top') top: string,
+    @Query('count') count: boolean,
     @Req() req,
   ) {
     return await this.transactionsService.getFilteredTransactions(
       req.user.id,
       filter ?? '',
       orderBy ?? '',
-      Number(top) ?? 0
+      top ? Number(top) : 0,
+      count !== undefined
     );
   }
 

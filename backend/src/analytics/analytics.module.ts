@@ -6,12 +6,14 @@ import { AnalyticsController } from './analytics.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Forecast, ForecastSchema } from './schemas/forecast.schema';
 import { StatisticsModule } from '@statistics/statistics.module';
+import { EventsModule } from '@events/events.module';
 
 @Module({
   imports: [
     forwardRef(() => AuthModule),
     forwardRef(() => TransactionsModule),
     forwardRef(() => StatisticsModule),
+    forwardRef(() => EventsModule),
     MongooseModule.forFeature([
       { name: Forecast.name, schema: ForecastSchema },
     ]),
