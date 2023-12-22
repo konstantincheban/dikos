@@ -15,6 +15,9 @@ import Tooltip from '@base/Tooltip';
 import Undo from '@base/Undo';
 import { useTransactionsRepository } from '@repos';
 import {
+  METRO_IMPORT_TYPE,
+  MONO_IMPORT_TYPE,
+  SUPPORTED_IMPORT_FILE_EXTS,
   TABLE_FILTER_KEY_VALUE_SEPARATOR,
   TABLE_FILTER_SEPARATOR,
   UNDO_DELAY,
@@ -163,6 +166,11 @@ function TransactionsView() {
     });
   };
 
+  const getImportTypeByFileName = (fileName: string) => {
+    if (fileName.match(/xls/)) return METRO_IMPORT_TYPE;
+    return MONO_IMPORT_TYPE
+  }
+
   // -------------------------------
   // Transactions Edit/Delete/Import
   // -------------------------------
@@ -175,7 +183,7 @@ function TransactionsView() {
     formData.append('file', values.file);
 
     toast.promise(
-      importTransactions(formData).then(() => {
+      importTransactions(formData, getImportTypeByFileName(values.file.name)).then(() => {
         if (!transactionErrors) modalRef.current?.close();
       }),
       {
@@ -191,7 +199,7 @@ function TransactionsView() {
     transactionId: string,
   ) => {
     const { transactionType, ...data } = values;
-    if (transactionType === 'outcome') data.amount = -data.amount;
+    if (transactionType === 'expenses') data.amount = -data.amount;
 
     editTransaction(data, transactionId).then(() => {
       if (!transactionErrors) modalRef.current?.close();
@@ -359,7 +367,7 @@ function TransactionsView() {
         <div className="Block">
           <div
             className={classMap(
-              { income: amount > 0, outcome: amount < 0 },
+              { income: amount > 0, expenses: amount < 0 },
               'TransactionCategory Block',
             )}
           >
@@ -566,7 +574,7 @@ function TransactionsView() {
         <div className="TransactionViewImportBlock">
           <div className="TransactionViewImportInfo">
             <span>ImportTransactions</span>
-            <Tooltip content="Click to import transactions from fileName.xls. Currently, we only have support for exported Metro receipts">
+            <Tooltip content={`Click to import transactions from ${SUPPORTED_IMPORT_FILE_EXTS.map(ext => `fileName.${ext}`).join(', ')}. Currently, we only have support for exported Metro receipts`}>
               <Icon size={17} className="InfoIconCommon" icon={<InfoIcon />} />
             </Tooltip>
           </div>

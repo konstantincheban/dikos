@@ -1,13 +1,15 @@
 # dikos
+
 Make your life easier, trust us with the flow of information about your budget
 
 ------------
 
 ### How to setup application using npm?
 
-Required NodeJS version - **16.13**
+Required NodeJS version - **18.17**
 
 **/frontend folder:**
+
 ```
 - npm i
 - npm run start:dev - DEV Env
@@ -15,6 +17,7 @@ Required NodeJS version - **16.13**
 ```
 
 **/backend folder:**
+
 ```
 - npm i
 - npm run start:dev - DEV Env
@@ -23,23 +26,25 @@ Required NodeJS version - **16.13**
 
 ------------
 
-
 ### How to setup application using Docker?
 
 Required - Docker on the working machine
 
 **root folder**
+
 ```
 - docker-compose up dev_api dev_ui - DEV Env
 - docker-compose up prod_api prod_ui - PROD Env
 ```
 
-### ! IMPORTANT !
+### ! IMPORTANT
+
 For the backend app requires an env file
 FileName Format: **.{dev|prod}.env**
 Content:
+
 ```
-PORT=5000
+PORT=6969
 MONGO_HOST=${MONGODB URI}
 JWT_KEY=${JWT_KEY}
 ```

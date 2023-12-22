@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IUserMenuProps {}
 export interface ISummaryWidgetConfig {
-  ref: 'income' | 'outcome';
+  ref: 'income' | 'expenses';
   name: string;
   amount: number;
   currency: string;

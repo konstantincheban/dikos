@@ -1,5 +1,9 @@
+import { SortOrder } from "mongoose";
+
+const SUPPORTED_OPERATORS = ['eq', 'contains', 'lt', 'gt'] as const;
+
 export const buildFilterExpressions = (filter: string) => {
-  const getValueBySeparator = (item: string, separator: 'eq' | 'contains') => {
+  const getValueBySeparator = (item: string, separator: typeof SUPPORTED_OPERATORS[number]) => {
     let [key, value] = item.split(separator);
     key = key?.trim() ?? '';
     value = value?.replace(/'|"|\s/g, '') ?? '';
@@ -18,16 +22,24 @@ export const buildFilterExpressions = (filter: string) => {
         const [key, value] = getValueBySeparator(item, 'contains');
         acc.push({ [key]: { $regex: new RegExp(value, 'g') } });
       }
+      if (item.includes('lt')) {
+        const [key, value] = getValueBySeparator(item, 'lt');
+        acc.push({ [key]: { $lt: value } });
+      }
+      if (item.includes('gt')) {
+        const [key, value] = getValueBySeparator(item, 'gt');
+        acc.push({ [key]: { $gt: value } });
+      }
       // placeholder for the $and operation in case of missing parameters
       if (!item) acc.push({ '': '' });
       return acc;
     }, []);
 };
 
-export const buildSortByOrderBy = (orderBy: string) => {
+export const buildSortByOrderBy = (orderBy: string): {[x: string]: SortOrder} => {
   const [field, criteria] = orderBy.split(' ');
-  if (field && criteria) return { [field]: criteria };
-  return { created_at: 'desc' };
+  if (field && criteria) return { [field]: criteria as SortOrder };
+  return { created_at: 'desc' as SortOrder };
 };
 
 export const immutableObjectFiltering = <T>(

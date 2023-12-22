@@ -1,9 +1,9 @@
 import { axiosAuthInstance } from './index';
 
 export const useStatisticsApi = () => {
-  const getIncomeOutcomeStatisticsData = (params?: string[]) => {
+  const getIncomeExpensesStatisticsData = (params?: string[]) => {
     return axiosAuthInstance.get(
-      `/statistics/income_outcome/${params?.join('/') ?? ''}`,
+      `/statistics/income_expenses/${params?.join('/') ?? ''}`,
     );
   };
 
@@ -22,7 +22,7 @@ export const useStatisticsApi = () => {
   };
 
   return {
-    getIncomeOutcomeStatisticsData,
+    getIncomeExpensesStatisticsData,
     getBudgetStatisticsData,
     getTopCategoriesStatisticsData,
     getTopShopsStatisticsData,

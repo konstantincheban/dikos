@@ -3,7 +3,7 @@ import { useStore } from '@store';
 import { useObservableState } from 'observable-hooks';
 import Budget from './Budget/Budget';
 import Category from './Category/Category';
-import IncomeOutcome from './IncomeOutcome/IncomeOutcome';
+import IncomeExpenses from './IncomeExpenses/IncomeExpenses';
 import Shop from './Shop/Shop';
 import './StatisticsView.scss';
 
@@ -15,7 +15,7 @@ function StatisticsView() {
       {loading && <Loader />}
       <div className="ViewTitle">Statistics</div>
       <div className="StatisticsChartsContainer">
-        <IncomeOutcome />
+        <IncomeExpenses />
         <Budget />
         <div className="PieCharts">
           <Category />

@@ -7,10 +7,12 @@ import {
   DeleteTransactionsResponse,
   EditTransactionRequest,
   ITransaction,
+  SupportedImportAPITypes
 } from '@interfaces';
 import { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { AttributeItem } from '@base/TagEditor';
+import { METRO_IMPORT_TYPE } from '@shared/constants';
 
 export const useTransactionsRepository = () => {
   const transactionsApi = useTransactionsApi();
@@ -31,9 +33,17 @@ export const useTransactionsRepository = () => {
     );
   };
 
-  const importTransactions = (data: FormData) => {
+  const importTransactions = (data: FormData, type: SupportedImportAPITypes) => {
+    if (type === METRO_IMPORT_TYPE) {
+      return repoWrapper(transactionsObservable, () =>
+        importApi.importMetroTransactions<FormData>(data).then(() => {
+          transactionsObservable.setUpToDateState(false);
+          accountsObservable.setUpToDateState(false);
+        }),
+      );
+    }
     return repoWrapper(transactionsObservable, () =>
-      importApi.importMetroTransactions<FormData>(data).then(() => {
+      importApi.importMonoTransactions<FormData>(data).then(() => {
         transactionsObservable.setUpToDateState(false);
         accountsObservable.setUpToDateState(false);
       }),

@@ -1,6 +1,6 @@
 export class AccountSummaryDTO {
   income: number;
-  outcome: number;
+  expenses: number;
   byDay: ByDateRangeDTO;
   byWeek: ByDateRangeDTO;
   byMonth: ByDateRangeDTO;

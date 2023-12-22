@@ -1,4 +1,4 @@
-import { HistoryIcon, HomeIcon, StatisticsIcon } from '@base/Icon/IconSet';
+import { HistoryIcon, HomeIcon, StatisticsIcon, AnalyticsIcon } from '@base/Icon/IconSet';
 
 export interface INavigationItemConfig {
   label: string;
@@ -21,5 +21,10 @@ export const navigationMenuConfig: INavigationItemConfig[] = [
     label: 'Statistics',
     path: '/statistics',
     icon: <StatisticsIcon />,
+  },
+  {
+    label: 'Analytics',
+    path: '/analytics',
+    icon: <AnalyticsIcon />,
   },
 ];

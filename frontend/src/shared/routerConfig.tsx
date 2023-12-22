@@ -8,6 +8,7 @@ import TransactionsView from '@components/TransactionsView/TransactionsView';
 import Layout from '@components/Layout/Layout';
 import PageNotFound from '@components/PageNotFound/PageNotFound';
 import StatisticsView from '@components/StatisticsView/StatisticsView';
+import AnalyticsView from '@components/AnalyticsView/AnalyticsView';
 
 export const getRouterConfig = (
   authState: IState<AuthState>,
@@ -52,6 +53,10 @@ export const getRouterConfig = (
           {
             path: '/statistics',
             element: <StatisticsView />,
+          },
+          {
+            path: '/analytics',
+            element: <AnalyticsView />,
           },
         ],
       },

@@ -35,7 +35,7 @@ const TransactionForm = forwardRef(function TransactionForm(
       const editFormControls = controls.reduce((acc, control) => {
         if (editFields.includes(control.name)) acc.push(control);
         if (control.name === 'transactionType' && control.controlType === 'switcher') {
-          control.value = clonedData.amount < 0 ? 'outcome' : 'income';
+          control.value = clonedData.amount < 0 ? 'expenses' : 'income';
           clonedData.amount = Math.abs(clonedData.amount);
         }
         if (control.name === 'category' && control.controlType === 'tagEditor') {

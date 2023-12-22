@@ -11,7 +11,7 @@ const Switcher = (props: ISwitcherProps & Partial<FieldProps>) => {
   const [activeOption, setActiveOption] = useState(value ?? getDefault());
 
   useEffect(() => {
-    if (value !== activeOption && onChange && field) onChange(activeOption);
+    if (value !== activeOption && onChange) onChange(activeOption);
   }, [activeOption, value]);
 
   useEffect(() => {

@@ -1,0 +1,25 @@
+@import '@styles/shared.scss';
+
+.AnalyticsViewContainer {
+  & .AnalyticsViewTopSection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+
+  & .AnalyticsChartsContainer {
+    display: flex;
+    gap: 30px;
+
+    & .AnalyticsChart {
+      flex: 1;
+    }
+
+    & .AnalyticsChartTitle {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+  }
+}

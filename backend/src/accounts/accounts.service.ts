@@ -120,7 +120,7 @@ export class AccountsService {
               },
             },
           },
-          outcome: {
+          expenses: {
             $sum: {
               $cond: {
                 if: { $lt: ['$amount', 0] },
@@ -193,8 +193,8 @@ export class AccountsService {
           income: {
             $round: ['$income', ROUND_VALUE],
           },
-          outcome: {
-            $round: ['$outcome', ROUND_VALUE],
+          expenses: {
+            $round: ['$expenses', ROUND_VALUE],
           },
           byDay: {
             $round: ['$byDay', ROUND_VALUE],
@@ -209,9 +209,9 @@ export class AccountsService {
       },
     ]);
 
-    const { income, outcome, byDay, byWeek, byMonth } = data[0] ?? {
+    const { income, expenses, byDay, byWeek, byMonth } = data[0] ?? {
       income: 0,
-      outcome: 0,
+      expenses: 0,
       byDay: 0,
       byWeek: 0,
       byMonth: 0,
@@ -222,7 +222,7 @@ export class AccountsService {
     const daysInCurrentMonth = moment().daysInMonth();
     return {
       income,
-      outcome,
+      expenses,
       byDay: {
         amount: byDay,
         // difference Btw Budget And Costs

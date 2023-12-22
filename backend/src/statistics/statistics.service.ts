@@ -1,7 +1,7 @@
 import { ROUND_VALUE } from '@utils/constants';
 import { TopShopDTO } from './dto/top-shops-dto';
 import { TopCategoriesDTO } from './dto/top-categories-dto';
-import { IncomeOutcomeDTO } from './dto/income-outcome-dto';
+import { IncomeExpensesDTO } from './dto/income-expenses-dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -12,6 +12,7 @@ import {
 import { BudgetService } from '@budget/budget.service';
 import * as moment from 'moment';
 import { BudgetDTO } from './dto/budget-dto';
+import { ForecastResult } from 'src/analytics/schemas/forecast.schema';
 
 @Injectable()
 export class StatisticsService {
@@ -50,7 +51,8 @@ export class StatisticsService {
       },
     };
   }
-  get outcomeSum() {
+
+  get expensesSum() {
     return {
       $sum: {
         $cond: {
@@ -62,10 +64,10 @@ export class StatisticsService {
     };
   }
 
-  async getIncomeOutcomeStatisticsDataForYear(
+  async getIncomeExpensesStatisticsDataForYear(
     userID: string,
-  ): Promise<IncomeOutcomeDTO[]> {
-    const data: IncomeOutcomeDTO[] = await this.transactionModel.aggregate([
+  ): Promise<IncomeExpensesDTO[]> {
+    const data: IncomeExpensesDTO[] = await this.transactionModel.aggregate([
       {
         $match: {
           $expr: {
@@ -77,7 +79,7 @@ export class StatisticsService {
         $group: {
           _id: { $dateToString: { format: '%Y-%m', date: '$date' } },
           income: this.incomeSum,
-          outcome: this.outcomeSum,
+          expenses: this.expensesSum,
         },
       },
       {
@@ -87,8 +89,8 @@ export class StatisticsService {
           income: {
             $round: ['$income', ROUND_VALUE],
           },
-          outcome: {
-            $round: [{ $abs: '$outcome' }, ROUND_VALUE],
+          expenses: {
+            $round: [{ $abs: '$expenses' }, ROUND_VALUE],
           },
         },
       },
@@ -100,7 +102,7 @@ export class StatisticsService {
           acc.push({
             name: date,
             income: 0,
-            outcome: 0,
+            expenses: 0,
           });
         }
 
@@ -109,11 +111,11 @@ export class StatisticsService {
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  async getIncomeOutcomeStatisticsDataForMonth(
+  async getIncomeExpensesStatisticsDataForMonth(
     userID: string,
     numberOfMonth: string,
-  ): Promise<IncomeOutcomeDTO[]> {
-    const data: IncomeOutcomeDTO[] = await this.transactionModel.aggregate([
+  ): Promise<IncomeExpensesDTO[]> {
+    const data: IncomeExpensesDTO[] = await this.transactionModel.aggregate([
       {
         $match: {
           $expr: {
@@ -133,7 +135,7 @@ export class StatisticsService {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
           income: this.incomeSum,
-          outcome: this.outcomeSum,
+          expenses: this.expensesSum,
         },
       },
       {
@@ -143,8 +145,8 @@ export class StatisticsService {
           income: {
             $round: ['$income', ROUND_VALUE],
           },
-          outcome: {
-            $round: [{ $abs: '$outcome' }, ROUND_VALUE],
+          expenses: {
+            $round: [{ $abs: '$expenses' }, ROUND_VALUE],
           },
         },
       },
@@ -155,13 +157,64 @@ export class StatisticsService {
           acc.push({
             name: date,
             income: 0,
-            outcome: 0,
+            expenses: 0,
           });
         }
 
         return acc;
       }, data)
       .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async getTransactionsDataForSpecificTimePeriod(
+    userID: string,
+    startTime: string,
+    endTime: string,
+    type: string,
+  ): Promise<ForecastResult[]> {
+    const startTimeDate = new Date(startTime);
+    const endTimeDate = new Date(endTime);
+    return await this.transactionModel.aggregate([
+      {
+        $match: {
+          $expr: {
+            $and: [
+              { $eq: ['$userID', { $toObjectId: userID }] },
+              {
+                $gt: [
+                  '$date',
+                  startTimeDate,
+                ],
+              },
+              {
+                $lt: [
+                  '$date',
+                  endTimeDate,
+                ],
+              },
+            ],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
+          amount: type === 'income' ? this.incomeSum : this.expensesSum
+        },
+      },
+      {
+        $sort: { _id: -1 } // Sorting in descending order
+      },
+      {
+        $project: {
+          _id: 0,
+          dataTime: '$_id',
+          amount: {
+            $round: ['$amount', ROUND_VALUE],
+          },
+        },
+      },
+    ]);
   }
 
   async getBudgetStatisticsDataForYear(userID: string): Promise<BudgetDTO[]> {
@@ -179,15 +232,15 @@ export class StatisticsService {
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m', date: '$date' } },
-          outcome: this.outcomeSum,
+          expenses: this.expensesSum,
         },
       },
       {
         $project: {
           _id: 0,
           name: '$_id',
-          outcome: {
-            $round: [{ $abs: '$outcome' }, ROUND_VALUE],
+          expenses: {
+            $round: [{ $abs: '$expenses' }, ROUND_VALUE],
           },
         },
       },
@@ -199,7 +252,7 @@ export class StatisticsService {
           acc.push({
             name: date,
             budget: 0,
-            outcome: 0,
+            expenses: 0,
           });
         }
 
@@ -245,15 +298,15 @@ export class StatisticsService {
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
-          outcome: this.outcomeSum,
+          expenses: this.expensesSum,
         },
       },
       {
         $project: {
           _id: 0,
           name: '$_id',
-          outcome: {
-            $round: [{ $abs: '$outcome' }, ROUND_VALUE],
+          expenses: {
+            $round: [{ $abs: '$expenses' }, ROUND_VALUE],
           },
         },
       },
@@ -264,7 +317,7 @@ export class StatisticsService {
           acc.push({
             name: date,
             budget: 0,
-            outcome: 0,
+            expenses: 0,
           });
         }
 

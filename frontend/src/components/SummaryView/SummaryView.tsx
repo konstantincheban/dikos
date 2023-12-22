@@ -41,7 +41,7 @@ function SummaryView() {
       <div key={`${name}_${index}`} className="TransactionItemBlock">
         <div
           className={classMap(
-            { income: isIncome, outcome: !isIncome },
+            { income: isIncome, expenses: !isIncome },
             'TypeOfTransaction',
           )}
         >

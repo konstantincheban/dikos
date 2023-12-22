@@ -6,6 +6,7 @@ import {
   useTransactionsObservable,
   useUsersObservable,
   useStatisticsObservable,
+  useAnalyticsObservable
 } from '@observables';
 
 const authState$ = useAuthObservable().getObservable();
@@ -13,6 +14,7 @@ const accountsState$ = useAccountsObservable().getObservable();
 const transactionsState$ = useTransactionsObservable().getObservable();
 const userState$ = useUsersObservable().getObservable();
 const statisticsState$ = useStatisticsObservable().getObservable();
+const analyticsState$ = useAnalyticsObservable().getObservable();
 
 const StoreContext = createContext({
   authState$,
@@ -20,6 +22,7 @@ const StoreContext = createContext({
   transactionsState$,
   userState$,
   statisticsState$,
+  analyticsState$
 });
 
 export const useStore = () => useContext(StoreContext);
@@ -34,6 +37,7 @@ export const StoreProvider = ({
       transactionsState$,
       userState$,
       statisticsState$,
+      analyticsState$
     }}
   >
     {children}

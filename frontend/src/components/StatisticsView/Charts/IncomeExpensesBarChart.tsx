@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import { IncomeOutcomeStatisticsData } from '@shared/interfaces';
+import { IncomeExpensesStatisticsData } from '@shared/interfaces';
 import { dateFormatter } from '@shared/utils';
 import { useState } from 'react';
 import {
@@ -17,14 +17,14 @@ import './Charts.scss';
 import { IChartProps } from './Charts.types';
 
 const renderBarShape =
-  (id: 'income' | 'outcome') =>
+  (id: 'income' | 'expenses') =>
   ({ height, width, x, y, fillOpacity }: any) => {
     const colors = {
       income: {
         from: '#00ddfa',
         to: '#4d33cc',
       },
-      outcome: {
+      expenses: {
         from: '#e9354f',
         to: '#a23363',
       },
@@ -84,8 +84,8 @@ const CustomTooltip = (props: any) => {
   return null;
 };
 
-const IncomeOutcomeBarChart = (
-  props: IChartProps<IncomeOutcomeStatisticsData>,
+const IncomeExpensesBarChart = (
+  props: IChartProps<IncomeExpensesStatisticsData>,
 ) => {
   const { chartData } = props;
   const [focusBar, setFocusBar] = useState('');
@@ -98,7 +98,7 @@ const IncomeOutcomeBarChart = (
   };
 
   return (
-    <div className="IncomeOutcomeBarChart">
+    <div className="IncomeExpensesBarChart">
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData}>
           <CartesianGrid vertical={false} stroke="#737687" />
@@ -126,11 +126,11 @@ const IncomeOutcomeBarChart = (
             shape={renderBarShape('income')}
           />
           <Bar
-            dataKey="outcome"
+            dataKey="expenses"
             minPointSize={5}
             fill="#a23363"
-            fillOpacity={focusBar === 'outcome' || !focusBar ? 1 : 0.3}
-            shape={renderBarShape('outcome')}
+            fillOpacity={focusBar === 'expenses' || !focusBar ? 1 : 0.3}
+            shape={renderBarShape('expenses')}
           />
         </BarChart>
       </ResponsiveContainer>
@@ -138,4 +138,4 @@ const IncomeOutcomeBarChart = (
   );
 };
 
-export default IncomeOutcomeBarChart;
+export default IncomeExpensesBarChart;

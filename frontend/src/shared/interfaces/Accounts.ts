@@ -18,7 +18,7 @@ export type EditAccountRequest = Pick<IAccount, 'name' | 'description'>;
 
 export type AccountSummaryData = {
   income: number;
-  outcome: number;
+  expenses: number;
   byDay: ByDateRangeSummary;
   byWeek: ByDateRangeSummary;
   byMonth: ByDateRangeSummary;
