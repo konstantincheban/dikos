@@ -14,6 +14,7 @@ services:
     ports:
       - 6969:6969
       - 9229:9229
+      - 6060:6060
     restart: unless-stopped
   prod_api:
     container_name: nestjs_api_prod
@@ -28,6 +29,7 @@ services:
     ports:
       - 6969:6969
       - 9229:9229
+      - 6060:6060
     restart: unless-stopped
   dev_ui:
     container_name: dikos_ui_dev
