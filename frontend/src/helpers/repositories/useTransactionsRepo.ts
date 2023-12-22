@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { repoWrapper, setErrorToState } from './utils';
 import { useAccountsObservable, useTransactionsObservable } from '@observables';
 import { useTransactionsApi, useImportApi } from '@api';
@@ -10,9 +11,10 @@ import {
   SupportedImportAPITypes
 } from '@interfaces';
 import { AxiosResponse } from 'axios';
-import { toast } from 'react-toastify';
+import { Id, toast } from 'react-toastify';
 import { AttributeItem } from '@base/TagEditor';
 import { METRO_IMPORT_TYPE } from '@shared/constants';
+import { useWebsocket } from '@hooks';
 
 export const useTransactionsRepository = () => {
   const transactionsApi = useTransactionsApi();
@@ -34,19 +36,46 @@ export const useTransactionsRepository = () => {
   };
 
   const importTransactions = (data: FormData, type: SupportedImportAPITypes) => {
+    let toasterID: Id;
     if (type === METRO_IMPORT_TYPE) {
-      return repoWrapper(transactionsObservable, () =>
-        importApi.importMetroTransactions<FormData>(data).then(() => {
+      const ws = useWebsocket({
+        event: 'metro-migration',
+        progressCb: (data) => {
+          toasterID = toast.loading(data.message);
+        },
+        successCb: (data) => {
+          toast.dismiss(toasterID);
           transactionsObservable.setUpToDateState(false);
           accountsObservable.setUpToDateState(false);
-        }),
+          toast.success(data.message);
+        },
+        failedCb: (data) => {
+          toast.dismiss(toasterID);
+          toast.error(data.message);
+        }
+      });
+      return repoWrapper(transactionsObservable, () =>
+        importApi.importMetroTransactions<FormData>(data)
       );
     }
-    return repoWrapper(transactionsObservable, () =>
-      importApi.importMonoTransactions<FormData>(data).then(() => {
+    const ws = useWebsocket({
+      event: 'mono-migration',
+      progressCb: (data) => {
+        toasterID = toast.loading(data.message);
+      },
+      successCb: (data) => {
+        toast.dismiss(toasterID);
         transactionsObservable.setUpToDateState(false);
         accountsObservable.setUpToDateState(false);
-      }),
+        toast.success(data.message);
+      },
+      failedCb: (data) => {
+        toast.dismiss(toasterID);
+        toast.error(data.message);
+      }
+    });
+    return repoWrapper(transactionsObservable, () =>
+      importApi.importMonoTransactions<FormData>(data)
     );
   };
 

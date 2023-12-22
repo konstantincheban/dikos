@@ -72,21 +72,9 @@ function AnalyticsView() {
   }, [forecastData, relatedTransactions])
 
   const handleForecast = (data: ForecastOptions) => {
-    toast.promise(
-      forecast(data.forecastType, data.period, data.startTime).then(() => {
-        getForecastedResults().then((forecasts) => {
-          forecasts?.forEach((forecast) => {
-            getTransactionsForForecastedPeriod(forecast._id, forecast.options.forecastType)
-          });
-          modalRef.current?.close();
-        })
-      }),
-      {
-        pending: 'Forecasting is in progress',
-        success: 'Forecasting finished successfully',
-        error: 'Forecasting failed',
-      },
-    );
+    forecast(data.forecastType, data.period, data.startTime).then(() => {
+      modalRef.current?.close();
+    });
   }
 
   const handleValidateForecastForm = (
