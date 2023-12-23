@@ -45,7 +45,7 @@ jobs:
 
           # (Optional, default: "")
           # Additional options of docker build command.
-          docker_options: "--no-cache"
+          docker_options: "--no-cache --target production"
 
           # (Optional, default: "web")
           # Select the process type for which you want the docker container to be uploaded.
@@ -89,7 +89,7 @@ jobs:
 
           # (Optional, default: "")
           # Additional options of docker build command.
-          docker_options: "--no-cache"
+          docker_options: "--no-cache --target production"
 
           # (Optional, default: "web")
           # Select the process type for which you want the docker container to be uploaded.
