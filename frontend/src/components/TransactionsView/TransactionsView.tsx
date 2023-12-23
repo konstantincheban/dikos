@@ -182,16 +182,9 @@ function TransactionsView() {
     formData.append('date', values.date);
     formData.append('file', values.file);
 
-    toast.promise(
-      importTransactions(formData, getImportTypeByFileName(values.file.name)).then(() => {
-        if (!transactionErrors) modalRef.current?.close();
-      }),
-      {
-        pending: 'Import & Migration is progress',
-        success: 'Import finished successfully',
-        error: 'Import failed',
-      },
-    );
+    importTransactions(formData, getImportTypeByFileName(values.file.name)).then(() => {
+      if (!transactionErrors) modalRef.current?.close();
+    })
   };
 
   const handleEditTransaction = (

@@ -1,21 +1,24 @@
 # Base image
-FROM node:18-alpine As development
+FROM python:3.9-slim As development
 # Create app directory
 WORKDIR /app
 # Copy application dependency manifests to the container image.
 # A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
 # Copying this first prevents re-running npm install on every code change.
 COPY package*.json ./
+
+# Install Node.js
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+
 # Install app dependencies
 RUN npm install glob rimraf
 RUN npm install
-# Install Python, pip, cmake, and build tools (gcc, g++, make)
-RUN apk add --update \
-    python3 \
-    py3-pip \
-    python3-dev \
-    cmake \
-    build-base  # This includes gcc, g++ and make
+
+# Create a virtual environment and activate it
+RUN python3 -m venv /usr/src/app/venv
+ENV PATH="/usr/src/app/venv/bin:$PATH"
 
 # Copy your Python script
 # Assume your Python script is in the 'python' directory in your project
@@ -31,7 +34,7 @@ COPY . .
 RUN npm run build
 
 # Base image for production
-FROM node:18-alpine As production
+FROM python:3.9-slim As production
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
 # Create app directory
@@ -40,16 +43,19 @@ WORKDIR /app
 # A wildcard is used to ensure copying both package.json AND package-lock.json (when available).
 # Copying this first prevents re-running npm install on every code change.
 COPY package*.json ./
+
+# Install Node.js
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+
 # Install production dependencies.
 # If you have a package-lock.json, speedier builds with 'npm ci', otherwise use 'npm install --only=production'
 RUN npm ci --only=production
-# Install Python, pip, cmake, and build tools (gcc, g++, make)
-RUN apk add --update \
-    python3 \
-    py3-pip \
-    python3-dev \
-    cmake \
-    build-base  # This includes gcc, g++ and make
+
+# Create a virtual environment and activate it
+RUN python3 -m venv /usr/src/app/venv
+ENV PATH="/usr/src/app/venv/bin:$PATH"
 
 # Copy your Python script
 # Assume your Python script is in the 'python' directory in your project

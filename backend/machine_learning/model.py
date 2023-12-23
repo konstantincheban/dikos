@@ -220,6 +220,32 @@ def main():
                 'lag2_mean_trx',
                 'lag2_num_trx'
             ]
+            # resample_features = [
+            #     'weekofyear',
+            #     'dayofweek',
+            #     'quarter',
+            #     'dayofyear',
+            #     'dayofmonth',
+            #     'lag1_amount',
+            #     'lag2_amount',
+            #     'lag2_min_trx',
+            #     'lag3_min_trx',
+            #     'lag2_max_trx',
+            #     'lag1_med_trx',
+            #     'lag3_med_trx',
+            #     'lag1_mean_trx',
+            #     'lag2_mean_trx',
+            #     'month',
+            #     'lag3_amount',
+            #     'lag1_min_trx',
+            #     'lag1_max_trx',
+            #     'lag3_max_trx',
+            #     'lag2_med_trx',
+            #     'lag3_mean_trx',
+            #     'lag1_num_trx',
+            #     'lag2_num_trx',
+            #     'lag3_num_trx',
+            # ]
         else:
             resample_features = [
                 'dayofweek',

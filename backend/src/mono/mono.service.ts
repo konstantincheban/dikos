@@ -6,6 +6,7 @@ import { ImportedStatusDTO } from '../metro/dto/metro-import-status.dto';
 import * as XLSX from 'xlsx';
 import { MonoTransactionDTO } from './dto/mono-product.dto';
 import { CreateTransactionDTO } from '@transactions/dto/create-transaction.dto';
+import { EventsGateway } from '@events/events.gateway';
 
 interface AggregationConfig {
   userID: string;
@@ -18,6 +19,7 @@ export class MonoService {
   constructor(
     private readonly transactionsService: TransactionsService,
     private readonly accountsService: AccountsService,
+    private eventsGateway: EventsGateway
   ) {}
 
   processImportFile(file: Express.Multer.File): MonoTransactionDTO[] {
@@ -81,28 +83,66 @@ export class MonoService {
     return Promise.allSettled(createTransactions);
   }
 
+  async importTransactionsHandler(
+    userID: string,
+    accountId: string,
+    date: string,
+    file: Express.Multer.File
+  ) {
+    try {
+      const relatedAccount = await this.accountsService.getAccountById(accountId);
+      if (!relatedAccount) {
+        throw new BadRequestException(
+          `You are using the wrong accountID - ${accountId}`,
+        );
+      }
+      const transactions = this.processImportFile(file);
+      // aggregated data
+      const dikosTransactions = this.aggregateData(transactions, {
+        userID,
+        relatedAccount,
+        date,
+      });
+      await this.migrateImportedTransactions(dikosTransactions);
+      this.eventsGateway.send(
+        'mono-migration',
+        {
+          status: 'success',
+          message: 'Import finished successfully',
+        }
+      );
+    } catch (err) {
+      this.eventsGateway.send(
+        'mono-migration',
+        {
+          status: 'failed',
+          message: 'Import failed',
+        }
+      );
+    }
+  }
+
   async importTransactions(
     userID: string,
     accountId: string,
     date: string,
     file: Express.Multer.File,
   ): Promise<ImportedStatusDTO> {
-    const relatedAccount = await this.accountsService.getAccountById(accountId);
-    if (!relatedAccount) {
-      throw new BadRequestException(
-        `You are using the wrong accountID - ${accountId}`,
-      );
-    }
-    const transactions = this.processImportFile(file);
-    // aggregated data
-    const dikosTransactions = this.aggregateData(transactions, {
+    this.eventsGateway.send(
+      'mono-migration',
+      {
+        status: 'progress',
+        message: 'Import & Migration is in progress'
+      }
+    );
+    this.importTransactionsHandler(
       userID,
-      relatedAccount,
+      accountId,
       date,
-    });
-    const statuses = await this.migrateImportedTransactions(dikosTransactions);
+      file
+    );
     return {
-      message: 'Transactions imported successfully',
+      message: 'Initiated import & migration process',
     };
   }
 }
