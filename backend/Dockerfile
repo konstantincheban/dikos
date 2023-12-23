@@ -69,6 +69,7 @@ COPY . .
 # Copy the bundled code
 COPY --from=development /app/dist ./dist
 # Start the server using the production build
-EXPOSE ${PORT}
+EXPOSE 6969
+EXPOSE 6060
 CMD [ "node", "dist/main.js" ]
 

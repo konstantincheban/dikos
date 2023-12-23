@@ -38,6 +38,7 @@ services:
       - API_URL=http://dev_api:6969/
     build:
       context: ./frontend
+      target: development
       dockerfile: Dockerfile
     command: npm run start:dev
     ports:
@@ -50,6 +51,7 @@ services:
       - API_URL=http://prod_api:6969/
     build:
       context: ./frontend
+      target: production
       dockerfile: Dockerfile
     command: npm run start
     ports:
