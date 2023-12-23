@@ -1,6 +1,8 @@
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-const BundleAnalyzerPlugin =
-  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+// const BundleAnalyzerPlugin =
+//   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 const path = require('path');
 const webpack = require('webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
@@ -46,6 +48,10 @@ let config = {
       template: './public/index.html',
       favicon: './public/favicon.ico',
     }),
+    new webpack.DefinePlugin({
+      'process.env.WS_URL': JSON.stringify(process.env.WS_URL),
+      // ... add other variables you want to expose
+    })
   ],
 };
 
@@ -78,8 +84,12 @@ module.exports = (env, argv) => {
       },
     };
     config.plugins.push(
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
+      // new BundleAnalyzerPlugin({
+      //   analyzerMode: 'static',
+      // }),
+      new CleanWebpackPlugin({
+        cleanStaleWebpackAssets: false,
+        verbose: true
       }),
       new CompressionPlugin({
         test: /(\.ts|\.tsx)(\?.*)?$/i,

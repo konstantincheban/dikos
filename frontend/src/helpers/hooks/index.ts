@@ -19,7 +19,7 @@ export const usePrevious = <T>(value: T): T | undefined => {
 };
 
 export const useWebsocket = (options: IUseWebsocketOptions) => {
-  const ws = new WebSocket('ws://localhost:6060');
+  const ws = new WebSocket(`${process.env.WS_URL}:6060`);
   ws.onopen = () => {
     if (options?.openedCb) {
       options.openedCb();

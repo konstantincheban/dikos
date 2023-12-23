@@ -3,6 +3,7 @@ WORKDIR /frontend
 COPY package*.json ./
 RUN npm ci
 COPY . .
+ENV WS_URL=ws://localhost
 # Build the app
 RUN npm run build:prod
 EXPOSE 3000
