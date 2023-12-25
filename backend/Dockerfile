@@ -70,6 +70,5 @@ COPY . .
 COPY --from=development /app/dist ./dist
 # Start the server using the production build
 EXPOSE 6969
-EXPOSE 6060
 CMD [ "node", "dist/main.js" ]
 
