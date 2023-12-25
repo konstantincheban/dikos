@@ -8,9 +8,9 @@ import ForecastForm from './ForecastForm/ForecastForm';
 import { createRef, useEffect, useState } from 'react';
 import { ForecastOptions, IForecastResult, IModalFormRef } from '@shared/interfaces';
 import { useAnalyticsRepository, useTransactionsRepository } from '@repos';
-import { toast } from 'react-toastify';
 import ForecastChart from './ForecastChart/ForecastChart';
 import { capitalize } from '@shared/utils';
+import moment from 'moment';
 
 function AnalyticsView() {
   const { analyticsState$ } = useStore();
@@ -51,7 +51,8 @@ function AnalyticsView() {
     let runningTotal = 0;
     return arr.map(item => {
       runningTotal += item.amount;
-      return { ...item, amount: runningTotal };
+      // use the same time format to make it easier to represent in the charts
+      return { dateTime: moment(item.dateTime).format('YYYY-MM-DD'), amount: runningTotal };
     });
   }
 
@@ -59,15 +60,15 @@ function AnalyticsView() {
 
   useEffect(() => {
     if (forecastData.length) {
-      const res = forecastData.map(forecast => ({ ...forecast, results: preProcessArrayOfResults(forecast.results)}));
-      setForecastDataCumulativeSum(res);
+      const forecastsRes = forecastData.map(forecast => ({ ...forecast, results: preProcessArrayOfResults(forecast.results)}));
+      setForecastDataCumulativeSum(forecastsRes);
     }
     if (Object.keys(relatedTransactions ?? {}).length) {
-      const res: typeof relatedTransactions = {};
+      const transactionsRes: typeof relatedTransactions = {};
       Object.entries(relatedTransactions).forEach(([forecastID, transactions]) => {
-        res[forecastID] = preProcessArrayOfResults(transactions);
+        transactionsRes[forecastID] = preProcessArrayOfResults(transactions);
       });
-      setRelatedTransactionsCumulativeSum(res);
+      setRelatedTransactionsCumulativeSum(transactionsRes);
     }
   }, [forecastData, relatedTransactions])
 

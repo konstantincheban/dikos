@@ -38,12 +38,13 @@ const ForecastLineChart = (
   props: IForecastChartProps,
 ) => {
   const { chartData, reversed } = props;
+  const domainData = chartData.forecastData.map(item => item.dateTime);
   return (
     <ResponsiveContainer width="100%" height={300}>
       <LineChart>
         <CartesianGrid vertical={false} stroke="#737687" />
         <XAxis xAxisId="forecast" dataKey="dateTime" tickFormatter={dateFormatter} axisLine={false} domain={['auto', 'auto']} />
-        <XAxis xAxisId="transactions" hide={true} dataKey="dateTime" tickFormatter={dateFormatter} axisLine={false} domain={['auto', 'auto']} />
+        <XAxis xAxisId="transactions" hide={true} dataKey="dateTime" tickFormatter={dateFormatter} axisLine={false} domain={domainData} />
         <YAxis axisLine={false} tickLine={false} reversed={reversed} />
         <Tooltip content={<CustomTooltip />} />
         <Legend />

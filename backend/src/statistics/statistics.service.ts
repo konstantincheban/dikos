@@ -203,12 +203,12 @@ export class StatisticsService {
         },
       },
       {
-        $sort: { _id: -1 } // Sorting in descending order
+        $sort: { _id: 1 } // Sorting in descending order
       },
       {
         $project: {
           _id: 0,
-          dataTime: '$_id',
+          dateTime: '$_id',
           amount: {
             $round: ['$amount', ROUND_VALUE],
           },
