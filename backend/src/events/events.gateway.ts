@@ -9,7 +9,7 @@ export class EventsGateway implements OnGatewayInit {
   logger = new Logger('EventsGateway');
 
   afterInit() {
-    this.wss = new WebSocket.Server({ port: Number(process.env.WS_PORT) || 6060 });
+    this.wss = new WebSocket.Server({ port: process.env.PORT ? Number(process.env.PORT): 6969 });
 
     this.wss.on('connection', ws => {
       ws.on('message', message => {
