@@ -124,10 +124,22 @@ export class AnalyticsService {
         'options.period': options.period,
         'options.nTransactions': options.nTransactions,
         'options.forecastType': options.forecastType
-      }).sort({ created_at: -1 }).limit(1);
+      }).sort({ updated_at: -1 }).limit(1);
       if (result.length) {
         this.logger.log('Forecast with the same options was found, return it...');
-        return result[0];
+        const updated = await this.forecastModel.findByIdAndUpdate(
+          result[0]._id,
+          { $set: { updated_at: new Date() } },
+          { new: true }
+        );
+        this.eventsGateway.send(
+          'forecast',
+          {
+            status: 'success',
+            message: 'Forecast with the same options was found'
+          }
+        );
+        return updated;
       }
 
       this.eventsGateway.send(
@@ -179,7 +191,7 @@ export class AnalyticsService {
       this.forecastModel.find({
         userID: userID,
         'options.forecastType': fType
-      }).sort({ created_at: -1 }).limit(1)
+      }).sort({ updated_at: -1 }).limit(1)
     );
 
     const results = await Promise.all(promises);
