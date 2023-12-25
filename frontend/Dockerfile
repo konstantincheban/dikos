@@ -12,7 +12,7 @@ WORKDIR /frontend
 COPY package*.json ./
 RUN npm ci
 COPY . .
-ENV WS_URL ws://dikos-api.herokuapp.com
+ENV WS_URL wss://dikos-api.herokuapp.com
 # Build the app
 RUN npm run build:prod
 EXPOSE 3000
