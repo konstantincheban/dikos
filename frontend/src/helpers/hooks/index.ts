@@ -19,7 +19,7 @@ export const usePrevious = <T>(value: T): T | undefined => {
 };
 
 export const useWebsocket = (options: IUseWebsocketOptions) => {
-  const socket = io(`ws://localhost:3000/events`, {transports: ['websocket']});
+  const socket = io(`${process.env.WS_URL}/events`, {transports: ['websocket']});
   socket.on('open', () => {
     if (options?.openedCb) {
       options.openedCb();

@@ -3,7 +3,7 @@ WORKDIR /frontend
 COPY package*.json ./
 RUN npm ci
 COPY . .
-ENV WS_URL ws://localhost
+ENV WS_URL ws://localhost:6969
 EXPOSE 3000
 CMD ['npm', 'run', 'start:dev']
 
