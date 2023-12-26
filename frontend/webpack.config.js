@@ -47,6 +47,10 @@ let config = {
     new HtmlWebPackPlugin({
       template: './public/index.html',
       favicon: './public/favicon.ico',
+    }),
+    new webpack.DefinePlugin({
+      'process.env.WS_URL': JSON.stringify(process.env.WS_URL),
+      // ... add other variables you want to expose
     })
   ],
 };
@@ -61,10 +65,10 @@ module.exports = (env, argv) => {
       port: 3000,
       proxy: {
         '/api/v1/*': process.env.API_URL || 'http://localhost:6969/',
-        '/events': {
-          target: process.env.WS_URL || 'ws://localhost:6969',
-          ws: true
-        }
+        // '/events': {
+        //   target: process.env.WS_URL || 'ws://localhost:6969',
+        //   ws: true
+        // }
       },
       hot: 'only',
       compress: true,
