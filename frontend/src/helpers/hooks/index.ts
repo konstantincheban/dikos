@@ -1,5 +1,5 @@
-import { IWebsocketData } from '@shared/interfaces/Websockets';
 import { useEffect, useRef } from 'react';
+import { io } from 'socket.io-client';
 
 interface IUseWebsocketOptions {
   event: string;
@@ -19,40 +19,39 @@ export const usePrevious = <T>(value: T): T | undefined => {
 };
 
 export const useWebsocket = (options: IUseWebsocketOptions) => {
-  const ws = new WebSocket(`${process.env.WS_URL}`);
-  ws.onopen = () => {
+  const socket = io(`ws://localhost:6969/events`);
+  socket.on('open', () => {
     if (options?.openedCb) {
       options.openedCb();
     } else {
       console.log(`WS Connection was opened: ${options.event}`);
     }
-  };
+  });
 
-  ws.onmessage = (event) => {
-    const data: IWebsocketData = JSON.parse(event.data as string);
+  socket.on('message', (event) => {
 
-    if (data.event === options.event) {
-      if (data.data.status === 'progress') {
-        options?.progressCb && options.progressCb(data.data);
+    if (event.event === options.event) {
+      if (event.data.status === 'progress') {
+        options?.progressCb && options.progressCb(event.data);
       }
-      if (data.data.status === 'success') {
-        ws.close();
-        options?.successCb && options.successCb(data.data);
+      if (event.data.status === 'success') {
+        socket.disconnect();
+        options?.successCb && options.successCb(event.data);
       }
-      if (data.data.status === 'failed') {
-        ws.close();
-        options?.failedCb && options.failedCb(data.data);
+      if (event.data.status === 'failed') {
+        socket.disconnect();
+        options?.failedCb && options.failedCb(event.data);
       }
     }
-  };
+  });
 
-  ws.onclose = () => {
+  socket.on('close', () => {
     if (options?.closedCb) {
       options.closedCb();
     } else {
       console.log(`WS Connection was closed: ${options.event}`)
     }
-  };
+  });
 
-  return ws;
+  return socket;
 }
