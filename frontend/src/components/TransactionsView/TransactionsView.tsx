@@ -380,7 +380,9 @@ function TransactionsView() {
           <span>{associatedAccountName}</span>
         </div>
         <div className="Block">{formatDate(date)}</div>
-        <div className="Block">{paymaster}</div>
+        <div className="Block">
+          <span title={paymaster}>{paymaster}</span>
+        </div>
         <div className="TransactionActions Block">
           <button onClick={() => handleOpenEditTransactionModal(_id)}>
             <Icon size={13} icon={<EditIcon />} />
