@@ -4,7 +4,7 @@ import { classMap } from '@shared/utils';
 import Input from '@base/Input';
 import { ArrowRightIcon, CloseIcon } from '@base/Icon/IconSet';
 import Icon from '@base/Icon';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { LegacyRef, useEffect, useRef, useState } from 'react';
 import { FieldProps } from 'formik';
 
 function Select(
@@ -25,6 +25,7 @@ function Select(
   const [collapsed, setCollapsed] = useState(true);
 
   const inputRef = useRef<HTMLInputElement>();
+  const listRef = useRef<HTMLUListElement>();
 
   const updateValue = (value: string) => {
     setValue(value);
@@ -35,7 +36,7 @@ function Select(
     }
     onChange && onChange(value);
 
-    setCollapsed(true);
+    setCollapsedValue(true);
     inputRef?.current?.focus();
   };
 
@@ -63,6 +64,23 @@ function Select(
     defaultValue && setValue(defaultValue);
   }, []);
 
+  const setCollapsedValue = (value: boolean) => {
+    setCollapsed(value);
+    window.requestAnimationFrame(() => {
+      !value && adjustHeight();
+    })
+  }
+
+  const adjustHeight = () => {
+    if (listRef.current) {
+      const { bottom, height } = listRef.current.getBoundingClientRect();
+      const diff = window.innerHeight - bottom;
+      if (diff < 0 && listRef.current) {
+        listRef.current.style.height = `${height + diff - 30}px`;
+      }
+    }
+  }
+
   const getRelatedLabelByValue = (value: string) => {
     const option = options?.find((option) => option.props.value === value);
     return option?.props.label ?? value;
@@ -73,7 +91,7 @@ function Select(
       case 'Enter':
       case ' ':
         e.preventDefault();
-        setCollapsed(!collapsed);
+        setCollapsedValue(!collapsed);
     }
   };
 
@@ -83,7 +101,7 @@ function Select(
     requestAnimationFrame(() => {
       // Check if the new focused element is a child of the original container
       if (!currentTarget.contains(document.activeElement)) {
-        setCollapsed(true);
+        setCollapsedValue(true);
       }
     });
   };
@@ -125,7 +143,7 @@ function Select(
         className="SelectInput"
         value={getRelatedLabelByValue(value)}
         name={field?.name ?? 'selectInput'}
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => setCollapsedValue(!collapsed)}
         onKeyDown={handleKeyDownEvent}
         tabIndex={0}
         aria-haspopup="listbox"
@@ -134,6 +152,7 @@ function Select(
         {renderSelectActions()}
       </Input>
       <ul
+        ref={listRef as LegacyRef<HTMLUListElement>}
         className={classMap({ collapsed: collapsed }, 'OptionsContainer')}
         role="listbox"
       >
