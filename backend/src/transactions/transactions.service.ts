@@ -106,21 +106,25 @@ export class TransactionsService {
   }
 
   // Overload signatures
-  async getFilteredTransactions(userID: string, filter: any | undefined, orderBy: any | undefined, top: number | undefined, count: true): Promise<ICount>;
-  async getFilteredTransactions(userID: string, filter?: any, orderBy?: any, top?: number, count?: boolean): Promise<Transaction[]>;
+  async getFilteredTransactions(userID: string, filter: any | undefined, orderBy: any | undefined, top: number | undefined, count: true, skip: number): Promise<ICount>;
+  async getFilteredTransactions(userID: string, filter?: any, orderBy?: any, top?: number, count?: boolean, skip?: number): Promise<Transaction[]>;
 
   async getFilteredTransactions(
     userID: string,
     filter?: any,
     orderBy?: any,
     top?: number,
-    count?: boolean
+    count?: boolean,
+    skip?: number
   ): Promise<Transaction[] | ICount> {
     const buildFilterObject = buildFilterExpressions(filter);
     const sortValue = buildSortByOrderBy(orderBy);
     let query = this.transactionModel.find({ $and: buildFilterObject, userID });
     if (orderBy) {
       query = query.sort(sortValue);
+    }
+    if (skip) {
+      query = query.skip(skip);
     }
     if (top) {
       query = query.limit(top);

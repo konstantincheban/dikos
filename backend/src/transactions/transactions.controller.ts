@@ -35,6 +35,7 @@ export class TransactionsController {
     @Query('orderby') orderBy: string,
     @Query('top') top: string,
     @Query('count') count: boolean,
+    @Query('skip') skip: string,
     @Req() req,
   ) {
     return await this.transactionsService.getFilteredTransactions(
@@ -42,7 +43,8 @@ export class TransactionsController {
       filter ?? '',
       orderBy ?? '',
       top ? Number(top) : 0,
-      count !== undefined
+      count !== undefined,
+      skip ? Number(skip) : null
     );
   }
 
