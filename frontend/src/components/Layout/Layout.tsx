@@ -25,6 +25,7 @@ function Layout() {
       .then((data) => data && userRepo.getBudgetData(data.budgetID));
     accountsRepo.getAccounts();
     transactionsRepo.getProposedCategories();
+    transactionsRepo.getTransactionsCount();
     setGlobalCSSVariable('--undo-animation-duration', `${UNDO_DELAY + 3000}ms`);
   }, []);
 

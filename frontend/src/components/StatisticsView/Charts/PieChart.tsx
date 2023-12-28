@@ -5,6 +5,7 @@ import {
   Sector,
   ResponsiveContainer,
   Cell,
+  Legend
 } from 'recharts';
 import { IChartProps } from './Charts.types';
 
@@ -18,6 +19,11 @@ const data = [
 
 const COLORS = ['#5286F2', '#5663FC', '#7059E6', '#974DFF', '#BD52F2'];
 
+const truncate = (str: string) => {
+  const MAX_SIZE = 15;
+  return str.length > MAX_SIZE ? `${str.substring(0, MAX_SIZE)}...` : str;
+}
+
 const renderActiveShape = (props: any) => {
   const RADIAN = Math.PI / 180;
   const {
@@ -29,10 +35,10 @@ const renderActiveShape = (props: any) => {
     startAngle,
     endAngle,
     fill,
-    payload,
     percent,
     name,
   } = props;
+  const visibleName = truncate(name);
   const sin = Math.sin(-RADIAN * midAngle);
   const cos = Math.cos(-RADIAN * midAngle);
   const sx = cx + (outerRadius + 10) * cos;
@@ -46,7 +52,7 @@ const renderActiveShape = (props: any) => {
   return (
     <g>
       <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-        {payload.name}
+        {visibleName}
       </text>
       <Sector
         cx={cx}
@@ -77,7 +83,7 @@ const renderActiveShape = (props: any) => {
         y={ey}
         textAnchor={textAnchor}
         fill="#4799eb"
-      >{`${name}`}</text>
+      >{`${visibleName}`}</text>
       <text
         x={ex + (cos >= 0 ? 1 : -1) * 12}
         y={ey}
@@ -91,6 +97,13 @@ const renderActiveShape = (props: any) => {
   );
 };
 
+const legendFormatter = (value: string) => {
+  const visibleName = truncate(value);
+  return (
+    <span title={value}>{visibleName}</span>
+  )
+}
+
 function PieChart<T>(props: IChartProps<T>) {
   const { chartData } = props;
   const [activeIndex, setActiveIndex] = useState(0);
@@ -102,6 +115,7 @@ function PieChart<T>(props: IChartProps<T>) {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <RechartsPieChart width={300} height={300}>
+        <Legend layout="vertical" verticalAlign="top" align="right" formatter={legendFormatter}/>
         <Pie
           activeIndex={activeIndex}
           activeShape={renderActiveShape}

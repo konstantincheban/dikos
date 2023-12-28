@@ -44,6 +44,7 @@
   padding: 8px 0;
   transform-origin: top;
   z-index: 1000;
+  overflow: auto;
   @include boxShadow;
   &.collapsed {
     transform: scale(1, 0);

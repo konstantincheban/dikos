@@ -28,6 +28,8 @@ export const useTransactionsRepository = () => {
         .createTransaction<CreateTransactionRequest>(data)
         .then(() => {
           toast.success(`Transaction ${data.name} was created successfully`);
+          const trans = transactionsObservable.getObservable();
+          transactionsObservable.setTransactionsCount(trans.value.transactionsCount + 1);
           transactionsObservable.setUpToDateState(false);
           accountsObservable.setUpToDateState(false);
         })
@@ -101,6 +103,8 @@ export const useTransactionsRepository = () => {
         .deleteTransaction(transactionId)
         .then(() => {
           toast.success(`Transaction was deleted successfully`);
+          const trans = transactionsObservable.getObservable();
+          transactionsObservable.setTransactionsCount(trans.value.transactionsCount - 1);
           transactionsObservable.setUpToDateState(false);
           accountsObservable.setUpToDateState(false);
         })
@@ -142,12 +146,27 @@ export const useTransactionsRepository = () => {
     );
   };
 
+  const setTransactionsCount = (count: number) => transactionsObservable.setTransactionsCount(count);
+
+  const getTransactionsCount = () => {
+    return repoWrapper(transactionsObservable, () =>
+      transactionsApi
+        .getTransactionsCount()
+        .then(({ data }: AxiosResponse<{ count: number }>) => {
+          setTransactionsCount(data.count);
+          return data.count;
+        })
+        .catch((err) => setErrorToState(err, transactionsObservable)),
+    );
+  };
+
   const getProposedCategories = () => {
     repoWrapper(transactionsObservable, () =>
       transactionsApi
         .getProposedCategories()
         .then(({ data }: AxiosResponse<AttributeItem[]>) => {
           transactionsObservable.setProposedCategories(data);
+          return data;
         })
         .catch((err) => setErrorToState(err, transactionsObservable)),
     );
@@ -162,6 +181,8 @@ export const useTransactionsRepository = () => {
     deleteTransaction,
     deleteTransactions,
     getTransactions,
+    getTransactionsCount,
+    setTransactionsCount,
     importTransactions,
     getProposedCategories,
     getTransactionsObservable,

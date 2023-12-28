@@ -7,7 +7,7 @@ import * as XLSX from 'xlsx';
 import { MonoTransactionDTO } from './dto/mono-product.dto';
 import { CreateTransactionDTO } from '@transactions/dto/create-transaction.dto';
 import { EventsGateway } from '@events/events.gateway';
-
+import { getOptionsByMCC, transliterateString } from '@utils/utils';
 interface AggregationConfig {
   userID: string;
   relatedAccount: AccountDocument;
@@ -24,7 +24,7 @@ export class MonoService {
 
   processImportFile(file: Express.Multer.File): MonoTransactionDTO[] {
     // Parse the CSV file
-    const workbook = XLSX.read(file.buffer , { type: 'buffer' });
+    const workbook = XLSX.read(file.buffer , { type: 'buffer', codepage: 65001 });
     // Assuming your CSV file has a single sheet
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
@@ -63,15 +63,19 @@ export class MonoService {
       date: date,
       paymaster: null
     };
-    return transactionsData.map((transaction) => ({
-      ...transactionSkeleton,
-      date: this.parseDate(transaction['Date and time']).toISOString(),
-      name: transaction['Description'],
-      description: transaction['Description'],
-      amount: transaction['Card currency amount, (UAH)'],
-      category: 'Shopping',
-      paymaster: `${transaction['MCC']}`
-    }));
+    return transactionsData.map((transaction) => {
+      const { category, description: shopDescription } = getOptionsByMCC(transaction['MCC']);
+      const transName = transliterateString(transaction['Description']);
+      return {
+        ...transactionSkeleton,
+        date: this.parseDate(transaction['Date and time']).toISOString(),
+        name: transName,
+        description: transName,
+        amount: transaction['Card currency amount, (UAH)'],
+        category: category,
+        paymaster: shopDescription
+      }
+    });
   }
 
   async migrateImportedTransactions(

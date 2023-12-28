@@ -4,11 +4,13 @@ import { createSubject, useObservableBaseActions } from './utils';
 export type TransactionsState = {
   isUpToDate: boolean;
   proposedCategories: AttributeItem[];
+  transactionsCount: number;
 };
 
 const initialState = {
   isUpToDate: false,
-  proposedCategories: []
+  proposedCategories: [],
+  transactionsCount: 0
 };
 
 const transactionsSubject$ = createSubject<TransactionsState>(initialState);
@@ -23,6 +25,10 @@ export const useTransactionsObservable = () => {
     actions.setNextState({ proposedCategories: categories });
   }
 
+  const setTransactionsCount = (count: number) => {
+    actions.setNextState({ transactionsCount: count });
+  }
+
   const setUpToDateState = (state: boolean) => {
     actions.setNextState({ isUpToDate: state, error: '' });
   };
@@ -30,6 +36,7 @@ export const useTransactionsObservable = () => {
   return {
     ...actions,
     setUpToDateState,
-    setProposedCategories
+    setProposedCategories,
+    setTransactionsCount
   };
 };

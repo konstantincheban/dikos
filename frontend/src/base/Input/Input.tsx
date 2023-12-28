@@ -3,7 +3,7 @@ import './Input.scss';
 import { forwardRef, LegacyRef, useImperativeHandle, useRef } from 'react';
 
 const Input = forwardRef(function Input(
-  { className, children, value, ...rest }: IInputProps,
+  { className, children, value, onClick, ...rest }: IInputProps,
   ref,
 ) {
   const inputRef = useRef<HTMLInputElement>();
@@ -13,7 +13,7 @@ const Input = forwardRef(function Input(
     },
   }));
   return (
-    <div className="InputContainer">
+    <div className="InputContainer" onClick={onClick}>
       <input
         ref={inputRef as LegacyRef<HTMLInputElement>}
         className={`Input ${className ?? ''}`}

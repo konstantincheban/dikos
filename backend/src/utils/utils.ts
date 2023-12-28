@@ -1,4 +1,6 @@
 import { SortOrder } from "mongoose";
+import transliterate from './transliteration';
+import * as mccData from './mcc-en.json';
 
 const SUPPORTED_OPERATORS = ['eq', 'contains', 'lt', 'gt'] as const;
 
@@ -52,4 +54,20 @@ export const immutableObjectFiltering = <T>(
       obj[key] = object[key];
       return obj;
     }, {} as T);
+};
+
+export const transliterateString = (string: string) => transliterate(string);
+
+export const getOptionsByMCC = (mcc: number) => {
+  const data = mccData.find(item => Number(item.mcc) === mcc);
+  if (data) {
+    return {
+      category: data.shortDescription,
+      description: `${data.fullDescription} - ${data.group.description}(${data.group.type})`
+    }
+  }
+  return {
+    category: 'shopping',
+    description: `${mcc}`
+  };
 };
