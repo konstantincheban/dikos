@@ -25,6 +25,10 @@ export const useTransactionsApi = () => {
     return axiosAuthInstance.get(`/transactions${queryParams}`);
   };
 
+  const getTransactionsCount = () => {
+    return axiosAuthInstance.get(`/transactions?count`);
+  };
+
   const getProposedCategories = () => {
     return axiosAuthInstance.get(`/transactions/proposedCategories?top=${COUNT_OF_PROPOSED_CATEGORIES}`);
   };
@@ -36,6 +40,7 @@ export const useTransactionsApi = () => {
     deleteTransaction,
     deleteTransactions,
     getTransactions,
+    getTransactionsCount,
     getProposedCategories
   };
 };

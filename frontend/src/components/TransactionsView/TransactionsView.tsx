@@ -21,6 +21,7 @@ import {
   TABLE_FILTER_KEY_VALUE_SEPARATOR,
   TABLE_FILTER_SEPARATOR,
   UNDO_DELAY,
+  ITEMS_PER_PAGE
 } from '@shared/constants';
 import {
   EditTransactionRequest,
@@ -44,6 +45,7 @@ import { useLocation } from 'react-router-dom';
 import { usePrevious } from '@hooks';
 import './TransactionsView.scss';
 import Checkbox from '@base/Checkbox';
+import { Select, Option } from '@base/Select';
 
 function TransactionsView() {
   const {
@@ -52,12 +54,15 @@ function TransactionsView() {
     deleteTransaction,
     deleteTransactions,
     importTransactions,
+    setTransactionsCount,
+    getTransactionsCount
   } = useTransactionsRepository();
   const { transactionsState$, accountsState$ } = useStore();
   const {
     loading,
     isUpToDate,
     proposedCategories,
+    transactionsCount,
     error: transactionErrors,
   } = useObservableState(transactionsState$);
   const { accounts } = useObservableState(accountsState$);
@@ -72,6 +77,11 @@ function TransactionsView() {
   const [sortValue, setSortValue] = useState('');
   const previousFilterValue = usePrevious(filterValue);
   const previousSortValue = usePrevious(sortValue);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(ITEMS_PER_PAGE[0]);
+  const previousCurrentPage = usePrevious(currentPage);
+  const previousPerPage = usePrevious(perPage);
 
   const history = createBrowserHistory({ window });
   const location = useLocation();
@@ -103,6 +113,8 @@ function TransactionsView() {
     if (
       previousFilterValue !== filterValue ||
       previousSortValue !== sortValue ||
+      previousPerPage !== perPage ||
+      previousCurrentPage !== currentPage ||
       (!isUpToDate && !loading)
     ) {
       getTransactions(
@@ -111,10 +123,21 @@ function TransactionsView() {
             ? `(${atob(filterValue.replace(/\(|\)/g, ''))})`
             : '',
           orderby: sortValue,
+          skip: `${perPage * (currentPage - 1)}`,
+          top: `${perPage}`,
         }),
-      ).then((data) => data && setTransactions(data));
+      ).then((data) => {
+        if (data) {
+          setTransactions(data);
+          if (filterValue) {
+            setTransactionsCount(data.length);
+          } else {
+            getTransactionsCount();
+          }
+        }
+      });
     }
-  }, [filterValue, sortValue, isUpToDate, loading]);
+  }, [filterValue, perPage, currentPage, sortValue, isUpToDate, loading]);
 
   // --------------------------
   // Filtering Logic
@@ -169,6 +192,32 @@ function TransactionsView() {
   const getImportTypeByFileName = (fileName: string) => {
     if (fileName.match(/xls/)) return METRO_IMPORT_TYPE;
     return MONO_IMPORT_TYPE
+  }
+
+  // --------------------------
+  // Pagination logic
+  // --------------------------
+
+  const getLastPage = () => Math.ceil(transactionsCount / perPage);
+
+  const handleFistPage = () => {
+    setCurrentPage(1);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage(currentPage - 1);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+
+  const handleLastPage = () => {
+    setCurrentPage(getLastPage());
+  };
+
+  const handleChangePerPage = (value: string) => {
+    setPerPage(Number(value));
   }
 
   // -------------------------------
@@ -341,6 +390,7 @@ function TransactionsView() {
       amount,
       currency,
       accountID,
+      category
     } = transaction;
     const associatedAccountName = accounts.find(
       (account) => account._id === accountID,
@@ -359,6 +409,7 @@ function TransactionsView() {
       >
         <div className="Block">
           <div
+            title={category}
             className={classMap(
               { income: amount > 0, expenses: amount < 0 },
               'TransactionCategory Block',
@@ -384,10 +435,16 @@ function TransactionsView() {
           <span title={paymaster}>{paymaster}</span>
         </div>
         <div className="TransactionActions Block">
-          <button onClick={() => handleOpenEditTransactionModal(_id)}>
+          <button onClick={(evt) => {
+            evt.stopPropagation();
+            handleOpenEditTransactionModal(_id);
+          }}>
             <Icon size={13} icon={<EditIcon />} />
           </button>
-          <button onClick={() => handleDeleteTransactionAction(_id)}>
+          <button onClick={(evt) => {
+            evt.stopPropagation();
+            handleDeleteTransactionAction(_id);
+          }}>
             <Icon size={17} icon={<CloseIcon />} />
           </button>
         </div>
@@ -402,6 +459,39 @@ function TransactionsView() {
       </div>
     );
   };
+
+  const renderPagination = () => {
+    const firstLabel = "<<";
+    const prevLabel = "<";
+    const nextLabel = ">";
+    const lastLabel = ">>";
+    const lastPage = getLastPage();
+    return (
+      <div className="PaginationContainer">
+        <button
+          className="action first-btn"
+          disabled={currentPage === 1}
+          onClick={handleFistPage}
+        >{firstLabel}</button>
+        <button
+          className="action prev-btn"
+          disabled={currentPage === 1}
+          onClick={handlePrevPage}
+        >{prevLabel}</button>
+        <span className="page-number">{currentPage} of {lastPage === 0 ? 1 : lastPage}</span>
+        <button
+          className="action next-btn"
+          disabled={currentPage === lastPage}
+          onClick={handleNextPage}
+        >{nextLabel}</button>
+        <button
+          className="action last-btn"
+          disabled={currentPage === lastPage}
+          onClick={handleLastPage}
+        >{lastLabel}</button>
+      </div>
+    )
+  }
 
   const renderTransactionList = () => {
     const [sortProperty, criteria] = sortValue.split(' ');
@@ -444,6 +534,17 @@ function TransactionsView() {
             ? transactions.map(renderTransactionItem)
             : renderListPlaceholder()}
         </div>
+        <div className="TransactionListFooter">
+          <div className="PerPageContainer">
+            <span>Per page: </span>
+            <Select value={`${perPage}`} onChange={handleChangePerPage}>
+              {ITEMS_PER_PAGE.map(option => <Option key={option} label={`${option}`} value={`${option}`}></Option>)}
+            </Select>
+          </div>
+          <div className="PaginationContainer">
+            {renderPagination()}
+          </div>
+        </div>
       </div>
     );
   };
@@ -451,7 +552,7 @@ function TransactionsView() {
   const renderFilterSection = () => {
     return (
       <div className="TransactionsViewFilterSection">
-        <div className="AmountOfItems">{transactions.length} Transactions</div>
+        <div className="AmountOfItems">{transactionsCount} Transactions</div>
         <div className="TagFilterSection">
           <TagEditor
             categories={filterConfig}

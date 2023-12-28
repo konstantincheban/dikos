@@ -107,6 +107,47 @@
       }
     }
 
+    & .TransactionListFooter {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      padding-bottom: 25px;
+
+      & .PerPageContainer,
+      .PaginationContainer {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      & .PerPageContainer {
+        & .SelectContainer {
+          width: 65px;
+        }
+      }
+
+      & .PaginationContainer {
+        & .action {
+          background-color: $secondaryBackgroundColor;
+          color: $textColor;
+          border-radius: $borderRadius;
+          width: 30px;
+          height: 30px;
+          @include transition(background-color);
+
+          &:not([disabled]):hover,
+          &:not([disabled]):active {
+            background-color: $lightPurpleColor;
+            cursor: pointer;
+          }
+
+          &[disabled] {
+            color: $disabledColor;
+          }
+        }
+      }
+    }
+
     & .EmptyListPlaceholderContainer {
       display: flex;
       align-items: center;

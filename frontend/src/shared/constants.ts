@@ -5,3 +5,4 @@ export const COUNT_OF_PROPOSED_CATEGORIES = 10;
 export const METRO_IMPORT_TYPE = 'metro';
 export const MONO_IMPORT_TYPE = 'mono';
 export const SUPPORTED_IMPORT_FILE_EXTS = ['xls', 'csv'];
+export const ITEMS_PER_PAGE = [10, 20, 50];
