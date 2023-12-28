@@ -75,8 +75,10 @@ function Select(
     if (listRef.current) {
       const { bottom, height } = listRef.current.getBoundingClientRect();
       const diff = window.innerHeight - bottom;
-      if (diff < 0 && listRef.current) {
+      if (diff < 0) {
         listRef.current.style.height = `${height + diff - 30}px`;
+      } else {
+        listRef.current.style.height = 'auto';
       }
     }
   }
