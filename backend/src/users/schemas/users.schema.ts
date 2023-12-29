@@ -3,9 +3,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';
 import { Exclude, Transform } from 'class-transformer';
+import { AbstractDocument } from '@app/common';
 
-@Schema()
-export class User {
+@Schema({ versionKey: false })
+export class User extends AbstractDocument {
   @Exclude()
   _id: string;
 
@@ -30,9 +31,6 @@ export class User {
   })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Budget' })
   budgetID: Budget;
-
-  @Exclude()
-  __v: number;
 }
 
 export type UserDocument = User & Document;

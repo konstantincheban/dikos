@@ -6,6 +6,6 @@ export class CreateTransactionDTO {
   amount: number;
   currency: string;
   category?: string;
-  date?: string;
+  date?: Date;
   paymaster?: string;
 }

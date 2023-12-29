@@ -8,10 +8,13 @@ import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { ValidationFilter } from './utils/filters/validation.filter';
 import { ValidationPipe as CustomValidationPipe } from './utils/pipes/validation.pipe';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const PORT = process.env.PORT || 6969;
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const PORT = configService.get('PORT') || 6969;
+  console.log("TEST", configService.get('MONGO_HOST'));
   app.useGlobalFilters(new ValidationFilter());
   app.useGlobalPipes(
     new CustomValidationPipe(),

@@ -22,6 +22,7 @@ import { EditTransactionDTO } from './dto/edit-transaction.dto';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
 import { DeleteTransactionsPayloadDTO } from './dto/delete-transactions-payload.dto';
+import { buildFilterExpressions, buildSortByOrderBy } from '@utils/utils';
 
 @Controller('transactions')
 @UseInterceptors(MongooseClassSerializerInterceptor(Transaction))
@@ -38,14 +39,24 @@ export class TransactionsController {
     @Query('skip') skip: string,
     @Req() req,
   ) {
-    return await this.transactionsService.getFilteredTransactions(
-      req.user.id,
-      filter ?? '',
-      orderBy ?? '',
-      top ? Number(top) : 0,
-      count !== undefined,
-      skip ? Number(skip) : null
-    );
+    const buildFilterObject = buildFilterExpressions(filter);
+    const sortValue = buildSortByOrderBy(orderBy);
+    if (count !== undefined) {
+      return await this.transactionsService.getTransactionsCount({
+        filter: { $and: buildFilterObject, userID: req.user.id },
+        sort: sortValue,
+        top: top,
+        skip: skip,
+        count: true
+      });
+    }
+    return await this.transactionsService.getTransactions({
+      filter: { $and: buildFilterObject, userID: req.user.id },
+      sort: sortValue,
+      top: top,
+      skip: skip,
+      count: count !== undefined
+    });
   }
 
   @UseGuards(JwtAuthGuard)

@@ -1,35 +1,20 @@
 import { StatisticsService } from '@statistics/statistics.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Query } from 'mongoose';
 import { AccountsService } from '@accounts/accounts.service';
-import { buildFilterExpressions, buildSortByOrderBy } from '@utils/utils';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
 import { EditTransactionDTO } from './dto/edit-transaction.dto';
 import {
-  Transaction,
   TransactionDocument,
 } from './schemas/transactions.schema';
 import { ProposedCategoryDTO } from './dto/proposed-category.dto';
 import { DeleteTransactionsStatusDTO } from './dto/delete-transactions-status.dto';
-
-interface ICount {
-  count: number
-}
-
-interface IOptions {
-  find?: any,
-  sort?: any,
-  select?: any,
-  top?: number,
-  count?: boolean
-}
+import { TransactionsRepository } from './transactions.repository';
+import { ICount, IOptions } from '@app/common';
 
 @Injectable()
 export class TransactionsService {
   constructor(
-    @InjectModel(Transaction.name)
-    private readonly transactionModel: Model<TransactionDocument>,
+    private readonly transactionsRepository: TransactionsRepository,
     private readonly statisticsService: StatisticsService,
     private readonly accountsService: AccountsService,
   ) {}
@@ -45,7 +30,7 @@ export class TransactionsService {
         `Transaction currency is not equal to the currency of the associated Account [${relatedAccount.name}]`,
       );
     }
-    return await new this.transactionModel(data).save();
+    return await this.transactionsRepository.create(data);
   }
 
   async editTransaction(
@@ -53,10 +38,9 @@ export class TransactionsService {
     data: EditTransactionDTO,
   ): Promise<TransactionDocument> {
     try {
-      const updatedTransaction = await this.transactionModel.findByIdAndUpdate(
-        transactionID,
-        { $set: data },
-        { new: true },
+      const updatedTransaction = await this.transactionsRepository.findOneAndUpdate(
+        { _id: transactionID },
+        { $set: data }
       );
       return updatedTransaction;
     } catch (err) {
@@ -66,7 +50,7 @@ export class TransactionsService {
 
   async deleteTransaction(transactionID: string) {
     try {
-      this.transactionModel.findByIdAndRemove(transactionID);
+      this.transactionsRepository.findOneAndDelete({ _id: transactionID });
       return { message: 'Transaction entry was removed successfully' };
     } catch (err) {
       throw new BadRequestException('Something went wrong. Please try again');
@@ -82,7 +66,7 @@ export class TransactionsService {
   async deleteTransactions(transactionIDs: string[]): Promise<DeleteTransactionsStatusDTO[]> {
     const statuses = await Promise.allSettled(transactionIDs.map(async (id) => {
       try {
-        await this.transactionModel.findByIdAndRemove(id).exec();
+        await this.transactionsRepository.findOneAndDelete({ _id: id });
         return Promise.resolve(id);
       } catch (err) {
         return Promise.reject({ id, desc: err.name });
@@ -105,68 +89,11 @@ export class TransactionsService {
     })
   }
 
-  // Overload signatures
-  async getFilteredTransactions(userID: string, filter: any | undefined, orderBy: any | undefined, top: number | undefined, count: true, skip: number): Promise<ICount>;
-  async getFilteredTransactions(userID: string, filter?: any, orderBy?: any, top?: number, count?: boolean, skip?: number): Promise<Transaction[]>;
-
-  async getFilteredTransactions(
-    userID: string,
-    filter?: any,
-    orderBy?: any,
-    top?: number,
-    count?: boolean,
-    skip?: number
-  ): Promise<Transaction[] | ICount> {
-    const buildFilterObject = buildFilterExpressions(filter);
-    const sortValue = buildSortByOrderBy(orderBy);
-    let query = this.transactionModel.find({ $and: buildFilterObject, userID });
-    if (orderBy) {
-      query = query.sort(sortValue);
-    }
-    if (skip) {
-      query = query.skip(skip);
-    }
-    if (top) {
-      query = query.limit(top);
-    }
-    if (count) {
-      return {
-        count: await query.countDocuments()
-      }
-    }
-    return await query;
+  async getTransactions(options: IOptions) {
+    return this.transactionsRepository.findAll(options);
   }
 
-  // Overload signatures
-  async getTransactions(userID: string, options: IOptions & { count: true }): Promise<ICount>;
-  async getTransactions(userID: string, options: IOptions): Promise<Partial<Transaction>[]>;
-
-  async getTransactions(
-    userID: string,
-    options: IOptions
-  ): Promise<ICount | Partial<Transaction>[]> {
-    const {
-      find,
-      sort,
-      select,
-      top,
-      count
-    } = options;
-    let query = this.transactionModel.find({ ...(find ?? {}), userID });
-    if (sort) {
-      query = query.sort(sort);
-    }
-    if (select) {
-      query = query.select(select);
-    }
-    if (top) {
-      query = query.limit(top);
-    }
-    if (count) {
-      return {
-        count: await query.countDocuments()
-      }
-    }
-    return await query;
+  async getTransactionsCount(options: IOptions) {
+    return this.transactionsRepository.findAll({ ...options, count: true });
   }
 }

@@ -1,25 +1,27 @@
+import * as moment from 'moment';
 import { BudgetService } from '@budget/budget.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  Transaction,
-  TransactionDocument,
-} from '@transactions/schemas/transactions.schema';
 import { AccountSummaryDTO } from './dto/account-summary-dto';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';
 import { Account, AccountDocument } from './schemas/accounts.schema';
-import * as moment from 'moment';
 import { ROUND_VALUE } from '@utils/constants';
+import { AccountsRepository } from './accounts.schema';
+import { TransactionsRepository } from '@transactions/transactions.repository';
+
+interface IAccountSummary {
+  income: number;
+  expenses: number;
+  byDay: number;
+  byWeek: number;
+  byMonth: number
+}
 
 @Injectable()
 export class AccountsService {
   constructor(
-    @InjectModel(Account.name)
-    private readonly accountModel: Model<AccountDocument>,
-    @InjectModel(Transaction.name)
-    private readonly transactionModel: Model<TransactionDocument>,
+    private readonly accountsRepo: AccountsRepository,
+    private readonly transactionsRepo: TransactionsRepository,
     private readonly budgetService: BudgetService,
   ) {}
 
@@ -38,7 +40,7 @@ export class AccountsService {
   }
 
   async createAccount(data: CreateAccountDTO): Promise<AccountDocument> {
-    return await new this.accountModel(data).save();
+    return this.accountsRepo.create(data);
   }
 
   async editAccount(
@@ -46,10 +48,9 @@ export class AccountsService {
     data: EditAccountDTO,
   ): Promise<AccountDocument> {
     try {
-      const updatedAccount = await this.accountModel.findByIdAndUpdate(
-        accountID,
-        { $set: data },
-        { new: true },
+      const updatedAccount = await this.accountsRepo.findOneAndUpdate(
+        { _id: accountID},
+        { $set: data }
       );
       return updatedAccount;
     } catch (err) {
@@ -59,8 +60,8 @@ export class AccountsService {
 
   async deleteAccount(accountID: string) {
     try {
-      await this.accountModel.findByIdAndRemove(accountID);
-      await this.transactionModel.deleteMany({ accountID: accountID });
+      await this.accountsRepo.findOneAndDelete({ _id: accountID });
+      await this.transactionsRepo.deleteMany({ accountID: accountID });
       return {
         message: 'Account and related transactions were removed successfully',
       };
@@ -100,7 +101,7 @@ export class AccountsService {
     accountID: string,
     userID: string,
   ): Promise<AccountSummaryDTO> {
-    const data = await this.transactionModel.aggregate([
+    const data = await this.transactionsRepo.aggregate<IAccountSummary>([
       {
         $match: {
           $expr: {
@@ -256,7 +257,7 @@ export class AccountsService {
     // .find({ $and: buildFilterObject, userID })
     // const buildFilterObject = buildFilterExpressions(filter);
     // const sortValue = buildSortByOrderBy(orderBy);
-    return await this.accountModel.aggregate([
+    return await this.accountsRepo.aggregate([
       {
         $match: {
           $expr: {
@@ -295,6 +296,6 @@ export class AccountsService {
   }
 
   async getAccountById(accountID: string) {
-    return await this.accountModel.findById(accountID);
+    return await this.accountsRepo.findOne({ _id: accountID });
   }
 }

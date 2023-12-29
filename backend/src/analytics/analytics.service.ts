@@ -2,13 +2,13 @@ import * as fs from 'fs';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { TransactionsService } from '@transactions/transactions.service';
 import { ForecastTypes, Periods } from './dto/forecast-dto';
-import { Forecast, ForecastDocument, ForecastOptions, ForecastResult } from './schemas/forecast.schema';
+import { Forecast, ForecastOptions, ForecastResult } from './schemas/forecast.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { spawn } from 'child_process';
 import { Transaction } from '@transactions/schemas/transactions.schema';
 import { StatisticsService } from '@statistics/statistics.service';
 import { EventsGateway } from '@events/events.gateway';
+import { AnalyticsRepository } from './analytics.repository';
 
 type ForecastType = Forecast['options']['forecastType'];
 
@@ -25,7 +25,7 @@ export const MIN_TRANSACTIONS_AMOUNT = 100;
 export class AnalyticsService {
   constructor(
     @InjectModel(Forecast.name)
-    private readonly forecastModel: Model<ForecastDocument>,
+    private readonly analyticsRepo: AnalyticsRepository,
     private readonly transactionsService: TransactionsService,
     private readonly statisticsService: StatisticsService,
     private eventsGateway: EventsGateway
@@ -50,7 +50,7 @@ export class AnalyticsService {
   }
 
   async validateRequirements(userID: string) {
-    const numberOfTransaction = await this.transactionsService.getTransactions(userID, { count: true });
+    const numberOfTransaction = await this.transactionsService.getTransactionsCount({ filter: { userID } });
     if (numberOfTransaction.count < MIN_TRANSACTIONS_AMOUNT) {
       throw new BadRequestException(`Number of available transactions: ${numberOfTransaction.count}. Required number of transactions to perform forecasting: ${MIN_TRANSACTIONS_AMOUNT}`);
     }
@@ -97,8 +97,8 @@ export class AnalyticsService {
     let amountFilter: {[key: string]: number} = { $gt: 0 };
     if (forecastType === 'expenses') amountFilter = { $lt: 0 };
 
-    const transactions = await this.transactionsService.getTransactions(userID, {
-      find: { amount: amountFilter, date: { $lt: startTime} },
+    const transactions = await this.transactionsService.getTransactions({
+      filter: { amount: amountFilter, date: { $lt: startTime}, userID },
       sort: { date: 'desc' },
       select: 'date amount -_id'
     });
@@ -118,7 +118,7 @@ export class AnalyticsService {
     try {
       const { transactions, options } = await this.buildParams(userID, period, forecastType, startTime);
 
-      const result = await this.forecastModel.find({
+      const result = await this.analyticsRepo.find({
         userID: userID,
         'options.startTime': options.startTime,
         'options.period': options.period,
@@ -127,10 +127,9 @@ export class AnalyticsService {
       }).sort({ updated_at: -1 }).limit(1);
       if (result.length) {
         this.logger.log('Forecast with the same options was found, return it...');
-        const updated = await this.forecastModel.findByIdAndUpdate(
-          result[0]._id,
-          { $set: { updated_at: new Date() } },
-          { new: true }
+        const updated = await this.analyticsRepo.findOneAndUpdate(
+          { _id: result[0]._id },
+          { $set: { updated_at: new Date() } }
         );
         this.eventsGateway.send(
           'forecast',
@@ -153,11 +152,11 @@ export class AnalyticsService {
       const processedTransactions = this.processTransaction(transactions);
       const results = await this.forecast(processedTransactions as MLTransaction[], options, forecastType);
 
-      await new this.forecastModel({
+      await this.analyticsRepo.create({
         userID: userID,
         results: results,
         options: options
-      }).save();
+      });
       this.eventsGateway.send(
         'forecast',
         {
@@ -188,7 +187,7 @@ export class AnalyticsService {
 
   async getResults(userID: string) {
     const promises = FORECAST_TYPES.map(fType =>
-      this.forecastModel.find({
+      this.analyticsRepo.find({
         userID: userID,
         'options.forecastType': fType
       }).sort({ updated_at: -1 }).limit(1)
@@ -199,7 +198,7 @@ export class AnalyticsService {
   }
 
   async getTransactionsByForecastTimePeriod(userID: string, forecastType: ForecastTypes, forecastID: string) {
-    const forecastItem = await this.forecastModel.find({ userID, _id: forecastID, 'options.forecastType': forecastType }).sort({ created_at: -1 }).limit(1);
+    const forecastItem = await this.analyticsRepo.find({ userID, _id: forecastID, 'options.forecastType': forecastType }).sort({ created_at: -1 }).limit(1);
     if (!forecastItem.length) {
       throw new BadRequestException(`There is no such forecast item: forecastType - ${forecastType}`);
     }

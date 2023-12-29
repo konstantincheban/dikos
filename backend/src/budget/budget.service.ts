@@ -1,16 +1,13 @@
 import { EditBudgetDTO } from './dto/edit-budget-dto';
-import { BudgetDocument, Budget } from './schemas/budget.schema';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { BudgetPerMonthDTO } from './dto/get-budget-dto';
 import * as moment from 'moment';
+import { BudgetRepository } from './budget.repository';
 
 @Injectable()
 export class BudgetService {
   constructor(
-    @InjectModel(Budget.name)
-    private readonly budgetModel: Model<BudgetDocument>,
+    private readonly budgetRepo: BudgetRepository
   ) {}
 
   get defaultUserBudget() {
@@ -43,10 +40,10 @@ export class BudgetService {
   }
 
   async createUserBudget(data: BudgetPerMonthDTO, userID: string) {
-    return await new this.budgetModel({
+    return this.budgetRepo.create({
       userID,
       budgetsPerMonth: [{ ...this.defaultUserBudget, ...data }],
-    }).save();
+    });
   }
 
   async editUserBudget(
@@ -54,7 +51,7 @@ export class BudgetService {
     budgetID: string,
   ): Promise<BudgetPerMonthDTO> {
     try {
-      const updateBudgets = await this.budgetModel.findById(budgetID);
+      const updateBudgets = await this.budgetRepo.findOne({ _id: budgetID });
       // @ts-ignore
       updateBudgets.budgetsPerMonth = updateBudgets.budgetsPerMonth.map(
         (item) => {
@@ -70,12 +67,11 @@ export class BudgetService {
           return item;
         },
       );
-      const updated = await this.budgetModel.findByIdAndUpdate(
-        budgetID,
+      const updated = await this.budgetRepo.findOneAndUpdate(
+        { _id: budgetID },
         {
           ...updateBudgets,
-        },
-        { new: true },
+        }
       );
       const currentBudget = this.getBudgetPerMonthByCurrentDate(
         updated.budgetsPerMonth,
@@ -92,14 +88,13 @@ export class BudgetService {
 
   async addBudgetPerMonth(budgetID: string) {
     try {
-      const updateBudgets = await this.budgetModel.findById(budgetID);
+      const updateBudgets = await this.budgetRepo.findOne({ _id: budgetID });
       updateBudgets.budgetsPerMonth.push(this.defaultUserBudget);
-      const updated = await this.budgetModel.findByIdAndUpdate(
-        budgetID,
+      const updated = await this.budgetRepo.findOneAndUpdate(
+        { _id: budgetID },
         {
           ...updateBudgets,
         },
-        { new: true },
       );
       return this.getBudgetPerMonthByCurrentDate(updated.budgetsPerMonth);
     } catch (err) {
@@ -110,7 +105,7 @@ export class BudgetService {
   async getUserBudgetByCurrentMonth(
     budgetID: string,
   ): Promise<BudgetPerMonthDTO> {
-    const budgetEntry = await this.budgetModel.findById(budgetID);
+    const budgetEntry = await this.budgetRepo.findOne({ _id: budgetID });
     let budgetForCurrentMonth = await this.getBudgetPerMonthByCurrentDate(
       budgetEntry.budgetsPerMonth,
     );
@@ -125,12 +120,12 @@ export class BudgetService {
   async getUserBudgetForCurrentMonthByUserID(
     userID: string,
   ): Promise<BudgetPerMonthDTO> {
-    const budgetEntry = await this.budgetModel.findOne({ userID });
+    const budgetEntry = await this.budgetRepo.findOne({ userID });
     return this.getBudgetPerMonthByCurrentDate(budgetEntry.budgetsPerMonth);
   }
 
   async getUserBudgetsByUserID(userID: string): Promise<BudgetPerMonthDTO[]> {
-    const budgetEntry = await this.budgetModel.findOne({ userID });
+    const budgetEntry = await this.budgetRepo.findOne({ userID });
     return budgetEntry.budgetsPerMonth;
   }
 }

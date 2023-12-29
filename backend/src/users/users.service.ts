@@ -1,16 +1,15 @@
 import { BudgetService } from '@budget/budget.service';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { AccountsService } from '@accounts/accounts.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UserDataDTO } from './dto/userData.dto';
-import { User, UserDocument } from './schemas/users.schema';
+import { UserDocument } from './schemas/users.schema';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly usersRepository: UsersRepository,
     private readonly accountsService: AccountsService,
     private readonly budgetService: BudgetService,
   ) {}
@@ -24,13 +23,13 @@ export class UsersService {
   }
 
   async createUser(data: CreateUserDTO): Promise<UserDocument> {
-    const user = await new this.userModel(data).save();
+    const user = await this.usersRepository.create(data);
 
     // create default account for the user
     const defaultAccountData = this.accountsService.defaultAccountData;
     await this.accountsService.createAccount({
       ...defaultAccountData,
-      userID: user.id,
+      userID: user._id,
     });
 
     // create budget entry for the new user
@@ -40,20 +39,19 @@ export class UsersService {
       user.id,
     );
 
-    const userWithBudget = await this.userModel.findByIdAndUpdate(
-      user.id,
-      { $set: { budgetID: createdBudget._id } },
-      { new: true },
+    const userWithBudget = await this.usersRepository.findOneAndUpdate(
+      { _id: user.id },
+      { $set: { budgetID: createdBudget._id } }
     );
 
     return userWithBudget;
   }
 
   async getUserByEmail(email: string): Promise<UserDocument | undefined> {
-    return await this.userModel.findOne({ email }).exec();
+    return this.usersRepository.findOne({ email });
   }
 
   async getUserData(userID): Promise<UserDocument> {
-    return await this.userModel.findById(userID).exec();
+    return await this.usersRepository.findOne({ _id: userID });
   }
 }

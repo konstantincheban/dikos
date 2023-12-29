@@ -41,6 +41,12 @@
       ],
       "@utils/*": [
         "./src/utils/*"
+      ],
+      "@app/common": [
+        "libs/common/src"
+      ],
+      "@app/common/*": [
+        "libs/common/src/*"
       ]
     },
     "incremental": true,
