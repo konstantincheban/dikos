@@ -17,7 +17,7 @@ import { TransactionsRepository } from './transactions.repository';
       { name: Transaction.name, schema: TransactionSchema },
     ]),
   ],
-  providers: [TransactionsService],
+  providers: [TransactionsService, TransactionsRepository],
   controllers: [TransactionsController],
   exports: [TransactionsService, TransactionsRepository],
 })

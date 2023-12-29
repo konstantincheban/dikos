@@ -18,8 +18,8 @@ import { TransactionsRepository } from '@transactions/transactions.repository';
       { name: Transaction.name, schema: TransactionSchema },
     ]),
   ],
-  providers: [StatisticsService],
+  providers: [StatisticsService, TransactionsRepository],
   controllers: [StatisticsController],
-  exports: [StatisticsService, TransactionsRepository]
+  exports: [StatisticsService]
 })
 export class StatisticsModule {}

@@ -6,7 +6,7 @@ import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';
 import { Account, AccountDocument } from './schemas/accounts.schema';
 import { ROUND_VALUE } from '@utils/constants';
-import { AccountsRepository } from './accounts.schema';
+import { AccountsRepository } from './accounts.repository';
 import { TransactionsRepository } from '@transactions/transactions.repository';
 
 interface IAccountSummary {

@@ -60,7 +60,7 @@ export class MonoService {
       amount: 0,
       currency: relatedAccount.currency,
       category: '',
-      date: date,
+      date: new Date(date),
       paymaster: null
     };
     return transactionsData.map((transaction) => {
@@ -68,7 +68,7 @@ export class MonoService {
       const transName = transliterateString(transaction['Description']);
       return {
         ...transactionSkeleton,
-        date: this.parseDate(transaction['Date and time']).toISOString(),
+        date: this.parseDate(transaction['Date and time']),
         name: transName,
         description: transName,
         amount: transaction['Card currency amount, (UAH)'],

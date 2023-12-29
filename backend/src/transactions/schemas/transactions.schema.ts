@@ -1,8 +1,5 @@
 import mongoose from 'mongoose';
-import { User } from '@users/schemas/users.schema';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
-import { Account } from '@accounts/schemas/accounts.schema';
 import { Document } from 'mongoose';
 
 import { Exclude, Transform } from 'class-transformer';
@@ -12,7 +9,7 @@ import { AbstractDocument } from '@app/common';
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   versionKey: false
 })
-export class Transaction extends AbstractDocument{
+export class Transaction extends AbstractDocument {
   @Exclude()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   userID: string;

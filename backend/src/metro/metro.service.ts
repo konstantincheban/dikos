@@ -59,14 +59,14 @@ export class MetroService {
       amount: 0,
       currency: relatedAccount.currency,
       category: '',
-      date: date,
+      date: new Date(date),
       paymaster: 'Metro',
     };
     // aggregation strategy - productsAsTransactions
     if (aggregationType === 'productsAsTransactions') {
       return metroData.map((metroProduct) => ({
         ...transactionSkeleton,
-        date: date,
+        date: new Date(date),
         name: `${metroProduct['Описание']}`,
         description: `Code of product - ${metroProduct['Код продукта']}`,
         amount: -metroProduct['Общая сумма с НДС'],

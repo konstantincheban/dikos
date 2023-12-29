@@ -19,7 +19,7 @@ import { AnalyticsRepository } from './analytics.repository';
       { name: Forecast.name, schema: ForecastSchema },
     ]),
   ],
-  providers: [AnalyticsService],
-  controllers: [AnalyticsController, AnalyticsRepository],
+  providers: [AnalyticsService, AnalyticsRepository],
+  controllers: [AnalyticsController],
 })
 export class AnalyticsModule {}

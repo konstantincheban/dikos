@@ -1,9 +1,4 @@
 import { BudgetModule } from '@budget/budget.module';
-import { Budget, BudgetSchema } from '@budget/schemas/budget.schema';
-import {
-  Transaction,
-  TransactionSchema,
-} from '@transactions/schemas/transactions.schema';
 import { AccountSchema } from './schemas/accounts.schema';
 import { Account } from '@accounts/schemas/accounts.schema';
 import { AccountsController } from './accounts.controller';
@@ -13,6 +8,9 @@ import { AuthModule } from '@auth/auth.module';
 import { DatabaseModule } from '@app/common';
 import { TransactionsRepository } from '@transactions/transactions.repository';
 import { BudgetRepository } from '@budget/budget.repository';
+import { Transaction, TransactionSchema } from '@transactions/schemas/transactions.schema';
+import { Budget, BudgetSchema } from '@budget/schemas/budget.schema';
+import { AccountsRepository } from './accounts.repository';
 
 @Module({
   imports: [
@@ -20,12 +18,12 @@ import { BudgetRepository } from '@budget/budget.repository';
     forwardRef(() => BudgetModule),
     DatabaseModule.forFeature([
       { name: Account.name, schema: AccountSchema },
-      // { name: Transaction.name, schema: TransactionSchema },
-      // { name: Budget.name, schema: BudgetSchema },
+      { name: Transaction.name, schema: TransactionSchema },
+      { name: Budget.name, schema: BudgetSchema },
     ]),
   ],
-  providers: [AccountsService],
+  providers: [AccountsService, AccountsRepository, TransactionsRepository, BudgetRepository],
   controllers: [AccountsController],
-  exports: [AccountsService, TransactionsRepository, BudgetRepository],
+  exports: [AccountsService, AccountsRepository],
 })
 export class AccountsModule {}

@@ -11,7 +11,7 @@ import { BudgetRepository } from './budget.repository';
     forwardRef(() => AuthModule),
     DatabaseModule.forFeature([{ name: Budget.name, schema: BudgetSchema }]),
   ],
-  providers: [BudgetService],
+  providers: [BudgetService, BudgetRepository],
   controllers: [BudgetController],
   exports: [BudgetService, BudgetRepository],
 })
