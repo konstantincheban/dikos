@@ -39,8 +39,8 @@ export class TransactionsController {
     @Query('skip') skip: string,
     @Req() req,
   ) {
-    const buildFilterObject = buildFilterExpressions(filter);
-    const sortValue = buildSortByOrderBy(orderBy);
+    const buildFilterObject = buildFilterExpressions(filter ?? '');
+    const sortValue = buildSortByOrderBy(orderBy ?? '');
     if (count !== undefined) {
       return await this.transactionsService.getTransactionsCount({
         filter: { $and: buildFilterObject, userID: req.user.id },

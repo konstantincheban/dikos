@@ -1,8 +1,9 @@
 import { EditBudgetDTO } from './dto/edit-budget-dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { BudgetPerMonthDTO } from './dto/get-budget-dto';
 import * as moment from 'moment';
 import { BudgetRepository } from './budget.repository';
+import { CreateBudgetDTO } from './dto/create-budget-dto';
+import { BudgetDocument } from './schemas/budget.schema';
 
 @Injectable()
 export class BudgetService {
@@ -29,7 +30,7 @@ export class BudgetService {
     return Math.round((amount - plannedCosts) / daysInMonth);
   }
 
-  getBudgetPerMonthByCurrentDate(budgets: BudgetPerMonthDTO[]) {
+  getBudgetPerMonthByCurrentDate(budgets: BudgetDocument['budgetsPerMonth']) {
     const currentDate = moment().format('YYYY-MM');
     return budgets.find((item) => item.date === currentDate);
   }
@@ -39,7 +40,7 @@ export class BudgetService {
     return budgets.find((budget) => budget.date === date)?.perDay ?? 0;
   }
 
-  async createUserBudget(data: BudgetPerMonthDTO, userID: string) {
+  async createUserBudget(data: CreateBudgetDTO, userID: string) {
     return this.budgetRepo.create({
       userID,
       budgetsPerMonth: [{ ...this.defaultUserBudget, ...data }],
@@ -49,7 +50,7 @@ export class BudgetService {
   async editUserBudget(
     data: EditBudgetDTO,
     budgetID: string,
-  ): Promise<BudgetPerMonthDTO> {
+  ) {
     try {
       const updateBudgets = await this.budgetRepo.findOne({ _id: budgetID });
       // @ts-ignore
@@ -104,7 +105,7 @@ export class BudgetService {
 
   async getUserBudgetByCurrentMonth(
     budgetID: string,
-  ): Promise<BudgetPerMonthDTO> {
+  ) {
     const budgetEntry = await this.budgetRepo.findOne({ _id: budgetID });
     let budgetForCurrentMonth = await this.getBudgetPerMonthByCurrentDate(
       budgetEntry.budgetsPerMonth,
@@ -119,12 +120,12 @@ export class BudgetService {
 
   async getUserBudgetForCurrentMonthByUserID(
     userID: string,
-  ): Promise<BudgetPerMonthDTO> {
+  ) {
     const budgetEntry = await this.budgetRepo.findOne({ userID });
     return this.getBudgetPerMonthByCurrentDate(budgetEntry.budgetsPerMonth);
   }
 
-  async getUserBudgetsByUserID(userID: string): Promise<BudgetPerMonthDTO[]> {
+  async getUserBudgetsByUserID(userID: string) {
     const budgetEntry = await this.budgetRepo.findOne({ userID });
     return budgetEntry.budgetsPerMonth;
   }

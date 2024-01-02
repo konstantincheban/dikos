@@ -1,10 +1,8 @@
+import * as XLSX from 'xlsx';
 import { AccountDocument } from '@accounts/schemas/accounts.schema';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AccountsService } from '@accounts/accounts.service';
 import { TransactionsService } from '@transactions/transactions.service';
-import { ImportedStatusDTO } from '../metro/dto/metro-import-status.dto';
-import * as XLSX from 'xlsx';
-import { MonoTransactionDTO } from './dto/mono-product.dto';
 import { CreateTransactionDTO } from '@transactions/dto/create-transaction.dto';
 import { EventsGateway } from '@events/events.gateway';
 import { getOptionsByMCC, transliterateString } from '@utils/utils';
@@ -12,6 +10,19 @@ interface AggregationConfig {
   userID: string;
   relatedAccount: AccountDocument;
   date: string;
+}
+
+interface MonoTransaction {
+  'Date and time': string;
+  'Description': string;
+  'MCC': number;
+  'Card currency amount, (UAH)': number;
+  'Operation amount': number;
+  'Operation currency': string;
+  'Exchange rate': number | string;
+  'Commission, (UAH)': number | string;
+  'Cashback amount, (UAH)': number | string;
+  'Balance': number;
 }
 
 @Injectable()
@@ -22,7 +33,7 @@ export class MonoService {
     private eventsGateway: EventsGateway
   ) {}
 
-  processImportFile(file: Express.Multer.File): MonoTransactionDTO[] {
+  processImportFile(file: Express.Multer.File): MonoTransaction[] {
     // Parse the CSV file
     const workbook = XLSX.read(file.buffer , { type: 'buffer', codepage: 65001 });
     // Assuming your CSV file has a single sheet
@@ -50,7 +61,7 @@ export class MonoService {
     return new Date(Number(year), Number(month) - 1, Number(day), Number(hours), Number(minutes), Number(seconds));
   }
 
-  aggregateData(transactionsData: MonoTransactionDTO[], config: AggregationConfig) {
+  aggregateData(transactionsData: MonoTransaction[], config: AggregationConfig) {
     const { userID, relatedAccount, date } = config;
     const transactionSkeleton = {
       userID,
@@ -79,7 +90,7 @@ export class MonoService {
   }
 
   async migrateImportedTransactions(
-    transactions: CreateTransactionDTO[],
+    transactions: (CreateTransactionDTO & { userID: string})[],
   ): Promise<any> {
     const createTransactions = transactions.map((transaction) =>
       this.transactionsService.createTransaction(transaction),
@@ -131,7 +142,7 @@ export class MonoService {
     accountId: string,
     date: string,
     file: Express.Multer.File,
-  ): Promise<ImportedStatusDTO> {
+  ) {
     this.eventsGateway.send(
       'mono-migration',
       {

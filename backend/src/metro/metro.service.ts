@@ -2,11 +2,22 @@ import { AccountDocument } from '@accounts/schemas/accounts.schema';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AccountsService } from '@accounts/accounts.service';
 import { TransactionsService } from '@transactions/transactions.service';
-import { ImportedStatusDTO } from './dto/metro-import-status.dto';
 import * as XLSX from 'xlsx';
-import { MetroProductDTO } from './dto/metro-product.dto';
 import { CreateTransactionDTO } from '@transactions/dto/create-transaction.dto';
 import { EventsGateway } from '@events/events.gateway';
+
+interface MetroProduct {
+  ' с НДС': number;
+  'Единица измерения': string;
+  'Код продукта': string;
+  'Количество': number;
+  'Общая сумма с НДС': number;
+  'Описание': string;
+  '__rowNum__': number;
+}
+const PRDCTS_AS_TRANS = 'productsAsTransactions';
+const CHECK_AS_TRANS = 'checkAsTransaction';
+export const METRO_AGGR_TYPES = [PRDCTS_AS_TRANS, CHECK_AS_TRANS];
 
 interface AggregationConfig {
   userID: string;
@@ -23,7 +34,7 @@ export class MetroService {
     private eventsGateway: EventsGateway
   ) {}
 
-  processImportFile(file: Express.Multer.File): MetroProductDTO[] {
+  processImportFile(file: Express.Multer.File): MetroProduct[] {
     // Read the file into memory
     const workbook = XLSX.read(file.buffer);
     // Convert the XLSX to JSON
@@ -49,7 +60,7 @@ export class MetroService {
     );
   }
 
-  aggregateData(metroData: MetroProductDTO[], config: AggregationConfig) {
+  aggregateData(metroData: MetroProduct[], config: AggregationConfig) {
     const { userID, relatedAccount, aggregationType, date } = config;
     const transactionSkeleton = {
       userID,
@@ -63,7 +74,7 @@ export class MetroService {
       paymaster: 'Metro',
     };
     // aggregation strategy - productsAsTransactions
-    if (aggregationType === 'productsAsTransactions') {
+    if (aggregationType === PRDCTS_AS_TRANS) {
       return metroData.map((metroProduct) => ({
         ...transactionSkeleton,
         date: new Date(date),
@@ -74,7 +85,7 @@ export class MetroService {
       }));
     }
     // aggregation strategy - checkAsTransaction
-    if (aggregationType === 'checkAsTransaction') {
+    if (aggregationType === CHECK_AS_TRANS) {
       const checkAmount = metroData.reduce((acc: number, metroProduct) => {
         acc -= metroProduct['Общая сумма с НДС'];
         return acc;
@@ -90,7 +101,7 @@ export class MetroService {
   }
 
   async migrateImportedTransactions(
-    transactions: CreateTransactionDTO[],
+    transactions: (CreateTransactionDTO & { userID: string})[],
   ): Promise<any> {
     const createTransactions = transactions.map((transaction) =>
       this.transactionsService.createTransaction(transaction),
@@ -145,7 +156,7 @@ export class MetroService {
     aggregationType: string,
     date: string,
     file: Express.Multer.File,
-  ): Promise<ImportedStatusDTO> {
+  ) {
     this.eventsGateway.send(
       'metro-migration',
       {

@@ -1,10 +1,8 @@
 import * as moment from 'moment';
 import { BudgetService } from '@budget/budget.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { AccountSummaryDTO } from './dto/account-summary-dto';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';
-import { Account, AccountDocument } from './schemas/accounts.schema';
 import { ROUND_VALUE } from '@utils/constants';
 import { AccountsRepository } from './accounts.repository';
 import { TransactionsRepository } from '@transactions/transactions.repository';
@@ -14,7 +12,7 @@ interface IAccountSummary {
   expenses: number;
   byDay: number;
   byWeek: number;
-  byMonth: number
+  byMonth: number;
 }
 
 @Injectable()
@@ -39,14 +37,14 @@ export class AccountsService {
     return isNaN(percentage) || !isFinite(percentage) ? 0 : percentage;
   }
 
-  async createAccount(data: CreateAccountDTO): Promise<AccountDocument> {
+  async createAccount(data: CreateAccountDTO & { userID: string }) {
     return this.accountsRepo.create(data);
   }
 
   async editAccount(
     accountID: string,
     data: EditAccountDTO,
-  ): Promise<AccountDocument> {
+  ) {
     try {
       const updatedAccount = await this.accountsRepo.findOneAndUpdate(
         { _id: accountID},
@@ -100,7 +98,7 @@ export class AccountsService {
   async getAccountSummary(
     accountID: string,
     userID: string,
-  ): Promise<AccountSummaryDTO> {
+  ) {
     const data = await this.transactionsRepo.aggregate<IAccountSummary>([
       {
         $match: {
@@ -227,24 +225,24 @@ export class AccountsService {
       byDay: {
         amount: byDay,
         // difference Btw Budget And Costs
-        percentage: `${this.calcPercentage(
+        percentage: `${budgetByUser ? this.calcPercentage(
           budgetByUser.perDay + byDay,
           budgetByUser.perDay,
-        )}%`,
+        ) : 0}%`,
       },
       byWeek: {
         amount: byWeek,
-        percentage: `${this.calcPercentage(
+        percentage: `${budgetByUser ? this.calcPercentage(
           budgetByUser.perDay * 7 + byWeek,
           budgetByUser.perDay * 7,
-        )}%`,
+        ) : 0}%`,
       },
       byMonth: {
         amount: byMonth,
-        percentage: `${this.calcPercentage(
+        percentage: `${budgetByUser ? this.calcPercentage(
           budgetByUser.perDay * daysInCurrentMonth + byMonth,
           budgetByUser.perDay * daysInCurrentMonth,
-        )}%`,
+        ) : 0}%`,
       },
     };
   }
@@ -253,7 +251,7 @@ export class AccountsService {
     filter: string,
     orderBy: string,
     userID: string,
-  ): Promise<Account[]> {
+  ) {
     // .find({ $and: buildFilterObject, userID })
     // const buildFilterObject = buildFilterExpressions(filter);
     // const sortValue = buildSortByOrderBy(orderBy);

@@ -2,9 +2,14 @@ import { BudgetService } from '@budget/budget.service';
 import { Injectable } from '@nestjs/common';
 import { AccountsService } from '@accounts/accounts.service';
 import { CreateUserDTO } from './dto/create-user.dto';
-import { UserDataDTO } from './dto/userData.dto';
 import { UserDocument } from './schemas/users.schema';
 import { UsersRepository } from './users.repository';
+
+interface IUserData {
+  username: string;
+  email: string;
+}
+
 
 @Injectable()
 export class UsersService {
@@ -14,7 +19,7 @@ export class UsersService {
     private readonly budgetService: BudgetService,
   ) {}
 
-  computeUserData(user: UserDocument): UserDataDTO {
+  computeUserData(user: UserDocument): IUserData {
     const { username, email } = user;
     return {
       username,

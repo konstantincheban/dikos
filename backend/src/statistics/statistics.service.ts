@@ -1,13 +1,32 @@
 import { ROUND_VALUE } from '@utils/constants';
-import { TopShopDTO } from './dto/top-shops-dto';
-import { TopCategoriesDTO } from './dto/top-categories-dto';
-import { IncomeExpensesDTO } from './dto/income-expenses-dto';
 import { Injectable } from '@nestjs/common';
 import { BudgetService } from '@budget/budget.service';
 import * as moment from 'moment';
-import { BudgetDTO } from './dto/budget-dto';
 import { ForecastResult } from 'src/analytics/schemas/forecast.schema';
 import { TransactionsRepository } from '@transactions/transactions.repository';
+
+export interface IBudget {
+  name: string;
+  budget: number;
+  expenses: number;
+}
+
+export class ITopCategories {
+  name: string;
+  count: number;
+}
+
+export class IIncomeExpenses {
+  name: string;
+  income: number;
+  expenses: number;
+}
+
+export class ITopShop {
+  name: string;
+  count: number;
+}
+
 
 @Injectable()
 export class StatisticsService {
@@ -60,8 +79,8 @@ export class StatisticsService {
 
   async getIncomeExpensesStatisticsDataForYear(
     userID: string,
-  ): Promise<IncomeExpensesDTO[]> {
-    const data: IncomeExpensesDTO[] = await this.transactionsRepository.aggregate([
+  ): Promise<IIncomeExpenses[]> {
+    const data: IIncomeExpenses[] = await this.transactionsRepository.aggregate([
       {
         $match: {
           $expr: {
@@ -108,8 +127,8 @@ export class StatisticsService {
   async getIncomeExpensesStatisticsDataForMonth(
     userID: string,
     numberOfMonth: string,
-  ): Promise<IncomeExpensesDTO[]> {
-    const data: IncomeExpensesDTO[] = await this.transactionsRepository.aggregate([
+  ): Promise<IIncomeExpenses[]> {
+    const data: IIncomeExpenses[] = await this.transactionsRepository.aggregate([
       {
         $match: {
           $expr: {
@@ -211,11 +230,11 @@ export class StatisticsService {
     ]);
   }
 
-  async getBudgetStatisticsDataForYear(userID: string): Promise<BudgetDTO[]> {
+  async getBudgetStatisticsDataForYear(userID: string): Promise<IBudget[]> {
     const budgetsByUser = await this.budgetService.getUserBudgetsByUserID(
       userID,
     );
-    const data: BudgetDTO[] = await this.transactionsRepository.aggregate([
+    const data: IBudget[] = await this.transactionsRepository.aggregate([
       {
         $match: {
           $expr: {
@@ -264,7 +283,7 @@ export class StatisticsService {
   async getBudgetStatisticsDataForMonth(
     userID: string,
     numberOfMonth: string,
-  ): Promise<BudgetDTO[]> {
+  ): Promise<IBudget[]> {
     const budgetsByUser = await this.budgetService.getUserBudgetsByUserID(
       userID,
     );
@@ -273,7 +292,7 @@ export class StatisticsService {
         budgetsByUser,
         `${moment().format('YYYY')}-${numberOfMonth}`,
       );
-    const data: BudgetDTO[] = await this.transactionsRepository.aggregate([
+    const data: IBudget[] = await this.transactionsRepository.aggregate([
       {
         $match: {
           $expr: {
@@ -327,8 +346,8 @@ export class StatisticsService {
   async getTopCategoriesStatisticsData(
     userID: string,
     top: number
-  ): Promise<TopCategoriesDTO[]> {
-    return await this.transactionsRepository.aggregate<TopCategoriesDTO>([
+  ): Promise<ITopCategories[]> {
+    return await this.transactionsRepository.aggregate<ITopCategories>([
       {
         $match: {
           $expr: {
@@ -356,8 +375,8 @@ export class StatisticsService {
     .limit(top);
   }
 
-  async getTopShopsStatisticsData(userID: string, top: number): Promise<TopShopDTO[]> {
-    return await this.transactionsRepository.aggregate<TopShopDTO>([
+  async getTopShopsStatisticsData(userID: string, top: number): Promise<ITopShop[]> {
+    return await this.transactionsRepository.aggregate<ITopShop>([
       {
         $match: {
           $expr: {

@@ -1,7 +1,17 @@
+import { ACCOUNT_TYPES } from "@utils/constants";
+import { IsIn, IsOptional, IsString } from "class-validator";
+
 export class CreateAccountDTO {
-  userID: string;
+  @IsString()
   name: string;
+
+  @IsString()
+  @IsOptional()
   description?: string;
-  currency?: string;
-  type?: string;
+
+  @IsString()
+  currency: string;
+
+  @IsIn(ACCOUNT_TYPES)
+  type: string;
 }

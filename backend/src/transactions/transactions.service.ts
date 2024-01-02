@@ -6,10 +6,8 @@ import { EditTransactionDTO } from './dto/edit-transaction.dto';
 import {
   TransactionDocument,
 } from './schemas/transactions.schema';
-import { ProposedCategoryDTO } from './dto/proposed-category.dto';
-import { DeleteTransactionsStatusDTO } from './dto/delete-transactions-status.dto';
 import { TransactionsRepository } from './transactions.repository';
-import { ICount, IOptions } from '@app/common';
+import { IOptions } from '@app/common';
 
 @Injectable()
 export class TransactionsService {
@@ -20,7 +18,7 @@ export class TransactionsService {
   ) {}
 
   async createTransaction(
-    data: CreateTransactionDTO,
+    data: CreateTransactionDTO & { userID: string },
   ): Promise<TransactionDocument> {
     const relatedAccount = await this.accountsService.getAccountById(
       data.accountID,
@@ -58,12 +56,12 @@ export class TransactionsService {
   }
 
 
-  async getTransactionProposedCategories(userID: string, top: number): Promise<ProposedCategoryDTO[]> {
+  async getTransactionProposedCategories(userID: string, top: number) {
     const topCategories = await this.statisticsService.getTopCategoriesStatisticsData(userID, top);
     return topCategories.map(category => ({ label: category.name, value: category.name }));
   }
 
-  async deleteTransactions(transactionIDs: string[]): Promise<DeleteTransactionsStatusDTO[]> {
+  async deleteTransactions(transactionIDs: string[]) {
     const statuses = await Promise.allSettled(transactionIDs.map(async (id) => {
       try {
         await this.transactionsRepository.findOneAndDelete({ _id: id });

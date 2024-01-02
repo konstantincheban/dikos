@@ -37,7 +37,7 @@ export class ForecastResult {
 @Schema({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, versionKey: false
 })
-export class Forecast extends AbstractDocument{
+export class Forecast extends AbstractDocument {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   @Exclude()
   userID: string;

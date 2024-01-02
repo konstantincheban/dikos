@@ -1,4 +1,3 @@
-import { BudgetPerMonthDTO } from './dto/get-budget-dto';
 import {
   Controller,
   Get,
@@ -15,6 +14,7 @@ import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.i
 import { BudgetService } from './budget.service';
 import { Budget } from './schemas/budget.schema';
 import { EditBudgetDTO } from './dto/edit-budget-dto';
+import { CreateBudgetDTO } from './dto/create-budget-dto';
 
 @Controller('budget')
 @UseInterceptors(MongooseClassSerializerInterceptor(Budget))
@@ -23,7 +23,7 @@ export class BudgetController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/create')
-  async createUserBudget(@Body() data: BudgetPerMonthDTO, @Req() req) {
+  async createUserBudget(@Body() data: CreateBudgetDTO, @Req() req) {
     return await this.budgetService.createUserBudget(data, req.user.id);
   }
 
