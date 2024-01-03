@@ -12,5 +12,8 @@
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
     }
+  },
+  "compilerOptions": {
+    "webpack": true
   }
 }
