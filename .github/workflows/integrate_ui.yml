@@ -10,7 +10,6 @@ on:
       - './frontend/**'
   workflow_dispatch:
 
-
 jobs:
   build_ui:
     runs-on: ubuntu-latest
