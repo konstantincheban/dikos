@@ -1,0 +1,26 @@
+name: Continuous Integration for UI
+
+on:
+  pull_request:
+    branches:
+      - master
+      - bugfix/**
+      - feature/**
+    paths:
+      - './frontend/**'
+  workflow_dispatch:
+
+
+jobs:
+  build_ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 18.17
+      - name: Build UI
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
