@@ -5,7 +5,7 @@ export class CreateBudgetDTO {
   @IsDate()
   @IsOptional()
   @Type(() => Date)
-  date?: string;
+  date?: Date;
 
   @IsNumber()
   amount: number;

@@ -11,5 +11,5 @@ export class MetroTransactionsFileDTO {
 
   @IsDate()
   @Type(() => Date)
-  date: string;
+  date: Date;
 }

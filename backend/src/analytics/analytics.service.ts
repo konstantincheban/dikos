@@ -131,7 +131,7 @@ export class AnalyticsService {
     userID: string,
     period: Periods,
     forecastType: ForecastType,
-    startTime: string,
+    startTime: Date,
   ) {
     const options: Forecast['options'] = this.defaultOptions;
 
@@ -145,7 +145,7 @@ export class AnalyticsService {
     });
     options.period = period;
     options.nTransactions = transactions.length;
-    options.startTime = startTime ?? transactions.at(0).date.toISOString();
+    options.startTime = (startTime ?? transactions.at(0).date).toISOString();
     options.forecastType = forecastType;
 
     return { transactions, options };
@@ -161,7 +161,7 @@ export class AnalyticsService {
   async forecastHandler(
     userID: string,
     period: Periods,
-    startTime: string,
+    startTime: Date,
     forecastType: ForecastType,
   ) {
     try {
@@ -229,7 +229,7 @@ export class AnalyticsService {
   async forecastIncomeOrExpenses(
     userID: string,
     period: Periods,
-    startTime: string,
+    startTime: Date,
     forecastType: ForecastType,
   ) {
     this.validateParams(period);

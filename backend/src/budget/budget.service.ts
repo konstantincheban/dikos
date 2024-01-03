@@ -1,9 +1,15 @@
+import * as moment from 'moment';
 import { EditBudgetDTO } from './dto/edit-budget-dto';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import * as moment from 'moment';
 import { BudgetRepository } from './budget.repository';
-import { CreateBudgetDTO } from './dto/create-budget-dto';
 import { BudgetDocument } from './schemas/budget.schema';
+
+export interface ICreateBudgetData {
+  date?: string;
+  amount: number;
+  plannedCosts: number;
+  perDay: number;
+}
 
 @Injectable()
 export class BudgetService {
@@ -11,11 +17,15 @@ export class BudgetService {
 
   get defaultUserBudget() {
     return {
-      date: moment().format('YYYY-MM'),
+      date: this.formatBudgetData(new Date()),
       amount: 0,
       plannedCosts: 0,
       perDay: 0,
     };
+  }
+
+  formatBudgetData(date: Date): string {
+    return moment(date ?? new Date()).format('YYYY-MM');
   }
 
   /**
@@ -38,7 +48,7 @@ export class BudgetService {
     return budgets.find((budget) => budget.date === date)?.perDay ?? 0;
   }
 
-  async createUserBudget(data: CreateBudgetDTO, userID: string) {
+  async createUserBudget(data: ICreateBudgetData, userID: string) {
     return this.budgetRepo.create({
       userID,
       budgetsPerMonth: [{ ...this.defaultUserBudget, ...data }],

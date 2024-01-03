@@ -7,5 +7,5 @@ export class MonoTransactionsFileDTO {
 
   @IsDate()
   @Type(() => Date)
-  date: string;
+  date: Date;
 }

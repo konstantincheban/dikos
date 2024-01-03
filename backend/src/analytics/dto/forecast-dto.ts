@@ -10,5 +10,5 @@ export class ForecastBodyDTO {
 
   @IsDate()
   @Type(() => Date)
-  startTime: string;
+  startTime: Date;
 }

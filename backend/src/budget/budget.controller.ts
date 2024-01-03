@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { MongooseClassSerializerInterceptor } from '@app/common';
-import { BudgetService } from './budget.service';
+import { BudgetService, ICreateBudgetData } from './budget.service';
 import { Budget } from './schemas/budget.schema';
 import { EditBudgetDTO } from './dto/edit-budget-dto';
 import { CreateBudgetDTO } from './dto/create-budget-dto';
@@ -24,7 +24,11 @@ export class BudgetController {
   @UseGuards(JwtAuthGuard)
   @Post('/create')
   async createUserBudget(@Body() data: CreateBudgetDTO, @Req() req) {
-    return await this.budgetService.createUserBudget(data, req.user.id);
+    const formattedData: ICreateBudgetData = {
+      ...data,
+      date: this.budgetService.formatBudgetData(data.date)
+    };
+    return await this.budgetService.createUserBudget(formattedData, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
