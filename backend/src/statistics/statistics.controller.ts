@@ -62,13 +62,16 @@ export class StatisticsController {
   async getTopCategoriesStatisticsData(@Req() req) {
     return await this.statisticsService.getTopCategoriesStatisticsData(
       req.user.id,
-      5
+      5,
     );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/top_shops')
   async getTopShopsStatisticsData(@Req() req) {
-    return await this.statisticsService.getTopShopsStatisticsData(req.user.id, 5);
+    return await this.statisticsService.getTopShopsStatisticsData(
+      req.user.id,
+      5,
+    );
   }
 }

@@ -1,6 +1,6 @@
-import { METRO_AGGR_TYPES } from "@metro/metro.service";
-import { Type } from "class-transformer";
-import { IsDate, IsIn, IsString } from "class-validator";
+import { METRO_AGGR_TYPES } from '@metro/metro.service';
+import { Type } from 'class-transformer';
+import { IsDate, IsIn, IsString } from 'class-validator';
 
 export class MetroTransactionsFileDTO {
   @IsString()

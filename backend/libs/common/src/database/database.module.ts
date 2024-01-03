@@ -9,9 +9,9 @@ import { ModelDefinition, MongooseModule } from '@nestjs/mongoose';
       useFactory: (configService: ConfigService) => ({
         uri: configService.get('MONGO_HOST'),
       }),
-      inject: [ConfigService]
-    })
-  ]
+      inject: [ConfigService],
+    }),
+  ],
 })
 export class DatabaseModule {
   static forFeature(models: ModelDefinition[]) {

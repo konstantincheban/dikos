@@ -33,9 +33,6 @@
       "@analytics/*": [
         "./src/analytics/*"
       ],
-      "@events/*": [
-        "src/events/*"
-      ],
       "@users/*": [
         "./src/users/*"
       ],

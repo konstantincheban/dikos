@@ -7,9 +7,7 @@ import { BudgetDocument } from './schemas/budget.schema';
 
 @Injectable()
 export class BudgetService {
-  constructor(
-    private readonly budgetRepo: BudgetRepository
-  ) {}
+  constructor(private readonly budgetRepo: BudgetRepository) {}
 
   get defaultUserBudget() {
     return {
@@ -47,32 +45,26 @@ export class BudgetService {
     });
   }
 
-  async editUserBudget(
-    data: EditBudgetDTO,
-    budgetID: string,
-  ) {
+  async editUserBudget(data: EditBudgetDTO, budgetID: string) {
     try {
       const updateBudgets = await this.budgetRepo.findOne({ _id: budgetID });
-      // @ts-ignore
-      updateBudgets.budgetsPerMonth = updateBudgets.budgetsPerMonth.map(
-        (item) => {
-          if (item.date === moment().format('YYYY-MM'))
-            return {
-              ...item,
-              ...data,
-              perDay: this.calculateBudgetPerDay(
-                data.amount,
-                data.plannedCosts,
-              ),
-            };
-          return item;
-        },
-      );
       const updated = await this.budgetRepo.findOneAndUpdate(
         { _id: budgetID },
         {
           ...updateBudgets,
-        }
+          budgetsPerMonth: updateBudgets.budgetsPerMonth.map((item) => {
+            if (item.date === moment().format('YYYY-MM'))
+              return {
+                ...item,
+                ...data,
+                perDay: this.calculateBudgetPerDay(
+                  data.amount,
+                  data.plannedCosts,
+                ),
+              };
+            return item;
+          }),
+        },
       );
       const currentBudget = this.getBudgetPerMonthByCurrentDate(
         updated.budgetsPerMonth,
@@ -103,9 +95,7 @@ export class BudgetService {
     }
   }
 
-  async getUserBudgetByCurrentMonth(
-    budgetID: string,
-  ) {
+  async getUserBudgetByCurrentMonth(budgetID: string) {
     const budgetEntry = await this.budgetRepo.findOne({ _id: budgetID });
     let budgetForCurrentMonth = await this.getBudgetPerMonthByCurrentDate(
       budgetEntry.budgetsPerMonth,
@@ -118,9 +108,7 @@ export class BudgetService {
     return await budgetForCurrentMonth;
   }
 
-  async getUserBudgetForCurrentMonthByUserID(
-    userID: string,
-  ) {
+  async getUserBudgetForCurrentMonthByUserID(userID: string) {
     const budgetEntry = await this.budgetRepo.findOne({ userID });
     return this.getBudgetPerMonthByCurrentDate(budgetEntry.budgetsPerMonth);
   }

@@ -21,6 +21,6 @@ import { TransactionsRepository } from '@transactions/transactions.repository';
   ],
   providers: [StatisticsService, TransactionsRepository],
   controllers: [StatisticsController],
-  exports: [StatisticsService]
+  exports: [StatisticsService],
 })
 export class StatisticsModule {}

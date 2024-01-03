@@ -1,18 +1,18 @@
-import { Logger, NotFoundException } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { FilterQuery, Model, UpdateQuery } from 'mongoose';
 import { AbstractDocument } from './abstract.schema';
 
 export interface ICount {
-  count: number
+  count: number;
 }
 
 export interface IOptions {
-  filter?: any,
-  sort?: any,
-  select?: any,
-  top?: number | string,
-  skip?: number | string,
-  count?: boolean
+  filter?: any;
+  sort?: any;
+  select?: any;
+  top?: number | string;
+  skip?: number | string;
+  count?: boolean;
 }
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
@@ -22,12 +22,11 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
   async create(document: Partial<TDocument>): Promise<TDocument> {
     const createdDocument = new this.model(document);
-    return (await createdDocument.save());
+    return await createdDocument.save();
   }
 
   async findOne(filterQuery: FilterQuery<TDocument>): Promise<TDocument> {
-    const document = await this.model
-      .findOne(filterQuery);
+    const document = await this.model.findOne(filterQuery);
 
     return document;
   }
@@ -36,10 +35,9 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     filterQuery: FilterQuery<TDocument>,
     update: UpdateQuery<TDocument>,
   ): Promise<TDocument> {
-    const document = await this.model
-      .findOneAndUpdate(filterQuery, update, {
-        new: true,
-      });
+    const document = await this.model.findOneAndUpdate(filterQuery, update, {
+      new: true,
+    });
 
     return document;
   }
@@ -52,17 +50,8 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
   async findAll(options: IOptions & { count: true }): Promise<ICount>;
   async findAll(options: IOptions): Promise<Partial<TDocument>[]>;
 
-  async findAll(
-    options: IOptions
-  ): Promise<ICount | Partial<TDocument>[]> {
-    const {
-      filter,
-      sort,
-      select,
-      top,
-      skip,
-      count
-    } = options;
+  async findAll(options: IOptions): Promise<ICount | Partial<TDocument>[]> {
+    const { filter, sort, select, top, skip, count } = options;
     let query = this.model.find({ ...(filter ?? {}) });
     if (sort) {
       query = query.sort(sort);
@@ -78,8 +67,8 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     }
     if (count) {
       return {
-        count: await query.countDocuments()
-      }
+        count: await query.countDocuments(),
+      };
     }
     return query;
   }

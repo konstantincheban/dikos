@@ -4,7 +4,7 @@ import { MonoController } from './mono.controller';
 import { MonoService } from './mono.service';
 import { AccountsModule } from '@accounts/accounts.module';
 import { AuthModule } from '@auth/auth.module';
-import { EventsModule } from '@events/events.module';
+import { EventsModule } from '@app/common';
 import { LoggerModule } from '@app/common';
 
 @Module({
@@ -13,7 +13,7 @@ import { LoggerModule } from '@app/common';
     forwardRef(() => AuthModule),
     forwardRef(() => TransactionsModule),
     forwardRef(() => AccountsModule),
-    forwardRef(() => EventsModule)
+    forwardRef(() => EventsModule),
   ],
   providers: [MonoService],
   controllers: [MonoController],

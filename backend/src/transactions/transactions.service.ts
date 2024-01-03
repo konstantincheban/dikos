@@ -3,9 +3,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { AccountsService } from '@accounts/accounts.service';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
 import { EditTransactionDTO } from './dto/edit-transaction.dto';
-import {
-  TransactionDocument,
-} from './schemas/transactions.schema';
+import { TransactionDocument } from './schemas/transactions.schema';
 import { TransactionsRepository } from './transactions.repository';
 import { IOptions } from '@app/common';
 
@@ -36,10 +34,11 @@ export class TransactionsService {
     data: EditTransactionDTO,
   ): Promise<TransactionDocument> {
     try {
-      const updatedTransaction = await this.transactionsRepository.findOneAndUpdate(
-        { _id: transactionID },
-        { $set: data }
-      );
+      const updatedTransaction =
+        await this.transactionsRepository.findOneAndUpdate(
+          { _id: transactionID },
+          { $set: data },
+        );
       return updatedTransaction;
     } catch (err) {
       throw new BadRequestException('Something went wrong. Please try again');
@@ -55,36 +54,41 @@ export class TransactionsService {
     }
   }
 
-
   async getTransactionProposedCategories(userID: string, top: number) {
-    const topCategories = await this.statisticsService.getTopCategoriesStatisticsData(userID, top);
-    return topCategories.map(category => ({ label: category.name, value: category.name }));
+    const topCategories =
+      await this.statisticsService.getTopCategoriesStatisticsData(userID, top);
+    return topCategories.map((category) => ({
+      label: category.name,
+      value: category.name,
+    }));
   }
 
   async deleteTransactions(transactionIDs: string[]) {
-    const statuses = await Promise.allSettled(transactionIDs.map(async (id) => {
-      try {
-        await this.transactionsRepository.findOneAndDelete({ _id: id });
-        return Promise.resolve(id);
-      } catch (err) {
-        return Promise.reject({ id, desc: err.name });
-      }
-    }));
+    const statuses = await Promise.allSettled(
+      transactionIDs.map(async (id) => {
+        try {
+          await this.transactionsRepository.findOneAndDelete({ _id: id });
+          return Promise.resolve(id);
+        } catch (err) {
+          return Promise.reject({ id, desc: err.name });
+        }
+      }),
+    );
 
-    return statuses.map(status => {
+    return statuses.map((status) => {
       if (status.status === 'rejected') {
         return {
           id: status.reason.id,
           status: 'failed',
-          reason: status.reason.desc
-        }
+          reason: status.reason.desc,
+        };
       }
 
       return {
         id: status.value,
-        status: 'success'
-      }
-    })
+        status: 'success',
+      };
+    });
   }
 
   async getTransactions(options: IOptions) {

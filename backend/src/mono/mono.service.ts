@@ -4,7 +4,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { AccountsService } from '@accounts/accounts.service';
 import { TransactionsService } from '@transactions/transactions.service';
 import { CreateTransactionDTO } from '@transactions/dto/create-transaction.dto';
-import { EventsGateway } from '@events/events.gateway';
+import { EventsGateway } from '@app/common';
 import { getOptionsByMCC, transliterateString } from '@utils/utils';
 interface AggregationConfig {
   userID: string;
@@ -14,15 +14,15 @@ interface AggregationConfig {
 
 interface MonoTransaction {
   'Date and time': string;
-  'Description': string;
-  'MCC': number;
+  Description: string;
+  MCC: number;
   'Card currency amount, (UAH)': number;
   'Operation amount': number;
   'Operation currency': string;
   'Exchange rate': number | string;
   'Commission, (UAH)': number | string;
   'Cashback amount, (UAH)': number | string;
-  'Balance': number;
+  Balance: number;
 }
 
 @Injectable()
@@ -30,12 +30,15 @@ export class MonoService {
   constructor(
     private readonly transactionsService: TransactionsService,
     private readonly accountsService: AccountsService,
-    private eventsGateway: EventsGateway
+    private eventsGateway: EventsGateway,
   ) {}
 
   processImportFile(file: Express.Multer.File): MonoTransaction[] {
     // Parse the CSV file
-    const workbook = XLSX.read(file.buffer , { type: 'buffer', codepage: 65001 });
+    const workbook = XLSX.read(file.buffer, {
+      type: 'buffer',
+      codepage: 65001,
+    });
     // Assuming your CSV file has a single sheet
     const firstSheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[firstSheetName];
@@ -56,12 +59,22 @@ export class MonoService {
       return this.excelSerialDateToDate(excelDate);
     }
     const [_, day, month, year, hours, minutes, seconds] =
-        /(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2}):(\d{2})/.exec(excelDate);
+      /(\d{2})\.(\d{2})\.(\d{4}) (\d{2}):(\d{2}):(\d{2})/.exec(excelDate);
 
-    return new Date(Number(year), Number(month) - 1, Number(day), Number(hours), Number(minutes), Number(seconds));
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+      Number(hours),
+      Number(minutes),
+      Number(seconds),
+    );
   }
 
-  aggregateData(transactionsData: MonoTransaction[], config: AggregationConfig) {
+  aggregateData(
+    transactionsData: MonoTransaction[],
+    config: AggregationConfig,
+  ) {
     const { userID, relatedAccount, date } = config;
     const transactionSkeleton = {
       userID,
@@ -72,10 +85,12 @@ export class MonoService {
       currency: relatedAccount.currency,
       category: '',
       date: new Date(date),
-      paymaster: null
+      paymaster: null,
     };
     return transactionsData.map((transaction) => {
-      const { category, description: shopDescription } = getOptionsByMCC(transaction['MCC']);
+      const { category, description: shopDescription } = getOptionsByMCC(
+        transaction['MCC'],
+      );
       const transName = transliterateString(transaction['Description']);
       return {
         ...transactionSkeleton,
@@ -84,13 +99,13 @@ export class MonoService {
         description: transName,
         amount: transaction['Card currency amount, (UAH)'],
         category: category,
-        paymaster: shopDescription
-      }
+        paymaster: shopDescription,
+      };
     });
   }
 
   async migrateImportedTransactions(
-    transactions: (CreateTransactionDTO & { userID: string})[],
+    transactions: (CreateTransactionDTO & { userID: string })[],
   ): Promise<any> {
     const createTransactions = transactions.map((transaction) =>
       this.transactionsService.createTransaction(transaction),
@@ -102,10 +117,12 @@ export class MonoService {
     userID: string,
     accountId: string,
     date: string,
-    file: Express.Multer.File
+    file: Express.Multer.File,
   ) {
     try {
-      const relatedAccount = await this.accountsService.getAccountById(accountId);
+      const relatedAccount = await this.accountsService.getAccountById(
+        accountId,
+      );
       if (!relatedAccount) {
         throw new BadRequestException(
           `You are using the wrong accountID - ${accountId}`,
@@ -119,21 +136,15 @@ export class MonoService {
         date,
       });
       await this.migrateImportedTransactions(dikosTransactions);
-      this.eventsGateway.send(
-        'mono-migration',
-        {
-          status: 'success',
-          message: 'Import finished successfully',
-        }
-      );
+      this.eventsGateway.send('mono-migration', {
+        status: 'success',
+        message: 'Import finished successfully',
+      });
     } catch (err) {
-      this.eventsGateway.send(
-        'mono-migration',
-        {
-          status: 'failed',
-          message: 'Import failed',
-        }
-      );
+      this.eventsGateway.send('mono-migration', {
+        status: 'failed',
+        message: 'Import failed',
+      });
     }
   }
 
@@ -143,19 +154,11 @@ export class MonoService {
     date: string,
     file: Express.Multer.File,
   ) {
-    this.eventsGateway.send(
-      'mono-migration',
-      {
-        status: 'progress',
-        message: 'Import & Migration is in progress'
-      }
-    );
-    this.importTransactionsHandler(
-      userID,
-      accountId,
-      date,
-      file
-    );
+    this.eventsGateway.send('mono-migration', {
+      status: 'progress',
+      message: 'Import & Migration is in progress',
+    });
+    this.importTransactionsHandler(userID, accountId, date, file);
     return {
       message: 'Initiated import & migration process',
     };

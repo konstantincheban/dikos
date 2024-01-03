@@ -4,16 +4,16 @@ import { AccountsService } from '@accounts/accounts.service';
 import { TransactionsService } from '@transactions/transactions.service';
 import * as XLSX from 'xlsx';
 import { CreateTransactionDTO } from '@transactions/dto/create-transaction.dto';
-import { EventsGateway } from '@events/events.gateway';
+import { EventsGateway } from '@app/common';
 
 interface MetroProduct {
   ' с НДС': number;
   'Единица измерения': string;
   'Код продукта': string;
-  'Количество': number;
+  Количество: number;
   'Общая сумма с НДС': number;
-  'Описание': string;
-  '__rowNum__': number;
+  Описание: string;
+  __rowNum__: number;
 }
 const PRDCTS_AS_TRANS = 'productsAsTransactions';
 const CHECK_AS_TRANS = 'checkAsTransaction';
@@ -31,7 +31,7 @@ export class MetroService {
   constructor(
     private readonly transactionsService: TransactionsService,
     private readonly accountsService: AccountsService,
-    private eventsGateway: EventsGateway
+    private eventsGateway: EventsGateway,
   ) {}
 
   processImportFile(file: Express.Multer.File): MetroProduct[] {
@@ -101,7 +101,7 @@ export class MetroService {
   }
 
   async migrateImportedTransactions(
-    transactions: (CreateTransactionDTO & { userID: string})[],
+    transactions: (CreateTransactionDTO & { userID: string })[],
   ): Promise<any> {
     const createTransactions = transactions.map((transaction) =>
       this.transactionsService.createTransaction(transaction),
@@ -117,7 +117,9 @@ export class MetroService {
     file: Express.Multer.File,
   ) {
     try {
-      const relatedAccount = await this.accountsService.getAccountById(accountId);
+      const relatedAccount = await this.accountsService.getAccountById(
+        accountId,
+      );
       if (!relatedAccount) {
         throw new BadRequestException(
           `You are using the wrong accountID - ${accountId}`,
@@ -132,21 +134,15 @@ export class MetroService {
         date,
       });
       await this.migrateImportedTransactions(dikosTransactions);
-      this.eventsGateway.send(
-        'metro-migration',
-        {
-          status: 'success',
-          message: 'Import finished successfully',
-        }
-      );
+      this.eventsGateway.send('metro-migration', {
+        status: 'success',
+        message: 'Import finished successfully',
+      });
     } catch (err) {
-      this.eventsGateway.send(
-        'metro-migration',
-        {
-          status: 'failed',
-          message: 'Import failed',
-        }
-      );
+      this.eventsGateway.send('metro-migration', {
+        status: 'failed',
+        message: 'Import failed',
+      });
     }
   }
 
@@ -157,19 +153,16 @@ export class MetroService {
     date: string,
     file: Express.Multer.File,
   ) {
-    this.eventsGateway.send(
-      'metro-migration',
-      {
-        status: 'progress',
-        message: 'Import & Migration is in progress'
-      }
-    );
+    this.eventsGateway.send('metro-migration', {
+      status: 'progress',
+      message: 'Import & Migration is in progress',
+    });
     this.importTransactionsHandler(
       userID,
       accountId,
       aggregationType,
       date,
-      file
+      file,
     );
     return {
       message: 'Initiated import & migration process',

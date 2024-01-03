@@ -9,7 +9,7 @@ import {
   Req,
   UseInterceptors,
   Put,
-  Delete
+  Delete,
 } from '@nestjs/common';
 
 import {
@@ -47,7 +47,7 @@ export class TransactionsController {
         sort: sortValue,
         top: top,
         skip: skip,
-        count: true
+        count: true,
       });
     }
     return await this.transactionsService.getTransactions({
@@ -55,16 +55,13 @@ export class TransactionsController {
       sort: sortValue,
       top: top,
       skip: skip,
-      count: count !== undefined
+      count: count !== undefined,
     });
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('/proposedCategories')
-  async getProposedCategories(
-    @Query('top') top: string,
-    @Req() req,
-  ) {
+  async getProposedCategories(@Query('top') top: string, @Req() req) {
     return await this.transactionsService.getTransactionProposedCategories(
       req.user.id,
       Number(top) ?? 0,
@@ -100,7 +97,9 @@ export class TransactionsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('/multi_delete')
-  async deleteTransactions(@Body() payload: DeleteTransactionsPayloadDTO): Promise<any> {
+  async deleteTransactions(
+    @Body() payload: DeleteTransactionsPayloadDTO,
+  ): Promise<any> {
     return await this.transactionsService.deleteTransactions(payload.entries);
   }
 }

@@ -8,7 +8,10 @@ import { AuthModule } from '@auth/auth.module';
 import { DatabaseModule, LoggerModule } from '@app/common';
 import { TransactionsRepository } from '@transactions/transactions.repository';
 import { BudgetRepository } from '@budget/budget.repository';
-import { Transaction, TransactionSchema } from '@transactions/schemas/transactions.schema';
+import {
+  Transaction,
+  TransactionSchema,
+} from '@transactions/schemas/transactions.schema';
 import { Budget, BudgetSchema } from '@budget/schemas/budget.schema';
 import { AccountsRepository } from './accounts.repository';
 
@@ -23,7 +26,12 @@ import { AccountsRepository } from './accounts.repository';
       { name: Budget.name, schema: BudgetSchema },
     ]),
   ],
-  providers: [AccountsService, AccountsRepository, TransactionsRepository, BudgetRepository],
+  providers: [
+    AccountsService,
+    AccountsRepository,
+    TransactionsRepository,
+    BudgetRepository,
+  ],
   controllers: [AccountsController],
   exports: [AccountsService, AccountsRepository],
 })

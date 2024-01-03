@@ -1,13 +1,13 @@
 const replacements = [
   // Ukrainian
-	['Є', 'Ye'],
-	['І', 'I'],
-	['Ї', 'Yi'],
-	['Ґ', 'G'],
-	['є', 'ye'],
-	['і', 'i'],
-	['ї', 'yi'],
-	['ґ', 'g'],
+  ['Є', 'Ye'],
+  ['І', 'I'],
+  ['Ї', 'Yi'],
+  ['Ґ', 'G'],
+  ['є', 'ye'],
+  ['і', 'i'],
+  ['ї', 'yi'],
+  ['ґ', 'g'],
 
   // russian
   ['А', 'A'],
@@ -87,31 +87,37 @@ const replacements = [
 ];
 
 const doCustomReplacements = (string, replacements) => {
-	for (const [key, value] of replacements) {
-		string = string.replace(new RegExp(key, 'g'), value);
-	}
+  for (const [key, value] of replacements) {
+    string = string.replace(new RegExp(key, 'g'), value);
+  }
 
-	return string;
+  return string;
 };
 
-export default function transliterate(string, options = { customReplacements: [] }) {
-	if (typeof string !== 'string') {
-		throw new TypeError(`Expected a string, got \`${typeof string}\``);
-	}
+export default function transliterate(
+  string,
+  options = { customReplacements: [] },
+) {
+  if (typeof string !== 'string') {
+    throw new TypeError(`Expected a string, got \`${typeof string}\``);
+  }
 
-	options = {
-		customReplacements: [],
-		...options
-	};
+  options = {
+    customReplacements: [],
+    ...options,
+  };
 
-	const customReplacements = new Map([
-		...replacements,
-		...options.customReplacements
-	]);
+  const customReplacements = new Map([
+    ...replacements,
+    ...options.customReplacements,
+  ]);
 
-	string = string.normalize();
-	string = doCustomReplacements(string, customReplacements);
-	string = string.normalize('NFD').replace(/\p{Diacritic}/gu, '').normalize();
+  string = string.normalize();
+  string = doCustomReplacements(string, customReplacements);
+  string = string
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .normalize();
 
-	return string;
+  return string;
 }

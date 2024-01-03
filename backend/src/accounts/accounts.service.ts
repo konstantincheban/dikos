@@ -41,14 +41,11 @@ export class AccountsService {
     return this.accountsRepo.create(data);
   }
 
-  async editAccount(
-    accountID: string,
-    data: EditAccountDTO,
-  ) {
+  async editAccount(accountID: string, data: EditAccountDTO) {
     try {
       const updatedAccount = await this.accountsRepo.findOneAndUpdate(
-        { _id: accountID},
-        { $set: data }
+        { _id: accountID },
+        { $set: data },
       );
       return updatedAccount;
     } catch (err) {
@@ -95,10 +92,7 @@ export class AccountsService {
     ];
   }
 
-  async getAccountSummary(
-    accountID: string,
-    userID: string,
-  ) {
+  async getAccountSummary(accountID: string, userID: string) {
     const data = await this.transactionsRepo.aggregate<IAccountSummary>([
       {
         $match: {
@@ -225,33 +219,41 @@ export class AccountsService {
       byDay: {
         amount: byDay,
         // difference Btw Budget And Costs
-        percentage: `${budgetByUser ? this.calcPercentage(
-          budgetByUser.perDay + byDay,
-          budgetByUser.perDay,
-        ) : 0}%`,
+        percentage: `${
+          budgetByUser
+            ? this.calcPercentage(
+                budgetByUser.perDay + byDay,
+                budgetByUser.perDay,
+              )
+            : 0
+        }%`,
       },
       byWeek: {
         amount: byWeek,
-        percentage: `${budgetByUser ? this.calcPercentage(
-          budgetByUser.perDay * 7 + byWeek,
-          budgetByUser.perDay * 7,
-        ) : 0}%`,
+        percentage: `${
+          budgetByUser
+            ? this.calcPercentage(
+                budgetByUser.perDay * 7 + byWeek,
+                budgetByUser.perDay * 7,
+              )
+            : 0
+        }%`,
       },
       byMonth: {
         amount: byMonth,
-        percentage: `${budgetByUser ? this.calcPercentage(
-          budgetByUser.perDay * daysInCurrentMonth + byMonth,
-          budgetByUser.perDay * daysInCurrentMonth,
-        ) : 0}%`,
+        percentage: `${
+          budgetByUser
+            ? this.calcPercentage(
+                budgetByUser.perDay * daysInCurrentMonth + byMonth,
+                budgetByUser.perDay * daysInCurrentMonth,
+              )
+            : 0
+        }%`,
       },
     };
   }
 
-  async getFilteredAccounts(
-    filter: string,
-    orderBy: string,
-    userID: string,
-  ) {
+  async getFilteredAccounts(filter: string, orderBy: string, userID: string) {
     // .find({ $and: buildFilterObject, userID })
     // const buildFilterObject = buildFilterExpressions(filter);
     // const sortValue = buildSortByOrderBy(orderBy);

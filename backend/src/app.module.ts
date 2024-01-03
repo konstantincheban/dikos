@@ -11,8 +11,7 @@ import { MonoModule } from './mono/mono.module';
 import { BudgetModule } from './budget/budget.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { AnalyticsModule } from './analytics/analytics.module';
-import { EventsModule } from './events/events.module';
-import { DatabaseModule } from '@app/common';
+import { DatabaseModule, EventsModule } from '@app/common';
 
 @Module({
   imports: [
@@ -29,7 +28,7 @@ import { DatabaseModule } from '@app/common';
     BudgetModule,
     StatisticsModule,
     AnalyticsModule,
-    EventsModule
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

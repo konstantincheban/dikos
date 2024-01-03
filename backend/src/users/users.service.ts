@@ -10,7 +10,6 @@ interface IUserData {
   email: string;
 }
 
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -46,7 +45,7 @@ export class UsersService {
 
     const userWithBudget = await this.usersRepository.findOneAndUpdate(
       { _id: user.id },
-      { $set: { budgetID: createdBudget._id } }
+      { $set: { budgetID: createdBudget._id } },
     );
 
     return userWithBudget;

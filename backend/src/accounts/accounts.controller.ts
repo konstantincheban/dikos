@@ -41,19 +41,13 @@ export class AccountsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/summaryData/:id')
-  async getAccountSummaryData(
-    @Param('id') accountID: string,
-    @Req() req,
-  ) {
+  async getAccountSummaryData(@Param('id') accountID: string, @Req() req) {
     return await this.accountsService.getAccountSummary(accountID, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/create')
-  async createAccount(
-    @Body() data: CreateAccountDTO,
-    @Req() req,
-  ) {
+  async createAccount(@Body() data: CreateAccountDTO, @Req() req) {
     return await this.accountsService.createAccount({
       ...data,
       userID: req.user.id,

@@ -16,7 +16,7 @@ import { LoggerModule } from '@app/common';
         secret: configService.get('JWT_KEY'),
         signOptions: { expiresIn: '12h' },
       }),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],

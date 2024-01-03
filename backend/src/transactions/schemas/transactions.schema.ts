@@ -7,7 +7,7 @@ import { AbstractDocument } from '@app/common';
 
 @Schema({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
-  versionKey: false
+  versionKey: false,
 })
 export class Transaction extends AbstractDocument {
   @Exclude()

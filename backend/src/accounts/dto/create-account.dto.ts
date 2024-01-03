@@ -1,5 +1,5 @@
-import { ACCOUNT_TYPES } from "@utils/constants";
-import { IsIn, IsOptional, IsString } from "class-validator";
+import { ACCOUNT_TYPES } from '@utils/constants';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 
 export class CreateAccountDTO {
   @IsString()

@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Document } from 'mongoose';
-import { User } from '@users/schemas/users.schema';
 import { Exclude } from 'class-transformer';
 import { ForecastTypes, Periods } from '../dto/forecast-dto';
 import { AbstractDocument } from '@app/common';
@@ -35,7 +34,8 @@ export class ForecastResult {
 }
 
 @Schema({
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, versionKey: false
+  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  versionKey: false,
 })
 export class Forecast extends AbstractDocument {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
