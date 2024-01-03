@@ -17,7 +17,7 @@ import { AccountsService } from './accounts.service';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
-import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@app/common';
 
 @Controller('accounts')
 @UseInterceptors(MongooseClassSerializerInterceptor(Account))

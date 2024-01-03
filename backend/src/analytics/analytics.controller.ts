@@ -12,7 +12,7 @@ import { AnalyticsService } from './analytics.service';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { ForecastBodyDTO, ForecastTypes } from './dto/forecast-dto';
 import { Forecast } from './schemas/forecast.schema';
-import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@app/common';
 
 @Controller('analytics')
 @UseInterceptors(MongooseClassSerializerInterceptor(Forecast))

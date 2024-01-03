@@ -10,7 +10,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
-import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@app/common';
 import { BudgetService } from './budget.service';
 import { Budget } from './schemas/budget.schema';
 import { EditBudgetDTO } from './dto/edit-budget-dto';

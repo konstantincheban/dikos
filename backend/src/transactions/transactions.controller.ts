@@ -20,7 +20,7 @@ import { TransactionsService } from './transactions.service';
 import { CreateTransactionDTO } from './dto/create-transaction.dto';
 import { EditTransactionDTO } from './dto/edit-transaction.dto';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
-import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@app/common';
 import { DeleteTransactionsPayloadDTO } from './dto/delete-transactions-payload.dto';
 import { buildFilterExpressions, buildSortByOrderBy } from '@utils/utils';
 

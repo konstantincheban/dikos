@@ -6,7 +6,7 @@ import {
 import { ClassTransformOptions, plainToClass } from 'class-transformer';
 import { Document } from 'mongoose';
 
-function MongooseClassSerializerInterceptor(
+export function MongooseClassSerializerInterceptor(
   classToIntercept: Type,
 ): typeof ClassSerializerInterceptor {
   return class Interceptor extends ClassSerializerInterceptor {
@@ -36,5 +36,3 @@ function MongooseClassSerializerInterceptor(
     }
   };
 }
-
-export default MongooseClassSerializerInterceptor;

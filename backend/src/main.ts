@@ -1,15 +1,14 @@
+import helmet from 'helmet';
+import { Logger } from 'nestjs-pino';
 import {
   BadRequestException,
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import helmet from 'helmet';
-import { AppModule } from './app.module';
-import { ValidationFilter } from './utils/filters/validation.filter';
-// import { ValidationPipe as CustomValidationPipe } from './utils/pipes/validation.pipe';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from 'nestjs-pino';
+import { ValidationFilter } from '@app/common';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
