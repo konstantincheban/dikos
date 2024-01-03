@@ -6,7 +6,7 @@ on:
   push:
     branches: [master]
     paths:
-      - './frontend/**'
+      - 'frontend/**'
   workflow_dispatch:
 
 # Your workflows jobs.

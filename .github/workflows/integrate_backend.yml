@@ -7,9 +7,8 @@ on:
       - bugfix/**
       - feature/**
     paths:
-      - './backend/**'
+      - 'backend/**'
   workflow_dispatch:
-
 
 jobs:
   test_pull_request:

@@ -8,6 +8,6 @@ export class CreateUserDTO {
   email: string;
 
   @IsString()
-  // TODO: password validation
+  // TODO: password validation on the backend (can use IsStrongPassword)
   password: string;
 }

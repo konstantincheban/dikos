@@ -7,9 +7,8 @@ on:
       - bugfix/**
       - feature/**
     paths:
-      - './frontend/**'
+      - 'frontend/**'
   workflow_dispatch:
-
 
 jobs:
   build_ui:
