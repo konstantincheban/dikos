@@ -162,7 +162,7 @@ function Authentication() {
   const [currentAuthMode, setAuthMode] =
     useState<AuthStateEnum>(defaultOptionValue);
 
-  // TODO: navigate to root after token changed
+  // TBF: navigate to root after token changed
   useEffect(() => {
     if (authState.token) navigate('/');
   }, [authState.token]);
