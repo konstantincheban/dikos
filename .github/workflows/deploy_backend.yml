@@ -5,8 +5,8 @@ name: Deploy Backend to heroku.
 on:
   push:
     branches: [master]
-  paths:
-    - './backend/**'
+    paths:
+      - './backend/**'
   workflow_dispatch:
 
 # Your workflows jobs.
