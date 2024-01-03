@@ -3,22 +3,24 @@ import { Module, forwardRef } from '@nestjs/common';
 import { TransactionsModule } from '@transactions/transactions.module';
 import { AnalyticsService } from './analytics.service';
 import { AnalyticsController } from './analytics.controller';
-import { MongooseModule } from '@nestjs/mongoose';
 import { Forecast, ForecastSchema } from './schemas/forecast.schema';
 import { StatisticsModule } from '@statistics/statistics.module';
-import { EventsModule } from '@events/events.module';
+import { EventsModule } from '@app/common';
+import { DatabaseModule, LoggerModule } from '@app/common';
+import { AnalyticsRepository } from './analytics.repository';
 
 @Module({
   imports: [
+    LoggerModule,
     forwardRef(() => AuthModule),
     forwardRef(() => TransactionsModule),
     forwardRef(() => StatisticsModule),
     forwardRef(() => EventsModule),
-    MongooseModule.forFeature([
+    DatabaseModule.forFeature([
       { name: Forecast.name, schema: ForecastSchema },
     ]),
   ],
-  providers: [AnalyticsService],
+  providers: [AnalyticsService, AnalyticsRepository],
   controllers: [AnalyticsController],
 })
 export class AnalyticsModule {}

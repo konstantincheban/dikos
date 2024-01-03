@@ -1,24 +1,36 @@
 import { ROUND_VALUE } from '@utils/constants';
-import { TopShopDTO } from './dto/top-shops-dto';
-import { TopCategoriesDTO } from './dto/top-categories-dto';
-import { IncomeExpensesDTO } from './dto/income-expenses-dto';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  TransactionDocument,
-  Transaction,
-} from '@transactions/schemas/transactions.schema';
 import { BudgetService } from '@budget/budget.service';
 import * as moment from 'moment';
-import { BudgetDTO } from './dto/budget-dto';
 import { ForecastResult } from 'src/analytics/schemas/forecast.schema';
+import { TransactionsRepository } from '@transactions/transactions.repository';
+
+export interface IBudget {
+  name: string;
+  budget: number;
+  expenses: number;
+}
+
+export class ITopCategories {
+  name: string;
+  count: number;
+}
+
+export class IIncomeExpenses {
+  name: string;
+  income: number;
+  expenses: number;
+}
+
+export class ITopShop {
+  name: string;
+  count: number;
+}
 
 @Injectable()
 export class StatisticsService {
   constructor(
-    @InjectModel(Transaction.name)
-    private readonly transactionModel: Model<TransactionDocument>,
+    private readonly transactionsRepository: TransactionsRepository,
     private readonly budgetService: BudgetService,
   ) {}
 
@@ -66,35 +78,37 @@ export class StatisticsService {
 
   async getIncomeExpensesStatisticsDataForYear(
     userID: string,
-  ): Promise<IncomeExpensesDTO[]> {
-    const data: IncomeExpensesDTO[] = await this.transactionModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $and: [{ $eq: ['$userID', { $toObjectId: userID }] }],
+  ): Promise<IIncomeExpenses[]> {
+    const data: IIncomeExpenses[] = await this.transactionsRepository.aggregate(
+      [
+        {
+          $match: {
+            $expr: {
+              $and: [{ $eq: ['$userID', { $toObjectId: userID }] }],
+            },
           },
         },
-      },
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m', date: '$date' } },
-          income: this.incomeSum,
-          expenses: this.expensesSum,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          name: '$_id',
-          income: {
-            $round: ['$income', ROUND_VALUE],
-          },
-          expenses: {
-            $round: [{ $abs: '$expenses' }, ROUND_VALUE],
+        {
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m', date: '$date' } },
+            income: this.incomeSum,
+            expenses: this.expensesSum,
           },
         },
-      },
-    ]);
+        {
+          $project: {
+            _id: 0,
+            name: '$_id',
+            income: {
+              $round: ['$income', ROUND_VALUE],
+            },
+            expenses: {
+              $round: [{ $abs: '$expenses' }, ROUND_VALUE],
+            },
+          },
+        },
+      ],
+    );
 
     return this.getInOneYearRequiredEntries()
       .reduce((acc, date) => {
@@ -114,43 +128,45 @@ export class StatisticsService {
   async getIncomeExpensesStatisticsDataForMonth(
     userID: string,
     numberOfMonth: string,
-  ): Promise<IncomeExpensesDTO[]> {
-    const data: IncomeExpensesDTO[] = await this.transactionModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $and: [
-              { $eq: ['$userID', { $toObjectId: userID }] },
-              {
-                $eq: [
-                  { $dateToString: { format: '%Y-%m', date: '$date' } },
-                  `${moment().format('YYYY')}-${numberOfMonth}`,
-                ],
-              },
-            ],
+  ): Promise<IIncomeExpenses[]> {
+    const data: IIncomeExpenses[] = await this.transactionsRepository.aggregate(
+      [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ['$userID', { $toObjectId: userID }] },
+                {
+                  $eq: [
+                    { $dateToString: { format: '%Y-%m', date: '$date' } },
+                    `${moment().format('YYYY')}-${numberOfMonth}`,
+                  ],
+                },
+              ],
+            },
           },
         },
-      },
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
-          income: this.incomeSum,
-          expenses: this.expensesSum,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          name: '$_id',
-          income: {
-            $round: ['$income', ROUND_VALUE],
-          },
-          expenses: {
-            $round: [{ $abs: '$expenses' }, ROUND_VALUE],
+        {
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
+            income: this.incomeSum,
+            expenses: this.expensesSum,
           },
         },
-      },
-    ]);
+        {
+          $project: {
+            _id: 0,
+            name: '$_id',
+            income: {
+              $round: ['$income', ROUND_VALUE],
+            },
+            expenses: {
+              $round: [{ $abs: '$expenses' }, ROUND_VALUE],
+            },
+          },
+        },
+      ],
+    );
     return this.getInOneMonthRequiredEntries(numberOfMonth)
       .reduce((acc, date) => {
         if (!data.find(({ name }) => name === date)) {
@@ -174,23 +190,17 @@ export class StatisticsService {
   ): Promise<ForecastResult[]> {
     const startTimeDate = new Date(startTime);
     const endTimeDate = new Date(endTime);
-    return await this.transactionModel.aggregate([
+    return await this.transactionsRepository.aggregate([
       {
         $match: {
           $expr: {
             $and: [
               { $eq: ['$userID', { $toObjectId: userID }] },
               {
-                $gt: [
-                  '$date',
-                  startTimeDate,
-                ],
+                $gt: ['$date', startTimeDate],
               },
               {
-                $lt: [
-                  '$date',
-                  endTimeDate,
-                ],
+                $lt: ['$date', endTimeDate],
               },
             ],
           },
@@ -199,11 +209,11 @@ export class StatisticsService {
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$date' } },
-          amount: type === 'income' ? this.incomeSum : this.expensesSum
+          amount: type === 'income' ? this.incomeSum : this.expensesSum,
         },
       },
       {
-        $sort: { _id: 1 } // Sorting in descending order
+        $sort: { _id: 1 }, // Sorting in descending order
       },
       {
         $project: {
@@ -217,11 +227,11 @@ export class StatisticsService {
     ]);
   }
 
-  async getBudgetStatisticsDataForYear(userID: string): Promise<BudgetDTO[]> {
+  async getBudgetStatisticsDataForYear(userID: string): Promise<IBudget[]> {
     const budgetsByUser = await this.budgetService.getUserBudgetsByUserID(
       userID,
     );
-    const data: BudgetDTO[] = await this.transactionModel.aggregate([
+    const data: IBudget[] = await this.transactionsRepository.aggregate([
       {
         $match: {
           $expr: {
@@ -270,7 +280,7 @@ export class StatisticsService {
   async getBudgetStatisticsDataForMonth(
     userID: string,
     numberOfMonth: string,
-  ): Promise<BudgetDTO[]> {
+  ): Promise<IBudget[]> {
     const budgetsByUser = await this.budgetService.getUserBudgetsByUserID(
       userID,
     );
@@ -279,7 +289,7 @@ export class StatisticsService {
         budgetsByUser,
         `${moment().format('YYYY')}-${numberOfMonth}`,
       );
-    const data: BudgetDTO[] = await this.transactionModel.aggregate([
+    const data: IBudget[] = await this.transactionsRepository.aggregate([
       {
         $match: {
           $expr: {
@@ -332,62 +342,67 @@ export class StatisticsService {
 
   async getTopCategoriesStatisticsData(
     userID: string,
-    top: number
-  ): Promise<TopCategoriesDTO[]> {
-    return await this.transactionModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $and: [{ $eq: ['$userID', { $toObjectId: userID }] }],
+    top: number,
+  ): Promise<ITopCategories[]> {
+    return await this.transactionsRepository
+      .aggregate<ITopCategories>([
+        {
+          $match: {
+            $expr: {
+              $and: [{ $eq: ['$userID', { $toObjectId: userID }] }],
+            },
           },
         },
-      },
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          name: {
-            $cond: [{ $eq: [{ $strLenCP: '$_id' }, 0] }, 'Unknown', '$_id'],
+        {
+          $group: {
+            _id: '$category',
+            count: { $sum: 1 },
           },
-          count: 1,
         },
-      },
-    ])
-    .sort({ count: 'desc'})
-    .limit(top);
+        {
+          $project: {
+            _id: 0,
+            name: {
+              $cond: [{ $eq: [{ $strLenCP: '$_id' }, 0] }, 'Unknown', '$_id'],
+            },
+            count: 1,
+          },
+        },
+      ])
+      .sort({ count: 'desc' })
+      .limit(top);
   }
 
-  async getTopShopsStatisticsData(userID: string, top: number): Promise<TopShopDTO[]> {
-    return await this.transactionModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $and: [{ $eq: ['$userID', { $toObjectId: userID }] }],
+  async getTopShopsStatisticsData(
+    userID: string,
+    top: number,
+  ): Promise<ITopShop[]> {
+    return await this.transactionsRepository
+      .aggregate<ITopShop>([
+        {
+          $match: {
+            $expr: {
+              $and: [{ $eq: ['$userID', { $toObjectId: userID }] }],
+            },
           },
         },
-      },
-      {
-        $group: {
-          _id: '$paymaster',
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          name: {
-            $cond: [{ $eq: [{ $strLenCP: '$_id' }, 0] }, 'Unknown', '$_id'],
+        {
+          $group: {
+            _id: '$paymaster',
+            count: { $sum: 1 },
           },
-          count: 1,
         },
-      },
-    ])
-    .sort({ count: 'desc'})
-    .limit(top);
+        {
+          $project: {
+            _id: 0,
+            name: {
+              $cond: [{ $eq: [{ $strLenCP: '$_id' }, 0] }, 'Unknown', '$_id'],
+            },
+            count: 1,
+          },
+        },
+      ])
+      .sort({ count: 'desc' })
+      .limit(top);
   }
 }

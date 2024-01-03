@@ -33,14 +33,17 @@
       "@analytics/*": [
         "./src/analytics/*"
       ],
-      "@events/*": [
-        "src/events/*"
-      ],
       "@users/*": [
         "./src/users/*"
       ],
       "@utils/*": [
         "./src/utils/*"
+      ],
+      "@app/common": [
+        "libs/common/src"
+      ],
+      "@app/common/*": [
+        "libs/common/src/*"
       ]
     },
     "incremental": true,

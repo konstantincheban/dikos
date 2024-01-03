@@ -24,12 +24,12 @@ export class MetroController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req,
   ) {
-    return await this.metroService.importTransactions(
-      req.user.id,
-      body.accountID,
-      body.aggregationType,
-      body.date,
-      file,
-    );
+    return await this.metroService.importTransactions({
+      userID: req.user.id,
+      accountId: body.accountID,
+      aggregationType: body.aggregationType,
+      date: body.date,
+      file: file,
+    });
   }
 }

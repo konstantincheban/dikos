@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "start": "cross-env NODE_ENV=prod nest start",
     "start:dev": "cross-env NODE_ENV=dev nest start --watch",
     "start:debug": "cross-env NODE_ENV=dev nest start --debug --watch",
@@ -25,6 +25,7 @@
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.3.0",
     "@nestjs/jwt": "^10.2.0",
+    "@nestjs/mapped-types": "^2.0.4",
     "@nestjs/mongoose": "^10.0.2",
     "@nestjs/platform-express": "^10.3.0",
     "@nestjs/websockets": "^10.3.0",
@@ -37,6 +38,9 @@
     "helmet": "^5.0.2",
     "moment": "^2.29.3",
     "mongoose": "^6.3.1",
+    "nestjs-pino": "^3.5.0",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
@@ -75,7 +79,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": ".",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -88,12 +92,17 @@
       "^@statistics/(.*)$": "<rootDir>/statistics/$1",
       "^@transactions/(.*)$": "<rootDir>/transactions/$1",
       "^@users/(.*)$": "<rootDir>/users/$1",
-      "^@utils/(.*)$": "<rootDir>/utils/$1"
+      "^@utils/(.*)$": "<rootDir>/utils/$1",
+      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1"
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/src/",
+      "<rootDir>/libs/"
+    ]
   }
 }

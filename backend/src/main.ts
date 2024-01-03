@@ -1,22 +1,24 @@
+import helmet from 'helmet';
+import { Logger } from 'nestjs-pino';
 import {
   BadRequestException,
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import helmet from 'helmet';
+import { ConfigService } from '@nestjs/config';
+import { ValidationFilter } from '@app/common';
 import { AppModule } from './app.module';
-import { ValidationFilter } from './utils/filters/validation.filter';
-import { ValidationPipe as CustomValidationPipe } from './utils/pipes/validation.pipe';
 
 async function bootstrap() {
-  const PORT = process.env.PORT || 6969;
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const PORT = configService.get('PORT') || 6969;
   app.useGlobalFilters(new ValidationFilter());
   app.useGlobalPipes(
-    new CustomValidationPipe(),
+    // new CustomValidationPipe(),
     new ValidationPipe({
-      skipMissingProperties: true,
+      whitelist: true, // strip properties not existing in the validation model
       // trigger when validation error occur
       exceptionFactory: (errors: ValidationError[]) => {
         const message = errors.map(
@@ -30,6 +32,7 @@ async function bootstrap() {
       },
     }),
   );
+  app.useLogger(app.get(Logger));
   app.setGlobalPrefix('/api/v1');
   app.enableCors();
   app.use(helmet());

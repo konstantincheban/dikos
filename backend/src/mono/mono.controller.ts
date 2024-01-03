@@ -24,11 +24,11 @@ export class MonoController {
     @UploadedFile() file: Express.Multer.File,
     @Req() req,
   ) {
-    return await this.monoService.importTransactions(
-      req.user.id,
-      body.accountID,
-      body.date,
-      file,
-    );
+    return await this.monoService.importTransactions({
+      userID: req.user.id,
+      accountId: body.accountID,
+      date: body.date,
+      file: file,
+    });
   }
 }

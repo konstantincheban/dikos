@@ -20,9 +20,9 @@ export class AuthService {
   ) {}
 
   private async generateToken(user: UserDocument) {
-    const { id, email } = user;
+    const { _id, email } = user;
     const payload = {
-      id: id,
+      id: _id,
       email: email,
     };
     const userData = this.usersService.computeUserData(user);

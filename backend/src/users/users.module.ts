@@ -1,21 +1,23 @@
 import { BudgetModule } from '@budget/budget.module';
 import { AccountsModule } from '@accounts/accounts.module';
 import { forwardRef, Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from '@auth/auth.module';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User, UserSchema } from './schemas/users.schema';
+import { DatabaseModule, LoggerModule } from '@app/common';
+import { UsersRepository } from './users.repository';
 
 @Module({
   imports: [
+    LoggerModule,
     forwardRef(() => AuthModule),
     forwardRef(() => AccountsModule),
     forwardRef(() => BudgetModule),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    DatabaseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [UsersController],
-  providers: [UsersService],
-  exports: [UsersService],
+  providers: [UsersService, UsersRepository],
+  exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}

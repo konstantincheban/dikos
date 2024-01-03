@@ -1,9 +1,4 @@
-export class EditTransactionDTO {
-  name?: string;
-  description?: string;
-  amount: number;
-  currency: string;
-  category?: string;
-  date?: Date;
-  paymaster?: string;
-}
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateTransactionDTO } from './create-transaction.dto';
+
+export class EditTransactionDTO extends PartialType(CreateTransactionDTO) {}

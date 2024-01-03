@@ -1,30 +1,18 @@
-import { User } from '@users/schemas/users.schema';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-
-import { Account } from '@accounts/schemas/accounts.schema';
-import { Document } from 'mongoose';
 import mongoose from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
 import { Exclude, Transform } from 'class-transformer';
+import { AbstractDocument } from '@app/common';
 
 @Schema({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
+  versionKey: false,
 })
-export class Transaction {
-  @Transform((value) => {
-    if ('value' in value) {
-      // HACK: this is changed because of https://github.com/typestack/class-transformer/issues/879
-      // return value.value.toString(); // because "toString" is also a wrapper for "toHexString"
-      return value.obj[value.key].toString();
-    }
-
-    return 'unknown value';
-  })
-  _id: string;
-
+export class Transaction extends AbstractDocument {
   @Exclude()
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  userID: User;
+  userID: string;
 
   @Transform((value) => {
     if ('value' in value) {
@@ -36,7 +24,7 @@ export class Transaction {
     return 'unknown value';
   })
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Account' })
-  accountID: Account;
+  accountID: string;
 
   @Prop({ default: 'Transaction Name' })
   name: string;
@@ -58,9 +46,6 @@ export class Transaction {
 
   @Prop({ default: 'default' })
   paymaster: string;
-
-  @Exclude()
-  __v: number;
 }
 
 export type TransactionDocument = Transaction & Document;

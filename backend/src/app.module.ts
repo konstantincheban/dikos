@@ -1,6 +1,5 @@
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { AccountsModule } from './accounts/accounts.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,14 +11,14 @@ import { MonoModule } from './mono/mono.module';
 import { BudgetModule } from './budget/budget.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { AnalyticsModule } from './analytics/analytics.module';
-import { EventsModule } from './events/events.module';
+import { DatabaseModule, EventsModule } from '@app/common';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: `.${process.env.NODE_ENV}.env`,
     }),
-    MongooseModule.forRoot(process.env.MONGO_HOST),
+    DatabaseModule,
     UsersModule,
     AuthModule,
     AccountsModule,
@@ -29,7 +28,7 @@ import { EventsModule } from './events/events.module';
     BudgetModule,
     StatisticsModule,
     AnalyticsModule,
-    EventsModule
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

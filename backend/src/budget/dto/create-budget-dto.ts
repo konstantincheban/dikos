@@ -1,6 +1,18 @@
-import { BudgetPerMonthDTO } from './get-budget-dto';
+import { Type } from 'class-transformer';
+import { IsDate, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateBudgetDTO {
-  userID: string;
-  budgetsPerMonth: BudgetPerMonthDTO[];
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  date?: Date;
+
+  @IsNumber()
+  amount: number;
+
+  @IsNumber()
+  plannedCosts: number;
+
+  @IsNumber()
+  perDay: number;
 }

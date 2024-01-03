@@ -1,25 +1,31 @@
-import { EditBudgetDTO } from './dto/edit-budget-dto';
-import { BudgetDocument, Budget } from './schemas/budget.schema';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { BudgetPerMonthDTO } from './dto/get-budget-dto';
 import * as moment from 'moment';
+import { EditBudgetDTO } from './dto/edit-budget-dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { BudgetRepository } from './budget.repository';
+import { BudgetDocument } from './schemas/budget.schema';
+
+export interface ICreateBudgetData {
+  date?: string;
+  amount: number;
+  plannedCosts: number;
+  perDay: number;
+}
 
 @Injectable()
 export class BudgetService {
-  constructor(
-    @InjectModel(Budget.name)
-    private readonly budgetModel: Model<BudgetDocument>,
-  ) {}
+  constructor(private readonly budgetRepo: BudgetRepository) {}
 
   get defaultUserBudget() {
     return {
-      date: moment().format('YYYY-MM'),
+      date: this.formatBudgetData(new Date()),
       amount: 0,
       plannedCosts: 0,
       perDay: 0,
     };
+  }
+
+  formatBudgetData(date: Date): string {
+    return moment(date ?? new Date()).format('YYYY-MM');
   }
 
   /**
@@ -32,7 +38,7 @@ export class BudgetService {
     return Math.round((amount - plannedCosts) / daysInMonth);
   }
 
-  getBudgetPerMonthByCurrentDate(budgets: BudgetPerMonthDTO[]) {
+  getBudgetPerMonthByCurrentDate(budgets: BudgetDocument['budgetsPerMonth']) {
     const currentDate = moment().format('YYYY-MM');
     return budgets.find((item) => item.date === currentDate);
   }
@@ -42,40 +48,33 @@ export class BudgetService {
     return budgets.find((budget) => budget.date === date)?.perDay ?? 0;
   }
 
-  async createUserBudget(data: BudgetPerMonthDTO, userID: string) {
-    return await new this.budgetModel({
+  async createUserBudget(data: ICreateBudgetData, userID: string) {
+    return this.budgetRepo.create({
       userID,
       budgetsPerMonth: [{ ...this.defaultUserBudget, ...data }],
-    }).save();
+    });
   }
 
-  async editUserBudget(
-    data: EditBudgetDTO,
-    budgetID: string,
-  ): Promise<BudgetPerMonthDTO> {
+  async editUserBudget(data: EditBudgetDTO, budgetID: string) {
     try {
-      const updateBudgets = await this.budgetModel.findById(budgetID);
-      // @ts-ignore
-      updateBudgets.budgetsPerMonth = updateBudgets.budgetsPerMonth.map(
-        (item) => {
-          if (item.date === moment().format('YYYY-MM'))
-            return {
-              ...item,
-              ...data,
-              perDay: this.calculateBudgetPerDay(
-                data.amount,
-                data.plannedCosts,
-              ),
-            };
-          return item;
-        },
-      );
-      const updated = await this.budgetModel.findByIdAndUpdate(
-        budgetID,
+      const updateBudgets = await this.budgetRepo.findOne({ _id: budgetID });
+      const updated = await this.budgetRepo.findOneAndUpdate(
+        { _id: budgetID },
         {
           ...updateBudgets,
+          budgetsPerMonth: updateBudgets.budgetsPerMonth.map((item) => {
+            if (item.date === moment().format('YYYY-MM'))
+              return {
+                ...item,
+                ...data,
+                perDay: this.calculateBudgetPerDay(
+                  data.amount,
+                  data.plannedCosts,
+                ),
+              };
+            return item;
+          }),
         },
-        { new: true },
       );
       const currentBudget = this.getBudgetPerMonthByCurrentDate(
         updated.budgetsPerMonth,
@@ -92,14 +91,13 @@ export class BudgetService {
 
   async addBudgetPerMonth(budgetID: string) {
     try {
-      const updateBudgets = await this.budgetModel.findById(budgetID);
+      const updateBudgets = await this.budgetRepo.findOne({ _id: budgetID });
       updateBudgets.budgetsPerMonth.push(this.defaultUserBudget);
-      const updated = await this.budgetModel.findByIdAndUpdate(
-        budgetID,
+      const updated = await this.budgetRepo.findOneAndUpdate(
+        { _id: budgetID },
         {
           ...updateBudgets,
         },
-        { new: true },
       );
       return this.getBudgetPerMonthByCurrentDate(updated.budgetsPerMonth);
     } catch (err) {
@@ -107,10 +105,8 @@ export class BudgetService {
     }
   }
 
-  async getUserBudgetByCurrentMonth(
-    budgetID: string,
-  ): Promise<BudgetPerMonthDTO> {
-    const budgetEntry = await this.budgetModel.findById(budgetID);
+  async getUserBudgetByCurrentMonth(budgetID: string) {
+    const budgetEntry = await this.budgetRepo.findOne({ _id: budgetID });
     let budgetForCurrentMonth = await this.getBudgetPerMonthByCurrentDate(
       budgetEntry.budgetsPerMonth,
     );
@@ -122,15 +118,13 @@ export class BudgetService {
     return await budgetForCurrentMonth;
   }
 
-  async getUserBudgetForCurrentMonthByUserID(
-    userID: string,
-  ): Promise<BudgetPerMonthDTO> {
-    const budgetEntry = await this.budgetModel.findOne({ userID });
+  async getUserBudgetForCurrentMonthByUserID(userID: string) {
+    const budgetEntry = await this.budgetRepo.findOne({ userID });
     return this.getBudgetPerMonthByCurrentDate(budgetEntry.budgetsPerMonth);
   }
 
-  async getUserBudgetsByUserID(userID: string): Promise<BudgetPerMonthDTO[]> {
-    const budgetEntry = await this.budgetModel.findOne({ userID });
+  async getUserBudgetsByUserID(userID: string) {
+    const budgetEntry = await this.budgetRepo.findOne({ userID });
     return budgetEntry.budgetsPerMonth;
   }
 }

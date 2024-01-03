@@ -12,13 +12,12 @@ import {
   Delete,
 } from '@nestjs/common';
 
-import { Account, AccountDocument } from './schemas/accounts.schema';
+import { Account } from './schemas/accounts.schema';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDTO } from './dto/create-account.dto';
 import { EditAccountDTO } from './dto/edit-account.dto';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
-import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
-import { AccountSummaryDTO } from './dto/account-summary-dto';
+import { MongooseClassSerializerInterceptor } from '@app/common';
 
 @Controller('accounts')
 @UseInterceptors(MongooseClassSerializerInterceptor(Account))
@@ -31,7 +30,7 @@ export class AccountsController {
     @Query('filter') filter: string,
     @Query('orderby') orderBy: string,
     @Req() req,
-  ): Promise<Account[]> {
+  ) {
     const test = await this.accountsService.getFilteredAccounts(
       filter ?? '',
       orderBy ?? '',
@@ -42,19 +41,13 @@ export class AccountsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/summaryData/:id')
-  async getAccountSummaryData(
-    @Param('id') accountID: string,
-    @Req() req,
-  ): Promise<AccountSummaryDTO> {
+  async getAccountSummaryData(@Param('id') accountID: string, @Req() req) {
     return await this.accountsService.getAccountSummary(accountID, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('/create')
-  async createAccount(
-    @Body() data: CreateAccountDTO,
-    @Req() req,
-  ): Promise<AccountDocument> {
+  async createAccount(@Body() data: CreateAccountDTO, @Req() req) {
     return await this.accountsService.createAccount({
       ...data,
       userID: req.user.id,
@@ -66,13 +59,13 @@ export class AccountsController {
   async editAccount(
     @Param('id') accountID: string,
     @Body() data: EditAccountDTO,
-  ): Promise<AccountDocument> {
+  ) {
     return await this.accountsService.editAccount(accountID, data);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete('/delete/:id')
-  async deleteAccount(@Param('id') accountID: string): Promise<any> {
+  async deleteAccount(@Param('id') accountID: string) {
     return await this.accountsService.deleteAccount(accountID);
   }
 }

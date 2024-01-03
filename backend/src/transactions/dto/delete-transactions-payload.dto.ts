@@ -1,3 +1,3 @@
 export class DeleteTransactionsPayloadDTO {
-  entries: string[]
+  entries: string[];
 }

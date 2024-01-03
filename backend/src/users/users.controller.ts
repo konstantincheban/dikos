@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
-import MongooseClassSerializerInterceptor from '@utils/mongooseClassSerializer.interceptor';
+import { MongooseClassSerializerInterceptor } from '@app/common';
 import { User } from './schemas/users.schema';
 
 @Controller('users')
