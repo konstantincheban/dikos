@@ -22,7 +22,7 @@ export const buildFilterExpressions = (filter: string) => {
       }
       if (item.includes('contains')) {
         const [key, value] = getValueBySeparator(item, 'contains');
-        acc.push({ [key]: { $regex: new RegExp(value, 'g') } });
+        acc.push({ [key]: { $regex: new RegExp(value, 'gi') } });
       }
       if (item.includes('lt')) {
         const [key, value] = getValueBySeparator(item, 'lt');
