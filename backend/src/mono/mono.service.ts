@@ -1,15 +1,21 @@
 import * as XLSX from 'xlsx';
 import { AccountDocument } from '@accounts/schemas/accounts.schema';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AccountsService } from '@accounts/accounts.service';
 import { TransactionsService } from '@transactions/transactions.service';
-import { CreateTransactionDTO } from '@transactions/dto/create-transaction.dto';
-import { EventsGateway } from '@app/common';
+import { MigrationBaseClass, EventsGateway } from '@app/common';
 import { getOptionsByMCC, transliterateString } from '@utils/utils';
 interface AggregationConfig {
   userID: string;
   relatedAccount: AccountDocument;
-  date: string;
+  date: Date;
+}
+
+interface IData {
+  userID: string;
+  accountId: string;
+  date: Date;
+  file: Express.Multer.File;
 }
 
 interface MonoTransaction {
@@ -26,26 +32,19 @@ interface MonoTransaction {
 }
 
 @Injectable()
-export class MonoService {
+export class MonoService extends MigrationBaseClass<
+  MonoTransaction,
+  IData
+> {
   constructor(
-    private readonly transactionsService: TransactionsService,
-    private readonly accountsService: AccountsService,
-    private eventsGateway: EventsGateway,
-  ) {}
-
-  processImportFile(file: Express.Multer.File): MonoTransaction[] {
-    // Parse the CSV file
-    const workbook = XLSX.read(file.buffer, {
-      type: 'buffer',
-      codepage: 65001,
-    });
-    // Assuming your CSV file has a single sheet
-    const firstSheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[firstSheetName];
-
-    // Convert the sheet to JSON
-    return XLSX.utils.sheet_to_json(worksheet, { raw: true });
+    protected readonly transactionsService: TransactionsService,
+    protected readonly accountsService: AccountsService,
+    protected eventsGateway: EventsGateway,
+  ) {
+    super(transactionsService, accountsService, eventsGateway);
   }
+
+  protected readonly eventsID = 'mono-migration';
 
   excelSerialDateToDate(serialDate) {
     // Excel base date is December 30, 1899
@@ -84,7 +83,7 @@ export class MonoService {
       amount: 0,
       currency: relatedAccount.currency,
       category: '',
-      date: new Date(date),
+      date: date,
       paymaster: null,
     };
     return transactionsData.map((transaction) => {
@@ -102,65 +101,5 @@ export class MonoService {
         paymaster: shopDescription,
       };
     });
-  }
-
-  async migrateImportedTransactions(
-    transactions: (CreateTransactionDTO & { userID: string })[],
-  ): Promise<any> {
-    const createTransactions = transactions.map((transaction) =>
-      this.transactionsService.createTransaction(transaction),
-    );
-    return Promise.allSettled(createTransactions);
-  }
-
-  async importTransactionsHandler(
-    userID: string,
-    accountId: string,
-    date: string,
-    file: Express.Multer.File,
-  ) {
-    try {
-      const relatedAccount = await this.accountsService.getAccountById(
-        accountId,
-      );
-      if (!relatedAccount) {
-        throw new BadRequestException(
-          `You are using the wrong accountID - ${accountId}`,
-        );
-      }
-      const transactions = this.processImportFile(file);
-      // aggregated data
-      const dikosTransactions = this.aggregateData(transactions, {
-        userID,
-        relatedAccount,
-        date,
-      });
-      await this.migrateImportedTransactions(dikosTransactions);
-      this.eventsGateway.send('mono-migration', {
-        status: 'success',
-        message: 'Import finished successfully',
-      });
-    } catch (err) {
-      this.eventsGateway.send('mono-migration', {
-        status: 'failed',
-        message: 'Import failed',
-      });
-    }
-  }
-
-  async importTransactions(
-    userID: string,
-    accountId: string,
-    date: string,
-    file: Express.Multer.File,
-  ) {
-    this.eventsGateway.send('mono-migration', {
-      status: 'progress',
-      message: 'Import & Migration is in progress',
-    });
-    this.importTransactionsHandler(userID, accountId, date, file);
-    return {
-      message: 'Initiated import & migration process',
-    };
   }
 }

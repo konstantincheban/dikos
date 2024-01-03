@@ -1,10 +1,8 @@
 import { AccountDocument } from '@accounts/schemas/accounts.schema';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AccountsService } from '@accounts/accounts.service';
 import { TransactionsService } from '@transactions/transactions.service';
-import * as XLSX from 'xlsx';
-import { CreateTransactionDTO } from '@transactions/dto/create-transaction.dto';
-import { EventsGateway } from '@app/common';
+import { MigrationBaseClass, EventsGateway } from '@app/common';
 
 interface MetroProduct {
   ' с НДС': number;
@@ -15,50 +13,37 @@ interface MetroProduct {
   Описание: string;
   __rowNum__: number;
 }
-const PRDCTS_AS_TRANS = 'productsAsTransactions';
-const CHECK_AS_TRANS = 'checkAsTransaction';
-export const METRO_AGGR_TYPES = [PRDCTS_AS_TRANS, CHECK_AS_TRANS];
+
+interface IData {
+  userID: string;
+  accountId: string;
+  aggregationType: string;
+  date: Date;
+  file: Express.Multer.File;
+}
 
 interface AggregationConfig {
   userID: string;
   relatedAccount: AccountDocument;
   aggregationType: string;
-  date: string;
+  date: Date;
 }
 
+const PRDCTS_AS_TRANS = 'productsAsTransactions';
+const CHECK_AS_TRANS = 'checkAsTransaction';
+export const METRO_AGGR_TYPES = [PRDCTS_AS_TRANS, CHECK_AS_TRANS];
+
 @Injectable()
-export class MetroService {
+export class MetroService extends MigrationBaseClass<MetroProduct, IData> {
   constructor(
-    private readonly transactionsService: TransactionsService,
-    private readonly accountsService: AccountsService,
-    private eventsGateway: EventsGateway,
-  ) {}
-
-  processImportFile(file: Express.Multer.File): MetroProduct[] {
-    // Read the file into memory
-    const workbook = XLSX.read(file.buffer);
-    // Convert the XLSX to JSON
-    const worksheets = [];
-    for (const sheetName of workbook.SheetNames) {
-      // Some helper functions in XLSX.utils generate different views of the sheets:
-      //     XLSX.utils.sheet_to_csv generates CSV
-      //     XLSX.utils.sheet_to_txt generates UTF16 Formatted Text
-      //     XLSX.utils.sheet_to_html generates HTML
-      //     XLSX.utils.sheet_to_json generates an array of objects
-      //     XLSX.utils.sheet_to_formulae generates a list of formulae
-      const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-      worksheets.push(data);
-    }
-
-    return worksheets.flat();
+    protected readonly transactionsService: TransactionsService,
+    protected readonly accountsService: AccountsService,
+    protected eventsGateway: EventsGateway,
+  ) {
+    super(transactionsService, accountsService, eventsGateway);
   }
 
-  // TEST PURPOSES
-  randomDate(start, end) {
-    return new Date(
-      start.getTime() + Math.random() * (end.getTime() - start.getTime()),
-    );
-  }
+  protected readonly eventsID = 'metro-migration';
 
   aggregateData(metroData: MetroProduct[], config: AggregationConfig) {
     const { userID, relatedAccount, aggregationType, date } = config;
@@ -70,7 +55,7 @@ export class MetroService {
       amount: 0,
       currency: relatedAccount.currency,
       category: '',
-      date: new Date(date),
+      date: date,
       paymaster: 'Metro',
     };
     // aggregation strategy - productsAsTransactions
@@ -98,74 +83,5 @@ export class MetroService {
         },
       ];
     }
-  }
-
-  async migrateImportedTransactions(
-    transactions: (CreateTransactionDTO & { userID: string })[],
-  ): Promise<any> {
-    const createTransactions = transactions.map((transaction) =>
-      this.transactionsService.createTransaction(transaction),
-    );
-    return Promise.allSettled(createTransactions);
-  }
-
-  async importTransactionsHandler(
-    userID: string,
-    accountId: string,
-    aggregationType: string,
-    date: string,
-    file: Express.Multer.File,
-  ) {
-    try {
-      const relatedAccount = await this.accountsService.getAccountById(
-        accountId,
-      );
-      if (!relatedAccount) {
-        throw new BadRequestException(
-          `You are using the wrong accountID - ${accountId}`,
-        );
-      }
-      const metroProducts = this.processImportFile(file);
-      // aggregated data
-      const dikosTransactions = this.aggregateData(metroProducts, {
-        userID,
-        relatedAccount,
-        aggregationType,
-        date,
-      });
-      await this.migrateImportedTransactions(dikosTransactions);
-      this.eventsGateway.send('metro-migration', {
-        status: 'success',
-        message: 'Import finished successfully',
-      });
-    } catch (err) {
-      this.eventsGateway.send('metro-migration', {
-        status: 'failed',
-        message: 'Import failed',
-      });
-    }
-  }
-
-  async importTransactions(
-    userID: string,
-    accountId: string,
-    aggregationType: string,
-    date: string,
-    file: Express.Multer.File,
-  ) {
-    this.eventsGateway.send('metro-migration', {
-      status: 'progress',
-      message: 'Import & Migration is in progress',
-    });
-    this.importTransactionsHandler(
-      userID,
-      accountId,
-      aggregationType,
-      date,
-      file,
-    );
-    return {
-      message: 'Initiated import & migration process',
-    };
   }
 }
