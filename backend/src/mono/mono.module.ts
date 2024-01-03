@@ -5,9 +5,11 @@ import { MonoService } from './mono.service';
 import { AccountsModule } from '@accounts/accounts.module';
 import { AuthModule } from '@auth/auth.module';
 import { EventsModule } from '@events/events.module';
+import { LoggerModule } from '@app/common';
 
 @Module({
   imports: [
+    LoggerModule,
     forwardRef(() => AuthModule),
     forwardRef(() => TransactionsModule),
     forwardRef(() => AccountsModule),

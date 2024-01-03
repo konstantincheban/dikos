@@ -5,11 +5,12 @@ import { AuthModule } from '@auth/auth.module';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User, UserSchema } from './schemas/users.schema';
-import { DatabaseModule } from '@app/common';
+import { DatabaseModule, LoggerModule } from '@app/common';
 import { UsersRepository } from './users.repository';
 
 @Module({
   imports: [
+    LoggerModule,
     forwardRef(() => AuthModule),
     forwardRef(() => AccountsModule),
     forwardRef(() => BudgetModule),

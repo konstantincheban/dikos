@@ -7,11 +7,12 @@ import { StatisticsController } from './statistics.controller';
 import { StatisticsService } from './statistics.service';
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthModule } from '@auth/auth.module';
-import { DatabaseModule } from '@app/common';
+import { DatabaseModule, LoggerModule } from '@app/common';
 import { TransactionsRepository } from '@transactions/transactions.repository';
 
 @Module({
   imports: [
+    LoggerModule,
     forwardRef(() => AuthModule),
     forwardRef(() => BudgetModule),
     DatabaseModule.forFeature([

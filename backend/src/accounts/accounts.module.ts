@@ -5,7 +5,7 @@ import { AccountsController } from './accounts.controller';
 import { AccountsService } from './accounts.service';
 import { forwardRef, Module } from '@nestjs/common';
 import { AuthModule } from '@auth/auth.module';
-import { DatabaseModule } from '@app/common';
+import { DatabaseModule, LoggerModule } from '@app/common';
 import { TransactionsRepository } from '@transactions/transactions.repository';
 import { BudgetRepository } from '@budget/budget.repository';
 import { Transaction, TransactionSchema } from '@transactions/schemas/transactions.schema';
@@ -14,6 +14,7 @@ import { AccountsRepository } from './accounts.repository';
 
 @Module({
   imports: [
+    LoggerModule,
     forwardRef(() => AuthModule),
     forwardRef(() => BudgetModule),
     DatabaseModule.forFeature([

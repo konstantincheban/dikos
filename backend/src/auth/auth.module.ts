@@ -4,9 +4,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { LoggerModule } from '@app/common';
 
 @Module({
   imports: [
+    LoggerModule,
     forwardRef(() => UsersModule),
     JwtModule.registerAsync({
       imports: [ConfigModule], // Import the ConfigModule

@@ -5,11 +5,12 @@ import { TransactionsService } from './transactions.service';
 import { TransactionsController } from './transactions.controller';
 import { AuthModule } from '@auth/auth.module';
 import { AccountsModule } from '@accounts/accounts.module';
-import { DatabaseModule } from '@app/common';
+import { DatabaseModule, LoggerModule } from '@app/common';
 import { TransactionsRepository } from './transactions.repository';
 
 @Module({
   imports: [
+    LoggerModule,
     forwardRef(() => AuthModule),
     forwardRef(() => AccountsModule),
     forwardRef(() => StatisticsModule),

@@ -6,11 +6,12 @@ import { AnalyticsController } from './analytics.controller';
 import { Forecast, ForecastSchema } from './schemas/forecast.schema';
 import { StatisticsModule } from '@statistics/statistics.module';
 import { EventsModule } from '@events/events.module';
-import { DatabaseModule } from '@app/common';
+import { DatabaseModule, LoggerModule } from '@app/common';
 import { AnalyticsRepository } from './analytics.repository';
 
 @Module({
   imports: [
+    LoggerModule,
     forwardRef(() => AuthModule),
     forwardRef(() => TransactionsModule),
     forwardRef(() => StatisticsModule),

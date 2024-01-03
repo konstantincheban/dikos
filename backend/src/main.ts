@@ -33,7 +33,7 @@ async function bootstrap() {
       },
     }),
   );
-  // app.useLogger(app.get(Logger));
+  app.useLogger(app.get(Logger));
   app.setGlobalPrefix('/api/v1');
   app.enableCors();
   app.use(helmet());
