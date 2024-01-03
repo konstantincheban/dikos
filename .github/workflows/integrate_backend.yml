@@ -7,7 +7,7 @@ on:
       - bugfix/**
       - feature/**
     paths:
-      - './backend/**'
+      - 'backend/**'
   workflow_dispatch:
 
 jobs:
