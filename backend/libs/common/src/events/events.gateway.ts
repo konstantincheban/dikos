@@ -29,19 +29,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log('Connection was closed');
   }
 
-  // send(event: string, data: any) {
-  //   // Handle received message
-  //   this.logger.log(`WS Event [${event}]: status - ${JSON.stringify(data, null, 2)}`);
-  //   for (let i = 0; i < 3; i++) {
-  //     const status = this.server.emit('message', { event, data }); // Broadcast the message to all connected clients
-  //     if (!status) {
-  //       this.logger.log(`WS Event [${event}]: there were no listeners, so initiated next try ${i + 1}`);
-  //     } else {
-  //       break;
-  //     }
-  //   }
-  // }
-
+  // TODO: sync this process more accurate and clear, it's a temp solution
   send(event: string, data: any) {
     // Handle received message
     this.logger.log(`WS Event [${event}]: status - ${JSON.stringify(data, null, 2)}`);
