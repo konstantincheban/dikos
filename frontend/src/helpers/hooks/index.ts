@@ -20,7 +20,7 @@ export const usePrevious = <T>(value: T): T | undefined => {
 
 export const useWebsocket = (options: IUseWebsocketOptions) => {
   const socket = io(`${process.env.WS_URL}/events`, {transports: ['websocket']});
-  socket.on('open', () => {
+  socket.on('connect', () => {
     if (options?.openedCb) {
       options.openedCb();
     } else {
@@ -45,12 +45,17 @@ export const useWebsocket = (options: IUseWebsocketOptions) => {
     }
   });
 
-  socket.on('close', () => {
+  socket.on('disconnect', () => {
     if (options?.closedCb) {
       options.closedCb();
     } else {
       console.log(`WS Connection was closed: ${options.event}`)
     }
+  });
+
+  socket.on('error', (error) => {
+    // TODO: better error handling
+    console.error(`WS Error: ${error}`);
   });
 
   return socket;
