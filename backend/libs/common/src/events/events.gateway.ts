@@ -29,37 +29,38 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log('Connection was closed');
   }
 
+  // send(event: string, data: any) {
+  //   // Handle received message
+  //   this.logger.log(`WS Event [${event}]: status - ${JSON.stringify(data, null, 2)}`);
+  //   for (let i = 0; i < 3; i++) {
+  //     const status = this.server.emit('message', { event, data }); // Broadcast the message to all connected clients
+  //     if (!status) {
+  //       this.logger.log(`WS Event [${event}]: there were no listeners, so initiated next try ${i + 1}`);
+  //     } else {
+  //       break;
+  //     }
+  //   }
+  // }
+
   send(event: string, data: any) {
     // Handle received message
     this.logger.log(`WS Event [${event}]: status - ${JSON.stringify(data, null, 2)}`);
-    this.server.emit('message', { event, data }); // Broadcast the message to all connected clients
+    let attempts = 0;
+    const maxAttempts = 3;
+    const intervalId = setInterval(() => {
+      // Emit the event and check if there were listeners
+      const status = this.server.emit('message', { event, data }); // Broadcast the message to all connected clients
+      if (status) {
+        this.logger.log(`WS Event [${event}]: The message was received by listeners.`);
+        clearInterval(intervalId); // Clear the interval if there were listeners
+      } else {
+        attempts++;
+        this.logger.log(`WS Event [${event}]: Attempt ${attempts}: No listeners yet.`);
+        if (attempts >= maxAttempts) {
+          this.logger.log(`WS Event [${event}]: Maximum attempts reached. Stopping retries.`);
+          clearInterval(intervalId); // Clear the interval after maximum attempts
+        }
+      }
+    }, 1000);
   }
-
-  // onApplicationBootstrap() {
-  //   this.httpServer = this.app.getHttpServer();
-  //   this.wss = new WebSocket.Server({ server: this.httpServer });
-
-  //   this.wss.on('connection', ws => {
-  //     ws.on('message', message => {
-  //       this.logger.log(`Received message: ${message}`);
-  //     });
-  //     this.logger.log('Connection initiated.');
-  //   });
-
-  //   this.wss.on('error', err => {
-  //     this.logger.error(`Connection terminated with an error: "${err.message}".`);
-  //   });
-
-  //   this.wss.on('close', () => {
-  //     this.logger.log(`Connection was terminated.`);
-  //   });
-  // }
-
-  // send(event: string, data: any) {
-  //   this.wss.clients.forEach(client => {
-  //     if (client.readyState === WebSocket.OPEN) {
-  //       client.send(JSON.stringify({ event, data }));
-  //     }
-  //   });
-  // }
 }
