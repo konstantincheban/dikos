@@ -31,7 +31,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   send(event: string, data: any) {
     // Handle received message
-    this.logger.log(`WS Event [${event}]: status - ${data}`);
+    this.logger.log(`WS Event [${event}]: status - ${JSON.stringify(data, null, 2)}`);
     this.server.emit('message', { event, data }); // Broadcast the message to all connected clients
   }
 
