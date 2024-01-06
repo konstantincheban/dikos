@@ -10,9 +10,6 @@
     "build:prod": "webpack --config webpack.config.js --mode production --node-env prod",
     "lint": "eslint --fix \"./src/**/*.{js,jsx,ts,tsx,json}\""
   },
-  "engines": {
-    "node": "18.17"
-  },
   "author": "konstantincheban",
   "license": "ISC",
   "dependencies": {

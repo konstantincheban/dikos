@@ -1,3 +1,4 @@
+watchdog
 pandas
 numpy
 scipy
