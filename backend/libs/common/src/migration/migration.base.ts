@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import { Logger } from '@nestjs/common';
 import { EventsGateway } from '../events';
 import { AccountsService } from '@accounts/accounts.service';
 import { TransactionsService } from '@transactions/transactions.service';
@@ -21,6 +22,8 @@ export abstract class MigrationBaseClass<TMigrationItem, TData extends BasicData
   protected abstract aggregateData(transactions: TMigrationItem[], option: TData & { relatedAccount: AccountDocument }): (CreateTransactionDTO & { userID: string })[];
 
   protected abstract readonly eventsID: string;
+
+  logger = new Logger('MigrationBase');
 
   processImportFile(file: Express.Multer.File): TMigrationItem[] {
     // Parse the CSV file
@@ -59,6 +62,7 @@ export abstract class MigrationBaseClass<TMigrationItem, TData extends BasicData
         message: 'Import finished successfully',
       });
     } catch (err) {
+      this.logger.error(err);
       this.eventsGateway.send(this.eventsID, {
         status: 'failed',
         message: 'Import failed',

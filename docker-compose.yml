@@ -50,6 +50,8 @@ services:
       - 6969:6969
       - 9229:9229
     restart: unless-stopped
+    depends_on:
+      - machine_learning
   dev_ui:
     container_name: dikos_ui_dev
     image: dikos_ui_dev:1.0.0
