@@ -2,12 +2,12 @@
 name: Deploy Backend to heroku.
 
 # Run workflow on every push to master branch.
-# on:
-#   push:
-#     branches: [master]
-#     paths:
-#       - 'backend/**'
-#   workflow_dispatch:
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:
 
 # Your workflows jobs.
 jobs:
