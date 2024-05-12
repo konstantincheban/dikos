@@ -11,7 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { spawn } from 'child_process';
 import { Transaction } from '@transactions/schemas/transactions.schema';
 import { StatisticsService } from '@statistics/statistics.service';
-import { EventsGateway } from '@app/common';
+import { EventsGateway, FileManagerService, WatcherService } from '@app/common';
 import { AnalyticsRepository } from './analytics.repository';
 
 type ForecastType = Forecast['options']['forecastType'];
@@ -32,12 +32,12 @@ export class AnalyticsService {
     private readonly analyticsRepo: AnalyticsRepository,
     private readonly transactionsService: TransactionsService,
     private readonly statisticsService: StatisticsService,
-    private eventsGateway: EventsGateway,
+    private readonly fileManagerService: FileManagerService,
+    private readonly watcherService: WatcherService,
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
-  logger = new Logger('AnalyticsService');
-
-  pyLogger = new Logger('PythonProcess');
+  private readonly logger = new Logger('AnalyticsService');
 
   defaultOptions: ForecastOptions = {
     startTime: '',
@@ -69,58 +69,49 @@ export class AnalyticsService {
     }
   }
 
-  runPythonChildProcess(
-    data: string,
-    period: Periods,
-    forecastType: ForecastType,
-  ): Promise<ForecastResult[]> {
-    return new Promise(async (resolve, reject) => {
-      await fs.promises.writeFile(
-        `${process.cwd()}/machine_learning/data.json`,
-        data,
-        'utf8',
-      );
-
-      const pythonProcess = spawn('python3', [
-        `${process.cwd()}/machine_learning/model.py`,
-        period,
-        forecastType,
-      ]);
-
-      pythonProcess.stdout.on('data', (data) => {
-        this.pyLogger.log(`Logs: ${data}`);
-      });
-      pythonProcess.stderr.on('data', (error) => {
-        reject(`Error: ${error}`);
-      });
-
-      pythonProcess.on('close', (code) => {
-        if (code !== 0) {
-          reject(`Python script exited with code ${code}`);
-        } else {
-          this.pyLogger.log(`Python script exited with code ${code}`);
-          const rawData = fs.readFileSync(
-            `${process.cwd()}/machine_learning/results.json`,
-            'utf8',
-          );
-          resolve(JSON.parse(JSON.parse(rawData)));
-        }
-      });
+  async createForecast(userID: string, results: ForecastResult[], options: Forecast['options']) {
+    return await this.analyticsRepo.create({
+      userID: userID,
+      results: results,
+      options: options,
     });
   }
 
   async forecast(
+    userID: string,
     transactions: MLTransaction[],
     options: Forecast['options'],
     forecastType: ForecastType,
-  ): Promise<ForecastResult[]> {
+  ) {
     try {
-      const results = await this.runPythonChildProcess(
-        JSON.stringify(transactions),
-        options.period,
-        forecastType,
-      );
-      return results;
+      const userMLPath = `/forecast/${userID}`
+      if (this.fileManagerService.isDirExist(userMLPath)) {
+        this.logger.log('Folder is already exist, forecasting is in progress...');
+      } else {
+        const folderPath = this.fileManagerService.createFolder(userMLPath);
+        const resultsJsonPath = this.fileManagerService.createFile('results.json', '', folderPath);
+        this.fileManagerService.createFile('data.json', {
+          period: options.period,
+          forecast_type: forecastType,
+          data: transactions
+        }, folderPath);
+        this.watcherService.watch(resultsJsonPath, async (content) => {
+          try {
+            const results = JSON.parse(content);
+            if (results !== '') {
+              await this.createForecast(userID, results, options);
+              this.fileManagerService.removeFolder(userMLPath);
+              this.eventsGateway.send('forecast', {
+                status: 'success',
+                message: 'Forecasting finished successfully',
+              });
+            }
+          } catch (err) {
+            this.logger.error(err);
+            throw new BadRequestException('Something went wrong. Please try again');
+          }
+        });
+      }
     } catch (error) {
       this.logger.error(error);
       throw new BadRequestException('Something went wrong. Please try again');
@@ -203,21 +194,12 @@ export class AnalyticsService {
       });
 
       const processedTransactions = this.processTransaction(transactions);
-      const results = await this.forecast(
+      await this.forecast(
+        userID,
         processedTransactions as MLTransaction[],
         options,
         forecastType,
       );
-
-      await this.analyticsRepo.create({
-        userID: userID,
-        results: results,
-        options: options,
-      });
-      this.eventsGateway.send('forecast', {
-        status: 'success',
-        message: 'Forecasting finished successfully',
-      });
     } catch (err) {
       this.eventsGateway.send('forecast', {
         status: 'failed',

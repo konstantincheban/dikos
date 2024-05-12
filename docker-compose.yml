@@ -6,6 +6,8 @@ services:
     image: dikos-api-dev:1.0.0
     env_file:
       - ./backend/.dev.env
+    volumes:
+      - shared_data:/forecast
     build:
       context: ./backend
       target: development
@@ -17,10 +19,23 @@ services:
     restart: unless-stopped
     depends_on:
       - mongo
+      - machine_learning
+  machine_learning:
+    container_name: machine-learning
+    image: dikos-machine-learning:1.0.0
+    volumes:
+      - shared_data:/forecast
+    build:
+      context: ./machine_learning
+      dockerfile: Dockerfile
+    command: python3 main.py
+    ports:
+      - 4000:4000
+    restart: unless-stopped
   mongo:
     image: mongo
     ports:
-      - "27017:27017"
+      - 27017:27017
   prod_api:
     container_name: nestjs_api_prod
     image: nestjs-api-prod:1.0.0
@@ -35,6 +50,8 @@ services:
       - 6969:6969
       - 9229:9229
     restart: unless-stopped
+    depends_on:
+      - machine_learning
   dev_ui:
     container_name: dikos_ui_dev
     image: dikos_ui_dev:1.0.0
@@ -61,3 +78,6 @@ services:
     ports:
       - 3000:3000
     restart: unless-stopped
+
+volumes:
+  shared_data:

@@ -1,5 +1,5 @@
-FROM node:18.17 As development
-WORKDIR /frontend
+FROM node:18-alpine As development
+WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci
 COPY . .
@@ -7,8 +7,8 @@ ENV WS_URL ws://localhost:6969
 EXPOSE 3000
 CMD ['npm', 'run', 'start:dev']
 
-FROM node:18.17 As production
-WORKDIR /frontend
+FROM node:18-alpine As production
+WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci
 COPY . .

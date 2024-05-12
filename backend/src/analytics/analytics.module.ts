@@ -5,7 +5,7 @@ import { AnalyticsService } from './analytics.service';
 import { AnalyticsController } from './analytics.controller';
 import { Forecast, ForecastSchema } from './schemas/forecast.schema';
 import { StatisticsModule } from '@statistics/statistics.module';
-import { EventsModule } from '@app/common';
+import { EventsModule, FileManagerService, WatcherService } from '@app/common';
 import { DatabaseModule, LoggerModule } from '@app/common';
 import { AnalyticsRepository } from './analytics.repository';
 
@@ -20,7 +20,7 @@ import { AnalyticsRepository } from './analytics.repository';
       { name: Forecast.name, schema: ForecastSchema },
     ]),
   ],
-  providers: [AnalyticsService, AnalyticsRepository],
+  providers: [AnalyticsService, AnalyticsRepository, FileManagerService, WatcherService],
   controllers: [AnalyticsController],
 })
 export class AnalyticsModule {}

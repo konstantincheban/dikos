@@ -1,24 +1,32 @@
+""" Handle forecasting functionality """
 import re
+import json
+import datetime
+import logging
+
 import pandas as pd
 import numpy as np
-from scipy import stats
-import pdb
-import datetime
-
 import xgboost as xgb
+
+from scipy import stats
 from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, r2_score
 from sklearn.model_selection import train_test_split
 
-import sys
-import json
-import os
+
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 def extract_number(s):
+    """
+    Extract number from the string
+    """
     match = re.search(r'\d+', s)
     return int(match.group()) if match else None
 
-
 def add_lags(df):
+    """
+    Add lags to the dataset
+    """
     df['lag1_amount'] = df['amount'].shift(11)
     df['lag2_amount'] = df['amount'].shift(19)
     df['lag3_amount'] = df['amount'].shift(29)
@@ -45,7 +53,6 @@ def add_lags(df):
 
     return df
 
-
 def create_features(df):
     """
     Create time series features based on time series index.
@@ -63,8 +70,10 @@ def create_features(df):
     df = add_lags(df)
     return df
 
-
 def make_xgboost_reg(X_train, y_train, X_test, y_test, forecast_type):
+    """
+    Make XGBoost regressor
+    """
     best_income_params = {
         "booster": 'gbtree',
         "objective": 'reg:squarederror',
@@ -84,20 +93,40 @@ def make_xgboost_reg(X_train, y_train, X_test, y_test, forecast_type):
             verbose=100)
     return reg
 
-
 def make_prediction(reg, X_test):
+    """
+    Predict values
+    """
     return reg.predict(X_test)
 
-
 def print_stats(y_test, pred):
-    print('RMSE: ', round(np.sqrt(mean_squared_error(y_true=y_test, y_pred=pred)), 3))
-    print('MAE: ', round(mean_absolute_error(y_true=y_test, y_pred=pred), 3))
-    print('MAPE: ', round(mean_absolute_percentage_error(
-        y_true=y_test, y_pred=pred), 3))
-    print('r2: ', round(r2_score(y_true=y_test, y_pred=pred), 3))
+    """
+    Log metrics which represents efficiency of the model predictions
+    """
+    logging.info(f'RMSE: {round(np.sqrt(mean_squared_error(y_true=y_test, y_pred=pred)), 3)}')
+    logging.info(f'MAE: {round(mean_absolute_error(y_true=y_test, y_pred=pred), 3)}')
+    logging.info(f'MAPE: {round(mean_absolute_percentage_error(y_true=y_test, y_pred=pred), 3)}')
+    logging.info(f'r2: {round(r2_score(y_true=y_test, y_pred=pred), 3)}')
 
+def base_line_comparison(y_train, y_test, model_predictions):
+    """
+    Compare predicted values with base line values (mean number)
+    """
+    # Define and fit the baseline model (predicting the mean)
+    baseline_prediction = np.mean(y_train)
+    baseline_predictions = np.full(len(y_test), baseline_prediction)
+
+    # Calculate RMSE for both models
+    baseline_rmse = np.sqrt(mean_squared_error(y_test, baseline_predictions))
+    xgb_rmse = np.sqrt(mean_squared_error(y_test, model_predictions))
+
+    logging.info(f"Baseline RMSE: {baseline_rmse}")
+    logging.info(f"XGBoost RMSE: {xgb_rmse}")
 
 def create_future_pred(reg, main_df, period, features):
+    """
+    Forecast future values
+    """
     # Create future dataframe
     start_date = main_df.index[-1]
     horizon_date = start_date + datetime.timedelta(days=30 * extract_number(period))
@@ -113,49 +142,32 @@ def create_future_pred(reg, main_df, period, features):
     future_DF['pred'] = reg.predict(future_DF[features])
     return future_DF
 
-
-def base_line_comparison(y_train, y_test, model_predictions):
-    # Define and fit the baseline model (predicting the mean)
-    baseline_prediction = np.mean(y_train)
-    baseline_predictions = np.full(len(y_test), baseline_prediction)
-
-    # Calculate RMSE for both models
-    baseline_rmse = np.sqrt(mean_squared_error(y_test, baseline_predictions))
-    xgb_rmse = np.sqrt(mean_squared_error(y_test, model_predictions))
-
-    print("Baseline RMSE:", baseline_rmse)
-    print("XGBoost RMSE:", xgb_rmse)
-
-
 def sum_aggregator(series):
     return series.sum()
-
 
 def min_aggregator(series):
     if len(series) > 0:
         return min(series)
     return 0
 
-
 def max_aggregator(series):
     if len(series) > 0:
         return max(series)
     return 0
 
-
 def mean_aggregator(series):
     return series.mean()
-
 
 def median_aggregator(series):
     return series.median()
 
-
 def num_aggregator(series):
     return len(series)
 
-
 def resample_and_create_features(df, resample_key):
+    """
+    Resample entries in the df and add some new features
+    """
     amount_df = df['amount'].resample(resample_key).apply(sum_aggregator)
     features_df = df['amount'].resample(resample_key).apply(
         {
@@ -175,18 +187,29 @@ def resample_and_create_features(df, resample_key):
     res_df['num_trx'] = features_df['num_trx']
     return res_df
 
-
 def replace_zeros(df):
+    """
+    Resample all zero values in the df with pre-zero values
+    """
     pseudo_zero = 1e-6
     return df.replace(0, pseudo_zero)
 
-
-def main():
+def forecast(data_path: str):
+    """
+    Main method to forecast future values
+    """
     try:
-        period = sys.argv[1]
-        forecast_type = sys.argv[2]
+        logging.info(f'Start loading JSON {data_path}')
+        # Reading JSON data
+        with open(data_path, 'r') as file:
+            data = json.load(file)
+        period = data['period']
+        forecast_type = data['forecast_type']
 
-        df = pd.read_json(f'{os.getcwd()}/machine_learning/data.json')
+        df = pd.DataFrame(data['data'])
+
+        # Convert 'datetime' column to datetime
+        df['dateTime'] = pd.to_datetime(df['dateTime'], errors='coerce')
 
         df.dateTime = df.dateTime.dt.tz_convert('Europe/Athens')
         df.set_index('dateTime', inplace=True)
@@ -292,7 +315,7 @@ def main():
 
         predictions = make_prediction(reg, X_test)
         print_stats(y_test, predictions)
-        # base_line_comparison(y_train, y_test, predictions)
+        base_line_comparison(y_train, y_test, predictions)
 
         future_df = create_future_pred(reg, main_df, period, features=resample_features)
         df_reset = future_df.reset_index()
@@ -300,11 +323,8 @@ def main():
         df_reset.columns = ['dateTime', 'amount']
         json_result = df_reset.to_json(orient='records', date_format='iso')
         # Writing JSON data
-        with open(f'{os.getcwd()}/machine_learning/results.json', 'w') as file:
-            json.dump(json_result, file)
-    except Exception as exception:
-        print(exception)
-
-
-if __name__ == "__main__":
-    main()
+        re_dpath = data_path.replace('data', 'results')
+        with open(re_dpath, 'w') as file:
+            file.write(json_result)
+    except Exception as _e:
+        logging.error('An error occurred while forecasting...', exc_info=True)
