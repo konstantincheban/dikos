@@ -7,10 +7,12 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "target": "es2017",
+    "target": "ES2022",
+    "lib": [
+      "ES2022"
+    ],
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
     "paths": {
       "@accounts/*": [
         "./src/accounts/*"
@@ -40,10 +42,10 @@
         "./src/utils/*"
       ],
       "@app/common": [
-        "libs/common/src"
+        "./libs/common/src"
       ],
       "@app/common/*": [
-        "libs/common/src/*"
+        "./libs/common/src/*"
       ]
     },
     "incremental": true,

@@ -1,11 +1,13 @@
-version: '3.8'
-
 services:
   dev_api:
     container_name: dikos_api_dev
     image: dikos-api-dev:1.0.0
-    env_file:
-      - ./backend/.dev.env
+    environment:
+      - PORT=6969
+      - NODE_ENV=development
+      - MONGO_HOST=mongodb://mongo:27017/dikos
+      - JWT_KEY=local-docker-secret
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
     volumes:
       - shared_data:/forecast
     build:
@@ -36,45 +38,17 @@ services:
     image: mongo
     ports:
       - 27017:27017
-  prod_api:
-    container_name: nestjs_api_prod
-    image: nestjs-api-prod:1.0.0
-    env_file:
-      - ./backend/.prod.env
-    build:
-      context: ./backend
-      target: production
-      dockerfile: Dockerfile
-    command: npm run start:prod
-    ports:
-      - 6969:6969
-      - 9229:9229
-    restart: unless-stopped
-    depends_on:
-      - machine_learning
   dev_ui:
     container_name: dikos_ui_dev
     image: dikos_ui_dev:1.0.0
     environment:
-      - API_URL=http://dev_api:6969/
+      - API_PROXY_TARGET=http://dev_api:6969/
+      - VITE_WS_URL=ws://localhost:6969
     build:
       context: ./frontend
       target: development
       dockerfile: Dockerfile
     command: npm run start:dev
-    ports:
-      - 3000:3000
-    restart: unless-stopped
-  prod_ui:
-    container_name: dikos_ui_prod
-    image: dikos_ui_prod:1.0.0
-    environment:
-      - API_URL=http://prod_api:6969/
-    build:
-      context: ./frontend
-      target: production
-      dockerfile: Dockerfile
-    command: npm run start
     ports:
       - 3000:3000
     restart: unless-stopped

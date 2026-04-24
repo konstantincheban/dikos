@@ -1,4 +1,5 @@
-@import '@styles/shared.scss';
+@use 'sass:color';
+@use '@styles/shared.scss' as *;
 
 .UserMenuContainer {
   padding: 40px 40px 20px 40px;
@@ -133,7 +134,10 @@
     & .SummaryWidgetContainer,
     & .DateSummaryWidgetContainer {
       display: flex;
-      background-color: lighten($color: $secondaryBackgroundColor, $amount: 5);
+      background-color: color.adjust(
+        $secondaryBackgroundColor,
+        $lightness: 5%
+      );
       border-radius: $borderRadius;
       padding: 15px;
       opacity: 1;

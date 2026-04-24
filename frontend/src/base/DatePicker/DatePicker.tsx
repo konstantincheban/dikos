@@ -10,7 +10,9 @@ function DatePicker(props: IDatePickerProps & Partial<FieldProps>) {
   const { showTime, disabled, placeholder, field, form } = props;
   const [value, setValue] = useState('');
   // TODO, check Formik behavior on how it pass default values to controls
-  const [date, setDate] = useState(new Date(field?.value) ?? new Date());
+  const [date, setDate] = useState(
+    field?.value ? new Date(field.value) : new Date(),
+  );
 
   useEffect(() => {
     // Field Mode

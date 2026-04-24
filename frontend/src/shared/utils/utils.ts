@@ -73,11 +73,14 @@ export const buildQueryParamsString = (params: KeyValueType) => {
     }, '');
 };
 
-export const debounce = (fn: Function, ms = 300) => {
+export const debounce = <TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  ms = 300,
+) => {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return function (this: any, ...args: any[]) {
+  return function (...args: TArgs) {
     clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn.apply(this, args), ms);
+    timeoutId = setTimeout(() => fn(...args), ms);
   };
 };
 

@@ -1,9 +1,7 @@
-@import '@styles/shared.scss';
+@use 'sass:color';
+@use '@styles/shared.scss' as *;
 
-$activeBackgroundColor: lighten(
-  $color: $secondaryBackgroundColor,
-  $amount: 15,
-);
+$activeBackgroundColor: color.adjust($secondaryBackgroundColor, $lightness: 15%);
 .OptionContainer {
   padding: 10px 25px;
   flex: 1;

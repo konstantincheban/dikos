@@ -2,7 +2,7 @@ import { ROUND_VALUE } from '@utils/constants';
 import { Injectable } from '@nestjs/common';
 import { BudgetService } from '@budget/budget.service';
 import * as moment from 'moment';
-import { ForecastResult } from 'src/analytics/schemas/forecast.schema';
+import { ForecastResult } from '@analytics/schemas/forecast.schema';
 import { TransactionsRepository } from '@transactions/transactions.repository';
 
 export interface IBudget {

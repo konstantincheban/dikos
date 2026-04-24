@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { BudgetStatisticsData } from '@shared/interfaces';
 import { dateFormatter } from '@shared/utils';
 import { useState } from 'react';

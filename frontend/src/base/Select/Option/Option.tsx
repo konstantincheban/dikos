@@ -11,14 +11,20 @@ function Option(props: IOptionProps) {
       case 'Enter':
       case ' ':
         e.preventDefault();
-        onSelect && onSelect(value);
+        if (onSelect) {
+          onSelect(value);
+        }
     }
   };
 
   return (
     <li
       className={classMap({ active: !!active }, 'OptionContainer')}
-      onClick={() => onSelect && onSelect(value)}
+      onClick={() => {
+        if (onSelect) {
+          onSelect(value);
+        }
+      }}
       onKeyDown={handleKeyDownEvent}
       tabIndex={collapsed ? -1 : 0}
       role="option"

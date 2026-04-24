@@ -33,13 +33,14 @@ const Switcher = (props: ISwitcherProps & Partial<FieldProps>) => {
   const handleKeydown = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case 'Enter':
-      case ' ':
+      case ' ': {
         e.preventDefault();
         const selectedValue = e.currentTarget.getAttribute('data-value') ?? getDefault();
         setActiveOption(selectedValue);
         break;
+      }
     }
-  }
+  };
 
   return (
     <div className="SwitcherContainer">

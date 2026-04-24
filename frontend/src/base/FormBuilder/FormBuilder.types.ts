@@ -3,8 +3,9 @@ import { IInputProps } from '@base/Input';
 import { IOptionProps, ISelectProps } from '@base/Select';
 import { ISwitcherProps } from '@base/Switcher';
 import { ITagEditorSingleModeProps } from '@base/TagEditor/TagEditor.types';
+import { FormikValues } from 'formik';
 
-export interface IFormBuilderProps<FormData> {
+export interface IFormBuilderProps<FormData extends FormikValues> {
   initialData: FormData;
   validationSchema?: unknown;
   containerClassName: string;

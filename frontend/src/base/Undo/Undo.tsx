@@ -9,7 +9,9 @@ interface IUndoProps {
 const Undo = ({ onUndo, closeToast, entryName }: IUndoProps) => {
   const handleClick = () => {
     onUndo();
-    closeToast && closeToast();
+    if (closeToast) {
+      closeToast();
+    }
   };
 
   return (

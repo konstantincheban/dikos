@@ -1,4 +1,5 @@
-@import '@styles/shared.scss';
+@use 'sass:color';
+@use '@styles/shared.scss' as *;
 
 .ButtonContainer {
   button {
@@ -7,7 +8,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: darken($color: $blueAccentColor, $amount: 15);
+    background-color: color.adjust($blueAccentColor, $lightness: -15%);
     color: $textColor;
     font-weight: 700;
     border: none;
@@ -16,7 +17,7 @@
     @include transitionMultiple(background-color, color);
 
     &[disabled] {
-      background-color: darken($color: $blueAccentColor, $amount: 30);
+      background-color: color.adjust($blueAccentColor, $lightness: -30%);
       color: $disabledColor;
       pointer-events: none;
     }
@@ -26,7 +27,7 @@
       border: 2px solid $blueAccentColor;
     }
     &.disruptive {
-      background-color: darken($color: $errorColor, $amount: 15);
+      background-color: color.adjust($errorColor, $lightness: -15%);
       &:hover {
         background-color: $errorColor;
       }
@@ -56,7 +57,7 @@
       background-color: transparent;
 
       &.disruptive {
-        color: darken($color: $errorColor, $amount: 15);
+        color: color.adjust($errorColor, $lightness: -15%);
         background-color: transparent;
         &:hover {
           color: $errorColor;
