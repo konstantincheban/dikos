@@ -18,8 +18,9 @@ export const usePrevious = <T>(value: T): T | undefined => {
   return ref.current;
 };
 
-export const useWebsocket = (options: IUseWebsocketOptions) => {
-  const socket = io(`${process.env.WS_URL}/events`, {transports: ['websocket']});
+export const createWebsocket = (options: IUseWebsocketOptions) => {
+  const wsUrl = import.meta.env.VITE_WS_URL || window.location.origin;
+  const socket = io(`${wsUrl}/events`, { transports: ['websocket'] });
   socket.on('connect', () => {
     if (options?.openedCb) {
       options.openedCb();
@@ -29,18 +30,23 @@ export const useWebsocket = (options: IUseWebsocketOptions) => {
   });
 
   socket.on('message', (event) => {
-
     if (event.event === options.event) {
       if (event.data.status === 'progress') {
-        options?.progressCb && options.progressCb(event.data);
+        if (options.progressCb) {
+          options.progressCb(event.data);
+        }
       }
       if (event.data.status === 'success') {
         socket.disconnect();
-        options?.successCb && options.successCb(event.data);
+        if (options.successCb) {
+          options.successCb(event.data);
+        }
       }
       if (event.data.status === 'failed') {
         socket.disconnect();
-        options?.failedCb && options.failedCb(event.data);
+        if (options.failedCb) {
+          options.failedCb(event.data);
+        }
       }
     }
   });
@@ -49,7 +55,7 @@ export const useWebsocket = (options: IUseWebsocketOptions) => {
     if (options?.closedCb) {
       options.closedCb();
     } else {
-      console.log(`WS Connection was closed: ${options.event}`)
+      console.log(`WS Connection was closed: ${options.event}`);
     }
   });
 
@@ -59,4 +65,4 @@ export const useWebsocket = (options: IUseWebsocketOptions) => {
   });
 
   return socket;
-}
+};

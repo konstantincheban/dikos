@@ -1,73 +1,205 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Dikos Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS API for the Dikos finance monitoring app.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Runtime
 
-## Description
+Required Node.js version: **24 LTS**
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The production backend is packaged as a Docker image and deployed to Google
+Cloud Run as the `dikos-api` service in `europe-west1`.
 
-## Installation
+## Local setup
+
+Install dependencies:
 
 ```bash
-$ npm install
+npm install
 ```
 
-## Running the app
+Create a local env file in this folder:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp .env.development.example .env.development
 ```
 
-## Test
+Required env vars:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+PORT=6969
+NODE_ENV=development
+MONGO_HOST=mongodb://localhost:27017
+JWT_KEY=your-local-jwt-secret
+CORS_ORIGINS=http://localhost:3000
 ```
 
-## Support
+Env files are loaded in this order, with earlier files taking priority:
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```text
+.env.${NODE_ENV}.local
+.env.${NODE_ENV}
+.${legacyEnv}.env
+.env.local
+.env
+```
 
-## Stay in touch
+`legacyEnv` keeps backward compatibility for old `.dev.env` and `.prod.env`
+files, but new setups should use `.env.development` and `.env.production`.
+Real `.env*` files are ignored by git; commit only `.env*.example` files.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Run the API:
 
-## License
+```bash
+npm run start:dev
+```
 
-Nest is [MIT licensed](LICENSE).
+The API is served with the global prefix:
+
+```text
+/api/v1
+```
+
+## Useful commands
+
+```bash
+npm run type-check
+npm run lint
+npm run lint:fix
+npm run build
+npm test
+npm run docker:build
+```
+
+## Cloud Run setup
+
+Choose placeholder values for your GCP/Firebase setup:
+
+```text
+GCP_PROJECT_ID=my-gcp-project
+GCP_REGION=europe-west1
+ARTIFACT_REPOSITORY=dikos
+CLOUD_RUN_SERVICE=dikos-api
+```
+
+Set it in the current `gcloud` session before running any deploy commands:
+
+```bash
+export GCP_PROJECT_ID=my-gcp-project
+export GCP_REGION=europe-west1
+export ARTIFACT_REPOSITORY=dikos
+export CLOUD_RUN_SERVICE=dikos-api
+
+gcloud auth login
+gcloud config set project ${GCP_PROJECT_ID}
+```
+
+Enable the required GCP APIs:
+
+```bash
+gcloud services enable run.googleapis.com \
+  --project=${GCP_PROJECT_ID}
+
+gcloud services enable cloudbuild.googleapis.com \
+  --project=${GCP_PROJECT_ID}
+
+gcloud services enable artifactregistry.googleapis.com \
+  --project=${GCP_PROJECT_ID}
+```
+
+If you see an error like:
+
+```text
+denied: Artifact Registry API has not been used in project PROJECT_NUMBER before or it is disabled
+```
+
+then `artifactregistry.googleapis.com` is not enabled for your GCP project yet,
+or it was enabled moments ago and has not propagated. Run the API enable command
+above, wait a few minutes, then retry the deploy.
+
+Create the Artifact Registry repository once:
+
+```bash
+gcloud artifacts repositories describe ${ARTIFACT_REPOSITORY} \
+  --location=${GCP_REGION} \
+  --project=${GCP_PROJECT_ID}
+
+gcloud artifacts repositories create ${ARTIFACT_REPOSITORY} \
+  --repository-format=docker \
+  --location=${GCP_REGION} \
+  --project=${GCP_PROJECT_ID}
+```
+
+If `describe` succeeds, the repository already exists and the `create` command
+can be skipped.
+
+Configure Docker auth for Artifact Registry:
+
+```bash
+gcloud auth configure-docker ${GCP_REGION}-docker.pkg.dev
+```
+
+Deploy production from this folder:
+
+```bash
+GCP_PROJECT_ID=my-gcp-project npm run deploy:prod
+```
+
+The deploy script builds and deploys:
+
+```text
+europe-west1-docker.pkg.dev/my-gcp-project/dikos/dikos-api:production
+```
+
+to Cloud Run service:
+
+```text
+dikos-api
+```
+
+in region:
+
+```text
+europe-west1
+```
+
+## Cloud Run env vars
+
+Set production env vars on the Cloud Run service.
+
+Recommended production values:
+
+```bash
+NODE_ENV=production
+MONGO_HOST=${MONGODB_URI}
+JWT_KEY=${JWT_KEY}
+CORS_ORIGINS=https://${FIREBASE_PROJECT_ID}.web.app,https://${FIREBASE_PROJECT_ID}.firebaseapp.com
+```
+
+Cloud Run provides `PORT`; the Docker image exposes `8080`.
+
+## Firebase Hosting integration
+
+The frontend Firebase Hosting config rewrites REST requests:
+
+```text
+/api/v1/**
+```
+
+to this Cloud Run service:
+
+```json
+{
+  "serviceId": "dikos-api",
+  "region": "europe-west1"
+}
+```
+
+Keep the Cloud Run service name and region in sync with
+`frontend/firebase.json`.
+
+## Forecasting note
+
+Forecasting still depends on the local Docker shared `/forecast` volume between
+this backend and the Python service. That flow works for local Docker
+development, but it is not production-ready for Cloud Run yet. Production
+forecasting needs a follow-up HTTP service or queue/job integration.

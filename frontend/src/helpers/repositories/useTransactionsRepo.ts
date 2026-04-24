@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { repoWrapper, setErrorToState } from './utils';
 import { useAccountsObservable, useTransactionsObservable } from '@observables';
 import { useTransactionsApi, useImportApi } from '@api';
@@ -14,7 +13,7 @@ import { AxiosResponse } from 'axios';
 import { Id, toast } from 'react-toastify';
 import { AttributeItem } from '@base/TagEditor';
 import { METRO_IMPORT_TYPE } from '@shared/constants';
-import { useWebsocket } from '@hooks';
+import { createWebsocket } from '@hooks';
 
 export const useTransactionsRepository = () => {
   const transactionsApi = useTransactionsApi();
@@ -40,7 +39,7 @@ export const useTransactionsRepository = () => {
   const importTransactions = (data: FormData, type: SupportedImportAPITypes) => {
     let toasterID: Id;
     if (type === METRO_IMPORT_TYPE) {
-      const ws = useWebsocket({
+      createWebsocket({
         event: 'metro-migration',
         progressCb: (data) => {
           toasterID = toast.loading(data.message);
@@ -54,13 +53,13 @@ export const useTransactionsRepository = () => {
         failedCb: (data) => {
           toast.dismiss(toasterID);
           toast.error(data.message);
-        }
+        },
       });
       return repoWrapper(transactionsObservable, () =>
         importApi.importMetroTransactions<FormData>(data)
       );
     }
-    const ws = useWebsocket({
+    createWebsocket({
       event: 'mono-migration',
       progressCb: (data) => {
         toasterID = toast.loading(data.message);
@@ -74,7 +73,7 @@ export const useTransactionsRepository = () => {
       failedCb: (data) => {
         toast.dismiss(toasterID);
         toast.error(data.message);
-      }
+      },
     });
     return repoWrapper(transactionsObservable, () =>
       importApi.importMonoTransactions<FormData>(data)
@@ -127,8 +126,12 @@ export const useTransactionsRepository = () => {
             return acc;
           }, { countOfSuccessful: 0, countOfFailed: 0 })
 
-          countOfSuccessful && toast.success(`${countOfSuccessful} transactions were deleted successfully`);
-          countOfFailed && toast.error(`${countOfFailed} transactions have not been deleted`);
+          if (countOfSuccessful) {
+            toast.success(`${countOfSuccessful} transactions were deleted successfully`);
+          }
+          if (countOfFailed) {
+            toast.error(`${countOfFailed} transactions have not been deleted`);
+          }
         })
         .catch((err) => setErrorToState(err, transactionsObservable)),
     );

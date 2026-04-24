@@ -1,4 +1,4 @@
-import { Field, Form, Formik, FormikProps } from 'formik';
+import { Field, Form, Formik, FormikProps, FormikValues } from 'formik';
 import { classMap } from '@shared/utils';
 import Input from '@base/Input';
 import {
@@ -18,7 +18,7 @@ import DatePicker from '@base/DatePicker';
 import Switcher from '@base/Switcher';
 import TagEditor from '@base/TagEditor';
 
-function FormBuilder<FormData>(
+function FormBuilder<FormData extends FormikValues>(
   props: IFormBuilderProps<FormData>,
   ref: React.ForwardedRef<any>,
 ) {
@@ -130,7 +130,7 @@ function FormBuilder<FormData>(
   );
 }
 
-const FormBuilderRef = forwardRef(FormBuilder) as <T>(
+const FormBuilderRef = forwardRef(FormBuilder) as <T extends FormikValues>(
   props: IFormBuilderProps<T> & { ref?: React.ForwardedRef<any> },
 ) => ReturnType<typeof FormBuilder>;
 

@@ -13,10 +13,20 @@ import { StatisticsModule } from './statistics/statistics.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { DatabaseModule, EventsModule } from '@app/common';
 
+const nodeEnv = process.env.NODE_ENV || 'development';
+const legacyEnv = nodeEnv === 'development' ? 'dev' : nodeEnv === 'production' ? 'prod' : nodeEnv;
+
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: `.${process.env.NODE_ENV}.env`,
+      isGlobal: true,
+      envFilePath: [
+        `.env.${nodeEnv}.local`,
+        `.env.${nodeEnv}`,
+        `.${legacyEnv}.env`,
+        '.env.local',
+        '.env',
+      ],
     }),
     DatabaseModule,
     UsersModule,

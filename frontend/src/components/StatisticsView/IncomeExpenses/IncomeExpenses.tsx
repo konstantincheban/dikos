@@ -30,10 +30,13 @@ function IncomeExpenses() {
 
   useEffect(() => {
     const params = dataConfig ? Object.values(dataConfig) : [];
-    params.length &&
-      getIncomeExpensesStatisticsData(params).then(
-        (data) => data && setChartData(data),
-      );
+    if (params.length) {
+      getIncomeExpensesStatisticsData(params).then((data) => {
+        if (data) {
+          setChartData(data);
+        }
+      });
+    }
   }, [dataConfig]);
 
   const handleChangeViewMode = (value: string) => {

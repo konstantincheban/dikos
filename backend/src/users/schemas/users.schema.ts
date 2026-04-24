@@ -8,7 +8,7 @@ import { AbstractDocument } from '@app/common';
 @Schema({ versionKey: false })
 export class User extends AbstractDocument {
   @Exclude()
-  _id: string;
+  declare _id: string;
 
   @Prop({ required: true })
   username: string;

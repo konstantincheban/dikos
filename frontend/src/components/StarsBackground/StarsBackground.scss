@@ -1,4 +1,4 @@
-@import '@styles/shared.scss';
+@use '@styles/shared.scss' as *;
 
 @mixin sp-layout {
   @media screen and (max-width: 750px) {

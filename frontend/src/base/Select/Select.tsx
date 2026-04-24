@@ -34,7 +34,9 @@ function Select(
       form.setFieldValue(field.name, value);
       setTimeout(() => form.setFieldTouched(field.name, true, true));
     }
-    onChange && onChange(value);
+    if (onChange) {
+      onChange(value);
+    }
 
     setCollapsedValue(true);
     inputRef?.current?.focus();
@@ -61,15 +63,19 @@ function Select(
   }, [children, value, collapsed]);
 
   useEffect(() => {
-    defaultValue && setValue(defaultValue);
+    if (defaultValue) {
+      setValue(defaultValue);
+    }
   }, []);
 
   const setCollapsedValue = (value: boolean) => {
     setCollapsed(value);
     window.requestAnimationFrame(() => {
-      !value && adjustHeight();
-    })
-  }
+      if (!value) {
+        adjustHeight();
+      }
+    });
+  };
 
   const adjustHeight = () => {
     if (listRef.current) {
@@ -81,7 +87,7 @@ function Select(
         listRef.current.style.height = 'auto';
       }
     }
-  }
+  };
 
   const getRelatedLabelByValue = (value: string) => {
     const option = options?.find((option) => option.props.value === value);

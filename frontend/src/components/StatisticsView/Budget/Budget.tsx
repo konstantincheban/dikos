@@ -1,5 +1,5 @@
 import { useStatisticsRepository } from '@repos';
-import { BudgetData } from '@shared/interfaces';
+import { BudgetStatisticsData } from '@shared/interfaces';
 import { useEffect, useState } from 'react';
 import BudgetBarChart from '../Charts/BudgetBarChart';
 import StatisticsDataController, {
@@ -9,16 +9,19 @@ import './Budget.scss';
 
 function Budget() {
   const { getBudgetStatisticsData } = useStatisticsRepository();
-  const [chartData, setChartData] = useState<BudgetData[]>();
+  const [chartData, setChartData] = useState<BudgetStatisticsData[]>();
   const [dataConfig, setDataConfig] =
     useState<StatisticsDataControllerConfig>();
 
   useEffect(() => {
     const params = dataConfig ? Object.values(dataConfig) : [];
-    params.length &&
-      getBudgetStatisticsData(params).then(
-        (data) => data && setChartData(data),
-      );
+    if (params.length) {
+      getBudgetStatisticsData(params).then((data) => {
+        if (data) {
+          setChartData(data);
+        }
+      });
+    }
   }, [dataConfig]);
 
   const handleControllerValueChanged = (

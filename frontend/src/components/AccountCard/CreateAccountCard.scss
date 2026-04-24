@@ -1,4 +1,4 @@
-@import '@styles/shared.scss';
+@use '@styles/shared.scss' as *;
 
 .CreationCart.CardContainer {
   width: 200px;
